@@ -33,7 +33,26 @@ export default function Home() {
   const [petauri, setPetauri] = useState([]);
   const [colonie, setColonie] = useState([]);
   const [pesi, setPesi] = useState([]);
-  const [alimenti, setAlimenti] = useState([]);
+  useEffect(() => {
+  caricaCSV();
+}, []);
+
+async function caricaCSV() {
+
+  const response = await fetch("/alimenti.csv");
+
+  const text = await response.text();
+
+  Papa.parse(text, {
+
+    header: true,
+
+    complete: function(results) {
+
+      setAlimenti(results.data);
+    }
+  });
+}
   const [diete, setDiete] = useState([]);
   const [settimane, setSettimane] = useState([]);
   const [giorniDB, setGiorniDB] = useState([]);
