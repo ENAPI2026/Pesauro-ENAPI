@@ -31,6 +31,7 @@ const giorniSettimana = [
 
 export default function Home() {
   const [petauri, setPetauri] = useState([]);
+  const [alimenti, setAlimenti] = useState([]);
   const [colonie, setColonie] = useState([]);
   const [pesi, setPesi] = useState([]);
   useEffect(() => {
