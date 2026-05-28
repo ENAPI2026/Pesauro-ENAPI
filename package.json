@@ -1,0 +1,21 @@
+{
+  "name": "pesauro-enapi",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.4",
+    "next": "14.2.5",
+<<<<<<< HEAD
+    "papaparse": "^5.5.3",
+=======
+>>>>>>> c47327e507dc71fc3d0350c5c9e01943cd46bd15
+    "react": "^18",
+    "react-dom": "^18",
+    "recharts": "^2.12.7"
+  }
+}
