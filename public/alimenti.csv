@@ -1,138 +1,138 @@
-nome,categoria,rapporto_ca_p,note
-Albicocca,Frutta,1.00,
-Anguria,Frutta,3.50,
-Atemoya,Frutta,0.38,
-Avocado,Frutta,0.29,MOLTO GRASSO
-Banana,Frutta,0.25,
-Cachi,Frutta,0.47,
-Cachi mela,Frutta,0.47,
-Caimito,Frutta,0.50,
-Calamansi,Frutta,1.71,
-Cherimoya,Frutta,0.38,
-Ciliegia,Frutta,0.62,
-Feijoa,Frutta,0.85,
-Fico,Frutta,1.72,NO SEMI
-Fico d'India,Frutta,2.33,
-Finger lime,Frutta,1.29,
-Fragola,Frutta,0.89,
-Frutto della passione,Frutta,0.18,NO SEMI
-Giuggiola,Frutta,0.91,
-Granadilla,Frutta,0.20,
-Guava,Frutta,0.45,
-Kiwano,Frutta,0.35,
-Lampone,Frutta,0.93,
-Litchi,Frutta,0.16,
-Lucuma,Frutta,0.56,
-Mango,Frutta,0.63,
-Mela Fuji,Frutta,0.50,
-Mela Gala,Frutta,0.55,
-Mela Golden,Frutta,0.55,
-Mela Granny Smith,Frutta,0.65,
-Melagrana,Frutta,0.28,NO SEMI
-Melone honeydew,Frutta,0.50,
-Melone pelle di rospo,Frutta,0.53,
-Melone retato,Frutta,0.69,
-Mirtillo,Frutta,1.33,NO SEMI
-Mora,Frutta,0.74,
-Nashi,Frutta,0.28,
-Papaya,Frutta,1.75,NO SEMI
-Pera Abate,Frutta,0.75,
-Pera Decana,Frutta,0.82,
-Pera Kaiser,Frutta,0.82,
-Pera Williams,Frutta,0.82,
-Pesca,Frutta,0.40,
-Pesca noce,Frutta,0.33,NO SEMI
-Pitaya,Frutta,0.33,NO SEMI
-Prugna,Frutta,0.92,
-Ribes nero,Frutta,0.93,
-Ribes rosso,Frutta,0.76,
-Salak,Frutta,1.56,
-Santol,Frutta,0.64,
-Sapodilla,Frutta,0.75,
-Zapote nero,Frutta,0.62,
-Ananas,Frutta,2.17,
-Arancia,Frutta,2.22,
-Jackfruit,Frutta,0.92,
-Kiwi,Frutta,0.35,
-Kumquat,Frutta,3.26,NO SEMI
-Mandarino,Frutta,0.68,
-Uva,Frutta,6.75,NO SEMI|NO BUCCIA|MICRO-DOSI RARE
-Alchechengi,Frutta,0.23,
-Amla,Frutta,0.93,
-Dattero,Frutta,1.03,
-Durian,Frutta,0.15,
-Longan,Frutta,0.05,
-Naranjilla,Frutta,0.24,
-Pomelo,Frutta,0.24,
-Pompelmo,Frutta,1.05,
-Tamarindo,Frutta,0.65,
-Asparago,Verdura,0.46,
-Bitter melon,Verdura,0.61,
-Bok choy,Verdura,2.84,
-Broccolo,Verdura,1.38,
-Carciofo,Verdura,0.49,
-Carota,Verdura,1.18,
-Cavoletti di Bruxelles,Verdura,0.61,
-Cavolfiore,Verdura,0.63,
-Cavolfiore romano,Verdura,0.50,
-Cavolo cappuccio,Verdura,2.11,
-Cavolo cinese,Verdura,2.84,
-Cavolo nero,Verdura,4.60,
-Cavolo rapa,Verdura,1.26,
-Cavolo riccio,Verdura,4.60,
-Cavolo verza,Verdura,1.36,
-Cetriolo,Verdura,0.67,
-Chayote,Verdura,0.94,
-Choy sum,Verdura,2.00,
-Cicoria,Verdura,2.38,
-Fagiolino,Verdura,0.73,
-Finocchio,Verdura,0.89,
-Fiore di zucca,Verdura,1.06,NO PISTILLO
-Indivia belga,Verdura,1.64,
-Kai lan,Verdura,1.28,
-Lattuga,Verdura,1.44,
-Mais,Verdura,0.07,
-Mizuna,Verdura,5.25,
-Pak choi baby,Verdura,2.84,
-Peperone,Verdura,0.59,NO SEMI|NO BUCCIA
-Pisello,Verdura,0.46,NO BUCCIA|COTTO
-Radicchio,Verdura,1.19,
-Rapa,Verdura,4.60,
-Rapanello,Verdura,1.35,
-Rucola,Verdura,7.62,
-Scarola,Verdura,3.06,
-Sedano,Verdura,0.68,
-Sedano rapa,Verdura,0.57,
-Shiso,Verdura,3.43,
-Songino,Verdura,1.10,
-Spinacino,Verdura,2.38,
-Tarassaco,Verdura,2.83,
-Zucca butternut,Verdura,1.45,
-Zucca Delica,Verdura,0.66,
-Zucca Hokkaido,Verdura,0.78,
-Zucca Kabocha,Verdura,1.24,
-Zucchina,Verdura,0.32,
-Barbabietola,Verdura,0.95,
-Callaloo,Verdura,4.31,
-Germoglio di bambù,Verdura,0.22,
-Okra,Verdura,1.34,COTTO
-Porrifoglio,Verdura,0.35,
-Prezzemolo,Verdura,2.94,
-Spinacio,Verdura,2.02,
-Bietola,Verdura,2.13,
-Daikon,Verdura,0.22,
-Edamame,Verdura,0.37,
-Fagiolo,Verdura,0.24,
-Germoglio di soia,Verdura,0.72,
-Igname,Verdura,0.31,
-Malanga,Verdura,0.51,
-Melanzana,Verdura,0.38,
-Patata dolce,Verdura,0.56,COTTA
-Patata,Verdura,0.18,COTTA
-Pomodoro,Verdura,1.43,
-Porro,Verdura,0.68,
-Rabarbaro,Verdura,6.40,
-Aglio,Verdura,0.22,TOSSICO
-Cassava,Verdura,0.59,TOSSICO
-Cipolla,Verdura,0.79,TOSSICO
-Peperoncino,Verdura,0.90,TOSSICO
+nome,categoria,rapporto
+Albicocca,Frutta,1.00
+Anguria,Frutta,3.50
+Atemoya,Frutta,0.38
+Avocado,Frutta,0.29
+Banana,Frutta,0.25
+Cachi,Frutta,0.47
+Cachi mela,Frutta,0.47
+Caimito,Frutta,0.50
+Calamansi,Frutta,1.71
+Cherimoya,Frutta,0.38
+Ciliegia,Frutta,0.62
+Feijoa,Frutta,0.85
+Fico,Frutta,1.72
+Fico d'India,Frutta,2.33
+Finger lime,Frutta,1.29
+Fragola,Frutta,0.89
+Frutto della passione,Frutta,0.18
+Giuggiola,Frutta,0.91
+Granadilla,Frutta,0.20
+Guava,Frutta,0.45
+Kiwano,Frutta,0.35
+Lampone,Frutta,0.93
+Litchi,Frutta,0.16
+Lucuma,Frutta,0.56
+Mango,Frutta,0.63
+Mela Fuji,Frutta,0.50
+Mela Gala,Frutta,0.55
+Mela Golden,Frutta,0.55
+Mela Granny Smith,Frutta,0.65
+Melagrana,Frutta,0.28
+Melone honeydew,Frutta,0.50
+Melone pelle di rospo,Frutta,0.53
+Melone retato,Frutta,0.69
+Mirtillo,Frutta,1.33
+Mora,Frutta,0.74
+Nashi,Frutta,0.28
+Papaya,Frutta,1.75
+Pera Abate,Frutta,0.75
+Pera Decana,Frutta,0.82
+Pera Kaiser,Frutta,0.82
+Pera Williams,Frutta,0.82
+Pesca,Frutta,0.40
+Pesca noce,Frutta,0.33
+Pitaya,Frutta,0.33
+Prugna,Frutta,0.92
+Ribes nero,Frutta,0.93
+Ribes rosso,Frutta,0.76
+Salak,Frutta,1.56
+Santol,Frutta,0.64
+Sapodilla,Frutta,0.75
+Zapote nero,Frutta,0.62
+Ananas,Frutta,2.17
+Arancia,Frutta,2.22
+Jackfruit,Frutta,0.92
+Kiwi,Frutta,0.35
+Kumquat,Frutta,3.26
+Mandarino,Frutta,0.68
+Uva,Frutta,6.75
+Alchechengi,Frutta,0.23
+Amla,Frutta,0.93
+Dattero,Frutta,1.03
+Durian,Frutta,0.15
+Longan,Frutta,0.05
+Naranjilla,Frutta,0.24
+Pomelo,Frutta,0.24
+Pompelmo,Frutta,1.05
+Tamarindo,Frutta,0.65
+Asparago,Verdura,0.46
+Bitter melon,Verdura,0.61
+Bok choy,Verdura,2.84
+Broccolo,Verdura,1.38
+Carciofo,Verdura,0.49
+Carota,Verdura,1.18
+Cavoletti di Bruxelles,Verdura,0.61
+Cavolfiore,Verdura,0.63
+Cavolfiore romano,Verdura,0.50
+Cavolo cappuccio,Verdura,2.11
+Cavolo cinese,Verdura,2.84
+Cavolo nero,Verdura,4.60
+Cavolo rapa,Verdura,1.26
+Cavolo riccio,Verdura,4.60
+Cavolo verza,Verdura,1.36
+Cetriolo,Verdura,0.67
+Chayote,Verdura,0.94
+Choy sum,Verdura,2.00
+Cicoria,Verdura,2.38
+Fagiolino,Verdura,0.73
+Finocchio,Verdura,0.89
+Fiore di zucca,Verdura,1.06
+Indivia belga,Verdura,1.64
+Kai lan,Verdura,1.28
+Lattuga,Verdura,1.44
+Mais,Verdura,0.07
+Mizuna,Verdura,5.25
+Pak choi,Verdura,2.84
+Peperone,Verdura,0.59
+Pisello,Verdura,0.46
+Radicchio,Verdura,1.19
+Rapa,Verdura,4.60
+Rapanello,Verdura,1.35
+Rucola,Verdura,7.62
+Scarola,Verdura,3.06
+Sedano,Verdura,0.68
+Sedano rapa,Verdura,0.57
+Shiso,Verdura,3.43
+Songino,Verdura,1.10
+Spinacino,Verdura,2.38
+Tarassaco,Verdura,2.83
+Zucca butternut,Verdura,1.45
+Zucca delica,Verdura,0.66
+Zucca hokkaido,Verdura,0.78
+Zucca kabocha,Verdura,1.24
+Zucchina,Verdura,0.32
+Barbabietola,Verdura,0.95
+Callaloo,Verdura,4.31
+Germoglio di bambù,Verdura,0.22
+Okra,Verdura,1.34
+Porrifoglio,Verdura,0.35
+Prezzemolo,Verdura,2.94
+Spinacio,Verdura,2.02
+Bietola,Verdura,2.13
+Daikon,Verdura,0.22
+Edamame,Verdura,0.37
+Fagiolo,Verdura,0.24
+Germoglio di soia,Verdura,0.72
+Igname,Verdura,0.31
+Malanga,Verdura,0.51
+Melanzana,Verdura,0.38
+Patata dolce,Verdura,0.56
+Patata,Verdura,0.18
+Pomodoro,Verdura,1.43
+Porro,Verdura,0.68
+Rabarbaro,Verdura,6.40
+Aglio,Tossico,0.22
+Cassava,Tossico,0.59
+Cipolla,Tossico,0.79
+Peperoncino,Tossico,0.90

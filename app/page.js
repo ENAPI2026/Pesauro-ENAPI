@@ -266,7 +266,14 @@ async function caricaCSV() {
     loadDiete();
   }
 
-  async function importCSV() {
+ async function importCSV()
+  const records = results.data
+  .filter((row) => row.nome)
+  .map((row) => ({
+    Nome: row.nome,
+    Categoria: row.categoria,
+    Rapporto: Number(row.rapporto)
+  }));
     if (!csvFile) {
       alert("Seleziona un file CSV");
       return;
