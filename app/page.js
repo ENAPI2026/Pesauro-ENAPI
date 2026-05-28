@@ -18,7 +18,6 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
-
 const giorniSettimana = [
   { nome: "Lunedi", numero: 1 },
   { nome: "Martedi", numero: 2 },
@@ -31,29 +30,9 @@ const giorniSettimana = [
 
 export default function Home() {
   const [petauri, setPetauri] = useState([]);
-  const [alimenti, setAlimenti] = useState([]);
   const [colonie, setColonie] = useState([]);
   const [pesi, setPesi] = useState([]);
-  useEffect(() => {
-  caricaCSV();
-}, []);
-
-async function caricaCSV() {
-
-  const response = await fetch("/alimenti.csv");
-
-  const text = await response.text();
-
-  Papa.parse(text, {
-
-    header: true,
-
-    complete: function(results) {
-
-      setAlimenti(results.data);
-    }
-  });
-}
+  const [alimenti, setAlimenti] = useState([]);
   const [diete, setDiete] = useState([]);
   const [settimane, setSettimane] = useState([]);
   const [giorniDB, setGiorniDB] = useState([]);
@@ -61,6 +40,9 @@ async function caricaCSV() {
   const [modalita, setModalita] = useState("petauro");
   const [petauroId, setPetauroId] = useState("");
   const [coloniaId, setColoniaId] = useState("");
+
+  const [nomePetauro, setNomePetauro] = useState("");
+  const [nomeColonia, setNomeColonia] = useState("");
 
   const [peso, setPeso] = useState("");
   const [dataPeso, setDataPeso] = useState("");
@@ -76,9 +58,9 @@ async function caricaCSV() {
   const [settimanaDaApplicare, setSettimanaDaApplicare] = useState("");
   const [dataInizioSettimana, setDataInizioSettimana] = useState("");
 
- useEffect(() => {
-  loadAll();
-}, []);
+  useEffect(() => {
+    loadAll();
+  }, []);
 
   async function loadAll() {
     await Promise.all([
@@ -112,11 +94,7 @@ async function caricaCSV() {
   }
 
   async function loadAlimenti() {
-    const { data } = await supabase
-      .from("alimenti")
-      .select("*")
-      .order("Nome", { ascending: true });
-
+    const { data } = await supabase.from("alimenti").select("*");
     if (data) setAlimenti(data);
   }
 
@@ -139,11 +117,11 @@ async function caricaCSV() {
     if (data) setGiorniDB(data);
   }
 
-  function nomePetauro(petauro) {
+  function nomePetauroDisplay(petauro) {
     return petauro?.Nome || petauro?.nome || "-";
   }
 
-  function nomeColonia(colonia) {
+  function nomeColoniaDisplay(colonia) {
     return colonia?.Nome || colonia?.nome || "-";
   }
 
@@ -160,7 +138,69 @@ async function caricaCSV() {
   }
 
   function nomeAlimento(id) {
-    return getAlimento(id)?.Nome || "-";
+    const alimento = getAlimento(id);
+    return alimento ? alimento.Nome : "-";
+  }
+
+  function rapportoAlimento(alimento) {
+    const calcio = Number(alimento?.Calcio || 0);
+    const fosforo = Number(alimento?.Fosforo || 0);
+
+    if (fosforo > 0) {
+      return (calcio / fosforo).toFixed(2);
+    }
+
+    if (alimento?.Rapporto) {
+      return Number(alimento.Rapporto).toFixed(2);
+    }
+
+    return "0.00";
+  }
+
+  async function aggiungiColonia() {
+    if (!nomeColonia) {
+      alert("Inserisci il nome della colonia");
+      return;
+    }
+
+    const { error } = await supabase.from("colonie").insert([
+      {
+        Nome: nomeColonia
+      }
+    ]);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    setNomeColonia("");
+    loadColonie();
+  }
+
+  async function aggiungiPetauro() {
+    if (!nomePetauro) {
+      alert("Inserisci il nome del petauro");
+      return;
+    }
+
+    const nuovoPetauro = {
+      Nome: nomePetauro
+    };
+
+    if (coloniaId) {
+      nuovoPetauro.colonia_id = Number(coloniaId);
+    }
+
+    const { error } = await supabase.from("petauri").insert([nuovoPetauro]);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    setNomePetauro("");
+    loadPetauri();
   }
 
   async function salvaPeso() {
@@ -253,8 +293,8 @@ async function caricaCSV() {
   }
 
   async function eliminaDieta(id) {
-    const ok = confirm("Eliminare questo alimento dalla dieta?");
-    if (!ok) return;
+    const conferma = confirm("Eliminare questo alimento dalla dieta?");
+    if (!conferma) return;
 
     const { error } = await supabase.from("diete").delete().eq("id", id);
 
@@ -266,64 +306,48 @@ async function caricaCSV() {
     loadDiete();
   }
 
-   async function importCSV() {
+  async function svuotaDiete() {
+    const conferma = confirm("Svuotare tutte le diete inserite?");
+    if (!conferma) return;
 
-  if (!csvFile) {
-    alert("Seleziona un file CSV");
-    return;
+    const { error } = await supabase.from("diete").delete().neq("id", 0);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    loadDiete();
   }
 
-  Papa.parse(csvFile, {
-
-    header: true,
-    skipEmptyLines: true,
-
-    complete: async function(results) {
-
-      const records = results.data
-        .filter((row) => row.nome)
-        .map((row) => ({
-          Nome: row.nome,
-          Categoria: row.categoria,
-          Rapporto: Number(row.rapporto)
-        }));
-
-      if (records.length === 0) {
-        alert("CSV vuoto o non valido");
-        return;
-      }
-
-      const { error } = await supabase
-        .from("alimenti")
-        .insert(records);
-
-      if (error) {
-
-        alert(error.message);
-
-      } else {
-
-        alert("Import completato 😄");
-
-        loadAlimenti();
-      }
+  async function importCSV() {
+    if (!csvFile) {
+      alert("Seleziona un file CSV");
+      return;
     }
-  });
-}
 
     Papa.parse(csvFile, {
       header: true,
       skipEmptyLines: true,
       complete: async function (results) {
         const records = results.data
-          .filter((row) => row.Nome)
-          .map((row) => ({
-            Nome: row.Nome,
-            Categoria: row.Categoria || "",
-            Calcio: Number(row.Calcio || 0),
-            Fosforo: Number(row.Fosforo || 0),
-            Note: row.Note || ""
-          }));
+          .filter((row) => row.nome || row.Nome)
+          .map((row) => {
+            const nome = row.nome || row.Nome;
+            const categoria = row.categoria || row.Categoria || "";
+            const rapporto = Number(row.rapporto || row.Rapporto || 0);
+            const calcio = Number(row.Calcio || row.calcio || rapporto || 0);
+            const fosforo = Number(row.Fosforo || row.fosforo || 1);
+            const note = row.Note || row.note || "";
+
+            return {
+              Nome: nome,
+              Categoria: categoria,
+              Calcio: calcio,
+              Fosforo: fosforo,
+              Note: note
+            };
+          });
 
         if (records.length === 0) {
           alert("CSV vuoto o non valido");
@@ -487,7 +511,7 @@ async function caricaCSV() {
 
         if (differenza <= -5) {
           return {
-            nome: nomePetauro(petauro),
+            nome: nomePetauroDisplay(petauro),
             differenza
           };
         }
@@ -502,7 +526,9 @@ async function caricaCSV() {
       Frutta: 0,
       Verdura: 0,
       Insetto: 0,
-      Integratore: 0
+      Integratore: 0,
+      Tossico: 0,
+      Altro: 0
     };
 
     const conteggio = {};
@@ -545,6 +571,46 @@ async function caricaCSV() {
       .sort((a, b) => b.grammi - a.grammi);
   }, [diete, alimenti]);
 
+  const calcoloDieta = useMemo(() => {
+    let calcioTotale = 0;
+    let fosforoTotale = 0;
+    let calcioVegetale = 0;
+    let fosforoVegetale = 0;
+
+    diete.forEach((dieta) => {
+      const alimento = getAlimento(dieta.alimento_id);
+      if (!alimento) return;
+
+      const calcio = (Number(alimento.Calcio || 0) / 100) * Number(dieta.grammi || 0);
+      const fosforo = (Number(alimento.Fosforo || 0) / 100) * Number(dieta.grammi || 0);
+
+      calcioTotale += calcio;
+      fosforoTotale += fosforo;
+
+      if (alimento.Categoria !== "Insetto") {
+        calcioVegetale += calcio;
+        fosforoVegetale += fosforo;
+      }
+    });
+
+    const rapportoTotale = fosforoTotale > 0 ? calcioTotale / fosforoTotale : 0;
+    const rapportoVegetale = fosforoVegetale > 0 ? calcioVegetale / fosforoVegetale : 0;
+
+    const calcioNecessario = fosforoVegetale * 2;
+    const calcioDaAggiungere =
+      calcioVegetale < calcioNecessario ? calcioNecessario - calcioVegetale : 0;
+
+    return {
+      calcioTotale,
+      fosforoTotale,
+      calcioVegetale,
+      fosforoVegetale,
+      rapportoTotale,
+      rapportoVegetale,
+      calcioDaAggiungere
+    };
+  }, [diete, alimenti]);
+
   return (
     <div style={pageStyle}>
       <h1 style={{ color: "#234b2d" }}>Dietauro ENAPI</h1>
@@ -581,7 +647,7 @@ async function caricaCSV() {
             <option value="">Seleziona petauro</option>
             {petauri.map((p) => (
               <option key={p.id} value={p.id}>
-                {nomePetauro(p)}
+                {nomePetauroDisplay(p)}
               </option>
             ))}
           </select>
@@ -594,11 +660,43 @@ async function caricaCSV() {
             <option value="">Seleziona colonia</option>
             {colonie.map((c) => (
               <option key={c.id} value={c.id}>
-                {nomeColonia(c)}
+                {nomeColoniaDisplay(c)}
               </option>
             ))}
           </select>
         )}
+      </div>
+
+      <div style={cardStyle}>
+        <h2>🏠 Aggiungi colonia</h2>
+
+        <input
+          type="text"
+          placeholder="Nome colonia"
+          value={nomeColonia}
+          onChange={(e) => setNomeColonia(e.target.value)}
+          style={inputStyle}
+        />
+
+        <button onClick={aggiungiColonia} style={greenButton}>
+          Salva colonia
+        </button>
+      </div>
+
+      <div style={cardStyle}>
+        <h2>🐿️ Aggiungi petauro</h2>
+
+        <input
+          type="text"
+          placeholder="Nome petauro"
+          value={nomePetauro}
+          onChange={(e) => setNomePetauro(e.target.value)}
+          style={inputStyle}
+        />
+
+        <button onClick={aggiungiPetauro} style={greenButton}>
+          Salva petauro
+        </button>
       </div>
 
       <div style={cardStyle}>
@@ -692,9 +790,21 @@ async function caricaCSV() {
           onChange={(e) => setCsvFile(e.target.files?.[0] || null)}
         />
 
-        <button onClick={importCSV} style={greenButton}>
+        <button type="button" onClick={importCSV} style={greenButton}>
           Importa CSV
         </button>
+      </div>
+
+      <div style={cardStyle}>
+        <h2>🧪 Analisi Ca:P</h2>
+
+        <p>Ca:P totale: {calcoloDieta.rapportoTotale.toFixed(2)}:1</p>
+        <p>Ca:P vegetale: {calcoloDieta.rapportoVegetale.toFixed(2)}:1</p>
+
+        <p>
+          Calcio da aggiungere:{" "}
+          <strong>{calcoloDieta.calcioDaAggiungere.toFixed(2)} mg</strong>
+        </p>
       </div>
 
       <div style={cardStyle}>
@@ -761,10 +871,11 @@ async function caricaCSV() {
             : "-"}
         </p>
 
-        <p><strong>Frutta:</strong> {analisiCategorie.stats.Frutta || 0} g</p>
-        <p><strong>Verdura:</strong> {analisiCategorie.stats.Verdura || 0} g</p>
-        <p><strong>Insetti:</strong> {analisiCategorie.stats.Insetto || 0} g</p>
-        <p><strong>Integratori:</strong> {analisiCategorie.stats.Integratore || 0} g</p>
+        <p>Frutta: {analisiCategorie.stats.Frutta || 0} g</p>
+        <p>Verdura: {analisiCategorie.stats.Verdura || 0} g</p>
+        <p>Insetti: {analisiCategorie.stats.Insetto || 0} g</p>
+        <p>Integratori: {analisiCategorie.stats.Integratore || 0} g</p>
+        <p>Tossici: {analisiCategorie.stats.Tossico || 0} g</p>
       </div>
 
       <div style={cardStyle}>
@@ -783,18 +894,19 @@ async function caricaCSV() {
       <div style={cardStyle}>
         <h2>🍽️ Diete inserite</h2>
 
+        <button onClick={svuotaDiete} style={redButton}>
+          Svuota tutte le diete
+        </button>
+
         {diete.map((dieta) => (
           <div key={dieta.id} style={dietCard}>
-            <p><strong>Petauro:</strong> {nomePetauro(getPetauro(dieta.petauro_id))}</p>
-            <p><strong>Colonia:</strong> {nomeColonia(getColonia(dieta.colonia_id))}</p>
-            <p><strong>Alimento:</strong> {nomeAlimento(dieta.alimento_id)}</p>
-            <p><strong>Grammi:</strong> {dieta.grammi}</p>
-            <p><strong>Data:</strong> {dieta.data}</p>
+            <p>Petauro: {nomePetauroDisplay(getPetauro(dieta.petauro_id))}</p>
+            <p>Colonia: {nomeColoniaDisplay(getColonia(dieta.colonia_id))}</p>
+            <p>Alimento: {nomeAlimento(dieta.alimento_id)}</p>
+            <p>Grammi: {dieta.grammi}</p>
+            <p>Data: {dieta.data}</p>
 
-            <button
-              onClick={() => eliminaDieta(dieta.id)}
-              style={redButton}
-            >
+            <button onClick={() => eliminaDieta(dieta.id)} style={redButton}>
               Elimina
             </button>
           </div>
@@ -809,6 +921,8 @@ async function caricaCSV() {
             <strong>{a.Nome}</strong>
             <span>Categoria: {a.Categoria || "-"}</span>
             <span>Ca: {a.Calcio} | P: {a.Fosforo}</span>
+            <span>Rapporto Ca:P: {rapportoAlimento(a)}:1</span>
+            {a.Note && <span>Note: {a.Note}</span>}
           </div>
         ))}
       </div>
