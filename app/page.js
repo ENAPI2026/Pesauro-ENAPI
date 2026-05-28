@@ -14,7 +14,7 @@ import {
 } from "recharts";
 
 const supabase = null;
-);
+
 
 const giorniSettimana = [
   { nome: "Lunedi", numero: 1 },
