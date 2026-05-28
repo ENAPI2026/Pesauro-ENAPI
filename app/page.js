@@ -266,18 +266,50 @@ async function caricaCSV() {
     loadDiete();
   }
 
- async function importCSV()
-  const records = results.data
-  .filter((row) => row.nome)
-  .map((row) => ({
-    Nome: row.nome,
-    Categoria: row.categoria,
-    Rapporto: Number(row.rapporto)
-  }));
-    if (!csvFile) {
-      alert("Seleziona un file CSV");
-      return;
+   async function importCSV() {
+
+  if (!csvFile) {
+    alert("Seleziona un file CSV");
+    return;
+  }
+
+  Papa.parse(csvFile, {
+
+    header: true,
+    skipEmptyLines: true,
+
+    complete: async function(results) {
+
+      const records = results.data
+        .filter((row) => row.nome)
+        .map((row) => ({
+          Nome: row.nome,
+          Categoria: row.categoria,
+          Rapporto: Number(row.rapporto)
+        }));
+
+      if (records.length === 0) {
+        alert("CSV vuoto o non valido");
+        return;
+      }
+
+      const { error } = await supabase
+        .from("alimenti")
+        .insert(records);
+
+      if (error) {
+
+        alert(error.message);
+
+      } else {
+
+        alert("Import completato 😄");
+
+        loadAlimenti();
+      }
     }
+  });
+}
 
     Papa.parse(csvFile, {
       header: true,
