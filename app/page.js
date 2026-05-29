@@ -871,13 +871,17 @@ const membriColonia = coloniaSelezionata
         {categoria === "Insetto" && "🦗 Insetti"}
         {categoria === "Integratore" && "🧪 Integratori"}
       </h3>
-
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "10px"
-        }}
+<div
+     style={{
+  border: "1px solid #ddd",
+  borderRadius: "12px",
+  padding: "8px",
+  width: "140px",
+  minHeight: "110px",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "space-between"
+}}
       >
         {alimenti
           .filter((a) => a.Categoria === categoria)
@@ -885,14 +889,24 @@ const membriColonia = coloniaSelezionata
           .map((a) => (
             <div
               key={a.id}
-              style={{
-                border: "1px solid #ddd",
-                borderRadius: "10px",
-                padding: "10px",
-                minWidth: "180px"
-              }}
+             style={{
+  border: "1px solid #ddd",
+  borderRadius: "12px",
+  padding: "8px",
+  width: "140px",
+  minHeight: "110px",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "space-between"
+}}
             >
-              <strong>{a.Nome}</strong>
+              <strong
+  style={{
+    fontSize: "16px"
+  }}
+>
+  {a.Nome}
+</strong>
 
               {a.Categoria !== "Integratore" &&
                 a.Categoria !== "Insetto" && (
@@ -920,12 +934,17 @@ const membriColonia = coloniaSelezionata
               )}
 
               <button
-                type="button"
-                onClick={() => setAlimentoId(a.id)}
-                style={{
-                  marginTop: "10px"
-                }}
-              >
+  type="button"
+  onClick={() => setAlimentoId(a.id)}
+  style={{
+    marginTop: "8px",
+    borderRadius: "8px",
+    padding: "6px",
+    fontSize: "20px",
+    cursor: "pointer"
+  }}
+>
+               
                 ➕
               </button>
             </div>
@@ -934,8 +953,6 @@ const membriColonia = coloniaSelezionata
     </div>
   ))}
       
-
-{/* Area Import CSV nascosta - solo amministrazione ENAPI */}
       
       
 </div>
