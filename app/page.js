@@ -864,7 +864,46 @@ const membriColonia = coloniaSelezionata
           Salva alimento
         </button>
       </div>
+<div style={cardStyle}>
+  <h2>🍽️ Selezione rapida alimenti</h2>
 
+  {["Frutta", "Verdura", "Insetto", "Integratore"].map((categoria) => (
+    <div key={categoria} style={{ marginBottom: "20px" }}>
+      <h3>
+        {categoria === "Frutta" && "🍎 Frutta"}
+        {categoria === "Verdura" && "🥬 Verdura"}
+        {categoria === "Insetto" && "🦗 Insetti"}
+        {categoria === "Integratore" && "🧪 Integratori"}
+      </h3>
+
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "10px"
+        }}
+      >
+        {alimenti
+          .filter((a) => a.Categoria === categoria)
+          .map((a) => (
+            <button
+              key={a.id}
+              type="button"
+              onClick={() => setAlimentoId(a.id)}
+              style={{
+                padding: "10px",
+                borderRadius: "10px",
+                border: "1px solid #ccc",
+                cursor: "pointer"
+              }}
+            >
+              {a.Nome}
+            </button>
+          ))}
+      </div>
+    </div>
+  ))}
+</div>
       {/* Area Import CSV nascosta - solo amministrazione ENAPI */}
 
       <div style={cardStyle}>
