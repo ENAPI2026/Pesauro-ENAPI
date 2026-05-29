@@ -610,7 +610,17 @@ export default function Home() {
       calcioDaAggiungere
     };
   }, [diete, alimenti]);
+const coloniaSelezionata = colonie.find(
+  (c) => String(c.id) === String(coloniaId)
+);
 
+const membriColonia = coloniaSelezionata
+  ? petauri.filter(
+      (p) =>
+        String(p.Colonia || "").trim() ===
+        String(coloniaSelezionata.Nome || "").trim()
+    )
+  : [];
   return (
     <div style={pageStyle}>
       <h1 style={{ color: "#234b2d" }}>Dietauro ENAPI</h1>
@@ -744,7 +754,81 @@ export default function Home() {
           </div>
         </div>
       )}
+{modalita === "colonia" && coloniaId && (
+  <div style={cardStyle}>
+    <h2>
+      🐿️ Colonia {coloniaSelezionata?.Nome}
+    </h2>
 
+    <p>
+      Totale petauri: {membriColonia.length}
+    </p>
+
+    {membriColonia.map((petauro) => {
+      const storico = pesi
+        .filter(
+          (p) =>
+            String(p.petauro_id) === String(petauro.id)
+        )
+        .sort(
+          (a, b) =>
+            new Date(a.data) - new Date(b.data)
+        );
+
+      const ultimoPeso =
+        storico.length > 0
+          ? storico[storico.length - 1].peso
+          : "-";
+
+      const datiStorico = storico.map((p) => ({
+        data: p.data,
+        peso: Number(p.peso)
+      }));
+
+      return (
+        <div
+          key={petauro.id}
+          style={{
+            border: "1px solid #ddd",
+            borderRadius: "12px",
+            padding: "15px",
+            marginBottom: "15px"
+          }}
+        >
+          <h3>{nomePetauroDisplay(petauro)}</h3>
+
+          <p>
+            ⚖️ Peso attuale: {ultimoPeso} g
+          </p>
+
+          {datiStorico.length > 0 && (
+            <div
+              style={{
+                width: "100%",
+                height: 250
+              }}
+            >
+              <ResponsiveContainer>
+                <LineChart data={datiStorico}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="data" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line
+                    type="monotone"
+                    dataKey="peso"
+                    stroke="#234b2d"
+                    strokeWidth={3}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </div>
+      );
+    })}
+  </div>
+)}
       <div style={cardStyle}>
         <h2>🍎 Aggiungi alimento alla dieta</h2>
 
