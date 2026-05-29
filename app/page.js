@@ -392,13 +392,7 @@ export default function Home() {
 
     const giornoObj = giorniSettimana.find((g) => g.nome === giornoSettimana);
 
-    const records = diete.map((dieta) => ({
-      settimana_id: data.id,
-      giorno: giornoSettimana,
-      giorno_numero: giornoObj.numero,
-      alimento_id: dieta.alimento_id,
-      grammi: dieta.grammi
-    }));
+   dieta.alimento_id
 
     const { error: errorGiorni } = await supabase
       .from("settimane_dieta_giorni")
@@ -1013,7 +1007,31 @@ const membriColonia = coloniaSelezionata
           <div key={dieta.id} style={dietCard}>
             <p>Petauro: {nomePetauroDisplay(getPetauro(dieta.petauro_id))}</p>
             <p>Colonia: {nomeColoniaDisplay(getColonia(dieta.colonia_id))}</p>
-            <p>Alimento: {nomeAlimento(dieta.alimento_id)}</p>
+           <p>Alimento: {nomeAlimento(dieta.alimento_id)}</p>
+
+{(() => {
+  const alimento = getAlimento(dieta.alimento_id);
+
+  if (!alimento) return null;
+
+  if (alimento.Categoria === "Insetto") {
+    return (
+      <p>
+        🦗 Dose ENAPI: {alimento.DoseConsigliata} {alimento.UnitaMisura} per petauro
+      </p>
+    );
+  }
+
+  if (alimento.Categoria === "Integratore") {
+    return (
+      <p>
+        🧪 {alimento.Posologia}
+      </p>
+    );
+  }
+
+  return null;
+})()}
             <p>Grammi: {dieta.grammi}</p>
             <p>Data: {dieta.data}</p>
 
