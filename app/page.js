@@ -781,19 +781,7 @@ export default function Home() {
         </button>
       </div>
 
-      <div style={cardStyle}>
-        <h2>📂 Import CSV alimenti</h2>
-
-        <input
-          type="file"
-          accept=".csv"
-          onChange={(e) => setCsvFile(e.target.files?.[0] || null)}
-        />
-
-        <button type="button" onClick={importCSV} style={greenButton}>
-          Importa CSV
-        </button>
-      </div>
+      {/* Area Import CSV nascosta - solo amministrazione ENAPI */}
 
       <div style={cardStyle}>
         <h2>🧪 Analisi Ca:P</h2>
