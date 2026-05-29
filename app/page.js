@@ -1030,7 +1030,7 @@ const membriColonia = coloniaSelezionata
       </div>
     )
   )}
-</div>
+
 
 const pageStyle = {
   minHeight: "100vh",
