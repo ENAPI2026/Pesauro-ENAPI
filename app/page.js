@@ -824,7 +824,9 @@ const membriColonia = coloniaSelezionata
   </div>
 )}
       <div style={cardStyle}>
-        <h2>🍎 Aggiungi alimento alla dieta</h2>
+        <h2 style={{ display: "none" }}>
+  🍎 Aggiungi alimento alla dieta
+</h2>
 
         <select
           value={alimentoId}
@@ -858,11 +860,11 @@ const membriColonia = coloniaSelezionata
           Salva alimento
         </button>
       </div>
-<div style={cardStyle}>
-  <h2>🍽️ Selezione rapida alimenti</h2>
+      <div style={cardStyle}>
+  <h2>🍽️ Costruisci la dieta</h2>
 
   {["Frutta", "Verdura", "Insetto", "Integratore"].map((categoria) => (
-    <div key={categoria} style={{ marginBottom: "20px" }}>
+    <div key={categoria} style={{ marginBottom: "25px" }}>
       <h3>
         {categoria === "Frutta" && "🍎 Frutta"}
         {categoria === "Verdura" && "🥬 Verdura"}
@@ -879,24 +881,67 @@ const membriColonia = coloniaSelezionata
       >
         {alimenti
           .filter((a) => a.Categoria === categoria)
+          .sort((a, b) => a.Nome.localeCompare(b.Nome))
           .map((a) => (
-            <button
+            <div
               key={a.id}
-              type="button"
-              onClick={() => setAlimentoId(a.id)}
               style={{
-                padding: "10px",
+                border: "1px solid #ddd",
                 borderRadius: "10px",
-                border: "1px solid #ccc",
-                cursor: "pointer"
+                padding: "10px",
+                minWidth: "180px"
               }}
             >
-              {a.Nome}
-            </button>
+              <strong>{a.Nome}</strong>
+
+              {a.Categoria !== "Integratore" &&
+                a.Categoria !== "Insetto" && (
+                  <div>
+                    Ca:P {rapportoAlimento(a)}:1
+                  </div>
+                )}
+
+              {a.Categoria === "Insetto" && (
+                <div>
+                  🦗 {a.DoseConsigliata} {a.UnitaMisura} per petauro
+                </div>
+              )}
+
+              {a.Categoria === "Integratore" && (
+                <div>
+                  🧪 {a.Posologia}
+                </div>
+              )}
+
+              {a.Note && (
+                <div style={{ fontSize: "12px" }}>
+                  {a.Note}
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={() => setAlimentoId(a.id)}
+                style={{
+                  marginTop: "10px"
+                }}
+              >
+                ➕
+              </button>
+            </div>
           ))}
       </div>
     </div>
   ))}
+
+
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "10px"
+        }}
+      
+      
 </div>
       {/* Area Import CSV nascosta - solo amministrazione ENAPI */}
 
