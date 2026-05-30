@@ -1091,43 +1091,12 @@ const membriColonia = coloniaSelezionata
             <button onClick={() => eliminaDieta(dieta.id)} style={redButton}>
               Elimina
             </button>
-          </div>
-        ))}
-      </div>
-
-           <div style={cardStyle}>
-   <div style={cardStyle}>
-  <h2>🍎 Alimenti presenti</h2>
-
-  {["Frutta", "Verdura", "Insetto", "Integratore", "Tossico"].map((categoria) => (
-    <div key={categoria} style={{ marginBottom: "25px" }}>
-      <h3>
-        {categoria === "Frutta" && "🍎 Frutta"}
-        {categoria === "Verdura" && "🥬 Verdura"}
-        {categoria === "Insetto" && "🦗 Insetti"}
-        {categoria === "Integratore" && "🧪 Integratori"}
-        {categoria === "Tossico" && "☠️ Tossici"}
-      </h3>
-
-      {alimenti
-        .filter((a) => a.Categoria === categoria)
-        .sort((a, b) => a.Nome.localeCompare(b.Nome))
-        .map((a) => (
-          <div key={a.id} style={rowColumnStyle}>
-            <strong>{a.Nome}</strong>
-            <span>Ca: {a.Calcio} | P: {a.Fosforo}</span>
-            <span>Rapporto Ca:P: {rapportoAlimento(a)}:1</span>
-            {a.Note && <span>📝 {a.Note}</span>}
-          </div>
-        ))}
-    </div>
-  ))}
-</div>
+            </div>
 
     </div>
   );
 }
-
+       
 const pageStyle = {
   minHeight: "100vh",
   backgroundColor: "#eef1ea",
