@@ -885,10 +885,7 @@ const membriColonia = coloniaSelezionata
         .map((a) => (
           <div
             key={a.id}
-            onClick={() => {
-  alert(a.Nome);
-  setAlimentoId(a.id);
-}}
+           onClick={() => setAlimentoId(a.id)}
             style={{
               border: "1px solid #ddd",
               borderRadius: "50px",
@@ -928,7 +925,31 @@ const membriColonia = coloniaSelezionata
   </div>
 ))}
 
-</div>
+
+{alimentoId && (
+  <div style={cardStyle}>
+    <h2>{nomeAlimento(alimentoId)}</h2>
+
+    <p>
+      Ca:P {rapportoAlimento(getAlimento(alimentoId))}:1
+    </p>
+
+    <input
+      type="number"
+      placeholder="Grammi"
+      value={grammi}
+      onChange={(e) => setGrammi(e.target.value)}
+      style={inputStyle}
+    />
+
+    <button
+      onClick={salvaDieta}
+      style={greenButton}
+    >
+      ➕ Aggiungi alla dieta
+    </button>
+  </div>
+)}
 
 {/* Area Import CSV nascosta - solo amministrazione ENAPI */}
     
