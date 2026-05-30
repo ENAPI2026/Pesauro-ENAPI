@@ -926,9 +926,12 @@ const membriColonia = coloniaSelezionata
         </div>
       )}
     </div>
-  ))}
- 
+   ))}
+    </div>
+  </div>
+))}
 </div>
+
 <p>DEBUG alimentoId: {alimentoId}</p>
 {alimentoId && (
   <div style={cardStyle}>
