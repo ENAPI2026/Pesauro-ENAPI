@@ -882,52 +882,51 @@ const membriColonia = coloniaSelezionata
         gap: "8px"
       }}
     >
-      {alimenti
-        .filter((a) => a.Categoria === categoria)
-        .sort((a, b) => a.Nome.localeCompare(b.Nome))
-        .map((a) => (
-          <button
-  type="button"
-  key={a.id}
-  onClick={() => setAlimentoId(String(a.id))}
-  style={{
-    border: "1px solid #ddd",
-    borderRadius: "50px",
-    padding: "8px",
-    minHeight: "78px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    textAlign: "center",
-    cursor: "pointer",
-    backgroundColor: "#ffffff"
-  }}
->
-            <strong style={{ fontSize: "13px" }}>{a.Nome}</strong>
+   {alimenti
+  .filter((a) => a.Categoria === categoria)
+  .sort((a, b) => a.Nome.localeCompare(b.Nome))
+  .map((a) => (
+    <div
+      key={a.id}
+      onClick={() => setAlimentoId(String(a.id))}
+      style={{
+        border: "1px solid #ddd",
+        borderRadius: "18px",
+        padding: "8px",
+        minHeight: "95px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
+        cursor: "pointer",
+        backgroundColor: "#ffffff",
+        userSelect: "none"
+      }}
+    >
+      <strong style={{ fontSize: "13px" }}>
+        {a.Nome}
+      </strong>
 
-            {a.Categoria !== "Integratore" && a.Categoria !== "Insetto" && (
-              <div style={{ fontSize: "11px" }}>
-                Ca:P {rapportoAlimento(a)}:1
-              </div>
-            )}
+      {a.Categoria !== "Integratore" && a.Categoria !== "Insetto" && (
+        <div style={{ fontSize: "11px" }}>
+          Ca:P {rapportoAlimento(a)}:1
+        </div>
+      )}
 
-            {a.Categoria === "Insetto" && (
-              <div style={{ fontSize: "11px" }}>
-                🦗 {a.DoseConsigliata} {a.UnitaMisura}
-              </div>
-            )}
+      {a.Categoria === "Insetto" && (
+        <div style={{ fontSize: "11px" }}>
+          🦗 {a.DoseConsigliata} {a.UnitaMisura}
+        </div>
+      )}
 
-                      {a.Categoria === "Integratore" && (
-              <div style={{ fontSize: "11px" }}>
-                🧪 Posologia
-              </div>
-            )}
-          </button>
-        ))}
+      {a.Categoria === "Integratore" && (
+        <div style={{ fontSize: "11px" }}>
+          🧪 Posologia
+        </div>
+      )}
     </div>
-  </div>
-))}
+  ))}
  
 </div>
 <p>DEBUG alimentoId: {alimentoId}</p>
