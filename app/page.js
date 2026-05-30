@@ -927,7 +927,8 @@ const membriColonia = coloniaSelezionata
     </div>
   </div>
 ))}
-
+ 
+</div>
 
 {alimentoId && (
   <div style={cardStyle}>
