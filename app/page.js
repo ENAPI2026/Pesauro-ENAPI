@@ -914,7 +914,7 @@ const membriColonia = coloniaSelezionata
               </div>
             )}
 
-            {a.Categoria === "Integratore" && (
+                      {a.Categoria === "Integratore" && (
               <div style={{ fontSize: "11px" }}>
                 🧪 Posologia
               </div>
@@ -924,8 +924,11 @@ const membriColonia = coloniaSelezionata
     </div>
   </div>
 ))}
-      {/* Area Import CSV nascosta - solo amministrazione ENAPI */}
 
+</div>
+
+{/* Area Import CSV nascosta - solo amministrazione ENAPI */}
+    
       <div style={cardStyle}>
         <h2>🧪 Analisi Ca:P</h2>
 
