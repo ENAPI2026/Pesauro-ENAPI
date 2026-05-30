@@ -133,9 +133,9 @@ export default function Home() {
     return colonie.find((c) => String(c.id) === String(id));
   }
 
-  function getAlimento(id) {
-    return alimenti.find((a) => String(a.id) === String(id));
-  }
+   function getAlimento(id) {
+  return alimenti.find((a) => String(a.id) === String(id));
+}
 
   function nomeAlimento(id) {
     const alimento = getAlimento(id);
