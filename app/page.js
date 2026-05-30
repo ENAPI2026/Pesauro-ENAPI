@@ -133,9 +133,9 @@ export default function Home() {
     return colonie.find((c) => String(c.id) === String(id));
   }
 
-   function getAlimento(id) {
-  return alimenti.find((a) => String(a.id) === String(id));
-}
+  function getAlimento(id) {
+    return alimenti.find((a) => String(a.id) === String(id));
+  }
 
   function nomeAlimento(id) {
     const alimento = getAlimento(id);
@@ -146,14 +146,8 @@ export default function Home() {
     const calcio = Number(alimento?.Calcio || 0);
     const fosforo = Number(alimento?.Fosforo || 0);
 
-    if (fosforo > 0) {
-      return (calcio / fosforo).toFixed(2);
-    }
-
-    if (alimento?.Rapporto) {
-      return Number(alimento.Rapporto).toFixed(2);
-    }
-
+    if (fosforo > 0) return (calcio / fosforo).toFixed(2);
+    if (alimento?.Rapporto) return Number(alimento.Rapporto).toFixed(2);
     return "0.00";
   }
 
@@ -163,11 +157,7 @@ export default function Home() {
       return;
     }
 
-    const { error } = await supabase.from("colonie").insert([
-      {
-        Nome: nomeColonia
-      }
-    ]);
+    const { error } = await supabase.from("colonie").insert([{ Nome: nomeColonia }]);
 
     if (error) {
       alert(error.message);
@@ -184,13 +174,8 @@ export default function Home() {
       return;
     }
 
-    const nuovoPetauro = {
-      Nome: nomePetauro
-    };
-
-    if (coloniaId) {
-      nuovoPetauro.colonia_id = Number(coloniaId);
-    }
+    const nuovoPetauro = { Nome: nomePetauro };
+    if (coloniaId) nuovoPetauro.colonia_id = Number(coloniaId);
 
     const { error } = await supabase.from("petauri").insert([nuovoPetauro]);
 
@@ -261,9 +246,7 @@ export default function Home() {
         return;
       }
 
-      const membri = petauri.filter(
-        (p) => String(p.colonia_id) === String(coloniaId)
-      );
+      const membri = petauri.filter((p) => String(p.colonia_id) === String(coloniaId));
 
       if (membri.length === 0) {
         alert("Nessun petauro collegato a questa colonia");
@@ -288,7 +271,6 @@ export default function Home() {
 
     setAlimentoId("");
     setGrammi("");
-    setDataDieta("");
     loadDiete();
   }
 
@@ -390,16 +372,18 @@ export default function Home() {
       return;
     }
 
-    const records = [];
+    const giornoObj = giorniSettimana.find((g) => g.nome === giornoSettimana) || giorniSettimana[0];
+    const records = diete.map((dieta) => ({
+      settimana_id: data.id,
+      giorno_nome: giornoObj.nome,
+      giorno_numero: giornoObj.numero,
+      alimento_id: Number(dieta.alimento_id),
+      grammi: Number(dieta.grammi || 0)
+    }));
 
-const { error: errorGiorni } = await supabase
-  .from("settimane_dieta_giorni")
-  .insert(records);
-
-if (errorGiorni) {
-  alert(errorGiorni.message);
-  return;
-}
+    const { error: errorGiorni } = await supabase
+      .from("settimane_dieta_giorni")
+      .insert(records);
 
     if (errorGiorni) {
       alert(errorGiorni.message);
@@ -449,9 +433,7 @@ if (errorGiorni) {
           data: dataFinale
         });
       } else {
-        const membri = petauri.filter(
-          (p) => String(p.colonia_id) === String(coloniaId)
-        );
+        const membri = petauri.filter((p) => String(p.colonia_id) === String(coloniaId));
 
         membri.forEach((p) => {
           recordsFinali.push({
@@ -487,10 +469,7 @@ if (errorGiorni) {
     return pesi
       .filter((p) => String(p.petauro_id) === String(petauroId))
       .sort((a, b) => new Date(a.data) - new Date(b.data))
-      .map((p) => ({
-        data: p.data,
-        peso: Number(p.peso)
-      }));
+      .map((p) => ({ data: p.data, peso: Number(p.peso) }));
   }, [pesi, petauroId]);
 
   const alertPeso = useMemo(() => {
@@ -507,10 +486,7 @@ if (errorGiorni) {
         const differenza = ultimo - precedente;
 
         if (differenza <= -5) {
-          return {
-            nome: nomePetauroDisplay(petauro),
-            differenza
-          };
+          return { nome: nomePetauroDisplay(petauro), differenza };
         }
 
         return null;
@@ -519,15 +495,7 @@ if (errorGiorni) {
   }, [petauri, pesi]);
 
   const analisiCategorie = useMemo(() => {
-    const stats = {
-      Frutta: 0,
-      Verdura: 0,
-      Insetto: 0,
-      Integratore: 0,
-      Tossico: 0,
-      Altro: 0
-    };
-
+    const stats = { Frutta: 0, Verdura: 0, Insetto: 0, Integratore: 0, Tossico: 0, Altro: 0 };
     const conteggio = {};
 
     diete.forEach((dieta) => {
@@ -592,10 +560,8 @@ if (errorGiorni) {
 
     const rapportoTotale = fosforoTotale > 0 ? calcioTotale / fosforoTotale : 0;
     const rapportoVegetale = fosforoVegetale > 0 ? calcioVegetale / fosforoVegetale : 0;
-
     const calcioNecessario = fosforoVegetale * 2;
-    const calcioDaAggiungere =
-      calcioVegetale < calcioNecessario ? calcioNecessario - calcioVegetale : 0;
+    const calcioDaAggiungere = calcioVegetale < calcioNecessario ? calcioNecessario - calcioVegetale : 0;
 
     return {
       calcioTotale,
@@ -607,17 +573,19 @@ if (errorGiorni) {
       calcioDaAggiungere
     };
   }, [diete, alimenti]);
-const coloniaSelezionata = colonie.find(
-  (c) => String(c.id) === String(coloniaId)
-);
 
-const membriColonia = coloniaSelezionata
-  ? petauri.filter(
-      (p) =>
-        String(p.Colonia || "").trim() ===
-        String(coloniaSelezionata.Nome || "").trim()
-    )
-  : [];
+  const coloniaSelezionata = colonie.find((c) => String(c.id) === String(coloniaId));
+
+  const membriColonia = coloniaSelezionata
+    ? petauri.filter(
+        (p) =>
+          String(p.colonia_id || "") === String(coloniaId) ||
+          String(p.Colonia || "").trim() === String(coloniaSelezionata.Nome || "").trim()
+      )
+    : [];
+
+  const alimentoSelezionato = getAlimento(alimentoId);
+
   return (
     <div style={pageStyle}>
       <h1 style={{ color: "#234b2d" }}>Dietauro ENAPI</h1>
@@ -626,49 +594,30 @@ const membriColonia = coloniaSelezionata
         <div style={alertCard}>
           <h2>🚨 Alert peso</h2>
           {alertPeso.map((a, index) => (
-            <p key={index}>
-              ⚠️ {a.nome} ha perso {Math.abs(a.differenza)} g
-            </p>
+            <p key={index}>⚠️ {a.nome} ha perso {Math.abs(a.differenza)} g</p>
           ))}
         </div>
       )}
 
       <div style={cardStyle}>
         <h2>Modalità</h2>
-
-        <select
-          value={modalita}
-          onChange={(e) => setModalita(e.target.value)}
-          style={inputStyle}
-        >
+        <select value={modalita} onChange={(e) => setModalita(e.target.value)} style={inputStyle}>
           <option value="petauro">Singolo petauro</option>
           <option value="colonia">Colonia</option>
         </select>
 
         {modalita === "petauro" ? (
-          <select
-            value={petauroId}
-            onChange={(e) => setPetauroId(e.target.value)}
-            style={inputStyle}
-          >
+          <select value={petauroId} onChange={(e) => setPetauroId(e.target.value)} style={inputStyle}>
             <option value="">Seleziona petauro</option>
             {petauri.map((p) => (
-              <option key={p.id} value={p.id}>
-                {nomePetauroDisplay(p)}
-              </option>
+              <option key={p.id} value={p.id}>{nomePetauroDisplay(p)}</option>
             ))}
           </select>
         ) : (
-          <select
-            value={coloniaId}
-            onChange={(e) => setColoniaId(e.target.value)}
-            style={inputStyle}
-          >
+          <select value={coloniaId} onChange={(e) => setColoniaId(e.target.value)} style={inputStyle}>
             <option value="">Seleziona colonia</option>
             {colonie.map((c) => (
-              <option key={c.id} value={c.id}>
-                {nomeColoniaDisplay(c)}
-              </option>
+              <option key={c.id} value={c.id}>{nomeColoniaDisplay(c)}</option>
             ))}
           </select>
         )}
@@ -676,63 +625,26 @@ const membriColonia = coloniaSelezionata
 
       <div style={cardStyle}>
         <h2>🏠 Aggiungi colonia</h2>
-
-        <input
-          type="text"
-          placeholder="Nome colonia"
-          value={nomeColonia}
-          onChange={(e) => setNomeColonia(e.target.value)}
-          style={inputStyle}
-        />
-
-        <button onClick={aggiungiColonia} style={greenButton}>
-          Salva colonia
-        </button>
+        <input type="text" placeholder="Nome colonia" value={nomeColonia} onChange={(e) => setNomeColonia(e.target.value)} style={inputStyle} />
+        <button onClick={aggiungiColonia} style={greenButton}>Salva colonia</button>
       </div>
 
       <div style={cardStyle}>
         <h2>🐿️ Aggiungi petauro</h2>
-
-        <input
-          type="text"
-          placeholder="Nome petauro"
-          value={nomePetauro}
-          onChange={(e) => setNomePetauro(e.target.value)}
-          style={inputStyle}
-        />
-
-        <button onClick={aggiungiPetauro} style={greenButton}>
-          Salva petauro
-        </button>
+        <input type="text" placeholder="Nome petauro" value={nomePetauro} onChange={(e) => setNomePetauro(e.target.value)} style={inputStyle} />
+        <button onClick={aggiungiPetauro} style={greenButton}>Salva petauro</button>
       </div>
 
       <div style={cardStyle}>
         <h2>⚖️ Inserisci peso</h2>
-
-        <input
-          type="number"
-          placeholder="Peso in grammi"
-          value={peso}
-          onChange={(e) => setPeso(e.target.value)}
-          style={inputStyle}
-        />
-
-        <input
-          type="date"
-          value={dataPeso}
-          onChange={(e) => setDataPeso(e.target.value)}
-          style={inputStyle}
-        />
-
-        <button onClick={salvaPeso} style={greenButton}>
-          Salva peso
-        </button>
+        <input type="number" placeholder="Peso in grammi" value={peso} onChange={(e) => setPeso(e.target.value)} style={inputStyle} />
+        <input type="date" value={dataPeso} onChange={(e) => setDataPeso(e.target.value)} style={inputStyle} />
+        <button onClick={salvaPeso} style={greenButton}>Salva peso</button>
       </div>
 
       {petauroId && datiGrafico.length > 0 && (
         <div style={cardStyle}>
           <h2>📈 Andamento peso</h2>
-
           <div style={{ width: "100%", height: 300 }}>
             <ResponsiveContainer>
               <LineChart data={datiGrafico}>
@@ -740,302 +652,157 @@ const membriColonia = coloniaSelezionata
                 <XAxis dataKey="data" />
                 <YAxis />
                 <Tooltip />
-                <Line
-                  type="monotone"
-                  dataKey="peso"
-                  stroke="#234b2d"
-                  strokeWidth={3}
-                />
+                <Line type="monotone" dataKey="peso" stroke="#234b2d" strokeWidth={3} />
               </LineChart>
             </ResponsiveContainer>
           </div>
         </div>
       )}
-{modalita === "colonia" && coloniaId && (
-  <div style={cardStyle}>
-    <h2>
-      🐿️ Colonia {coloniaSelezionata?.Nome}
-    </h2>
 
-    <p>
-      Totale petauri: {membriColonia.length}
-    </p>
+      {modalita === "colonia" && coloniaId && (
+        <div style={cardStyle}>
+          <h2>🐿️ Colonia {coloniaSelezionata?.Nome}</h2>
+          <p>Totale petauri: {membriColonia.length}</p>
 
-    {membriColonia.map((petauro) => {
-      const storico = pesi
-        .filter(
-          (p) =>
-            String(p.petauro_id) === String(petauro.id)
-        )
-        .sort(
-          (a, b) =>
-            new Date(a.data) - new Date(b.data)
-        );
+          {membriColonia.map((petauro) => {
+            const storico = pesi
+              .filter((p) => String(p.petauro_id) === String(petauro.id))
+              .sort((a, b) => new Date(a.data) - new Date(b.data));
+            const ultimoPeso = storico.length > 0 ? storico[storico.length - 1].peso : "-";
+            const datiStorico = storico.map((p) => ({ data: p.data, peso: Number(p.peso) }));
 
-      const ultimoPeso =
-        storico.length > 0
-          ? storico[storico.length - 1].peso
-          : "-";
+            return (
+              <div key={petauro.id} style={dietCard}>
+                <h3>{nomePetauroDisplay(petauro)}</h3>
+                <p>⚖️ Peso attuale: {ultimoPeso} g</p>
 
-      const datiStorico = storico.map((p) => ({
-        data: p.data,
-        peso: Number(p.peso)
-      }));
+                {datiStorico.length > 0 && (
+                  <div style={{ width: "100%", height: 250 }}>
+                    <ResponsiveContainer>
+                      <LineChart data={datiStorico}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="data" />
+                        <YAxis />
+                        <Tooltip />
+                        <Line type="monotone" dataKey="peso" stroke="#234b2d" strokeWidth={3} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
 
-      return (
-        <div
-          key={petauro.id}
-          style={{
-            border: "1px solid #ddd",
-            borderRadius: "12px",
-            padding: "15px",
-            marginBottom: "15px"
-          }}
-        >
-          <h3>{nomePetauroDisplay(petauro)}</h3>
+      <div style={cardStyle}>
+        <h2>🍽️ Costruisci la dieta</h2>
 
-          <p>
-            ⚖️ Peso attuale: {ultimoPeso} g
-          </p>
+        {["Frutta", "Verdura", "Insetto", "Integratore"].map((categoria) => (
+          <div key={categoria} style={{ marginBottom: "25px" }}>
+            <h3>
+              {categoria === "Frutta" && "🍎 Frutta"}
+              {categoria === "Verdura" && "🥬 Verdura"}
+              {categoria === "Insetto" && "🦗 Insetti"}
+              {categoria === "Integratore" && "🧪 Integratori"}
+            </h3>
 
-          {datiStorico.length > 0 && (
-            <div
-              style={{
-                width: "100%",
-                height: 250
-              }}
-            >
-              <ResponsiveContainer>
-                <LineChart data={datiStorico}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="data" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line
-                    type="monotone"
-                    dataKey="peso"
-                    stroke="#234b2d"
-                    strokeWidth={3}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(95px, 1fr))", gap: "8px" }}>
+              {alimenti
+                .filter((a) => a.Categoria === categoria)
+                .sort((a, b) => a.Nome.localeCompare(b.Nome))
+                .map((a) => (
+                  <button
+                    key={a.id}
+                    type="button"
+                    onClick={() => setAlimentoId(String(a.id))}
+                    style={{
+                      border: String(alimentoId) === String(a.id) ? "2px solid #234b2d" : "1px solid #ddd",
+                      borderRadius: "18px",
+                      padding: "8px",
+                      minHeight: "95px",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      textAlign: "center",
+                      cursor: "pointer",
+                      backgroundColor: "#ffffff",
+                      fontFamily: "inherit"
+                    }}
+                  >
+                    <strong style={{ fontSize: "13px" }}>{a.Nome}</strong>
+
+                    {a.Categoria !== "Integratore" && a.Categoria !== "Insetto" && (
+                      <div style={{ fontSize: "11px" }}>Ca:P {rapportoAlimento(a)}:1</div>
+                    )}
+
+                    {a.Categoria === "Insetto" && (
+                      <div style={{ fontSize: "11px" }}>🦗 {a.DoseConsigliata} {a.UnitaMisura}</div>
+                    )}
+
+                    {a.Categoria === "Integratore" && (
+                      <div style={{ fontSize: "11px" }}>🧪 Posologia</div>
+                    )}
+                  </button>
+                ))}
             </div>
-          )}
-        </div>
-      );
-    })}
-  </div>
-)}
-      <div style={cardStyle}>
-        <h2 style={{ display: "none" }}>
-  🍎 Aggiungi alimento alla dieta
-</h2>
-
-        <select
-          value={alimentoId}
-          onChange={(e) => setAlimentoId(e.target.value)}
-          style={inputStyle}
-        >
-          <option value="">Seleziona alimento</option>
-          {alimenti.map((a) => (
-            <option key={a.id} value={a.id}>
-              {a.Nome}
-            </option>
-          ))}
-        </select>
-
-        <input
-          type="number"
-          placeholder="Grammi"
-          value={grammi}
-          onChange={(e) => setGrammi(e.target.value)}
-          style={inputStyle}
-        />
-
-        <input
-          type="date"
-          value={dataDieta}
-          onChange={(e) => setDataDieta(e.target.value)}
-          style={inputStyle}
-        />
-
-        <button onClick={salvaDieta} style={greenButton}>
-          Salva alimento
-        </button>
+          </div>
+        ))}
       </div>
-      <div style={cardStyle}>
-  <h2>🍽️ Costruisci la dieta</h2>
 
-{["Frutta", "Verdura", "Insetto", "Integratore"].map((categoria) => (
-  <div key={categoria} style={{ marginBottom: "25px" }}>
-    <h3>
-      {categoria === "Frutta" && "🍎 Frutta"}
-      {categoria === "Verdura" && "🥬 Verdura"}
-      {categoria === "Insetto" && "🦗 Insetti"}
-      {categoria === "Integratore" && "🧪 Integratori"}
-    </h3>
+      {alimentoId && (
+        <div style={cardStyle}>
+          <h2>{nomeAlimento(alimentoId)}</h2>
 
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(95px, 1fr))",
-        gap: "8px"
-      }}
-    >
-   {alimenti
-  .filter((a) => a.Categoria === categoria)
-  .sort((a, b) => a.Nome.localeCompare(b.Nome))
-  .map((a) => (
-    <div
-      key={a.id}
-      onClick={() => setAlimentoId(String(a.id))}
-      style={{
-        border: "1px solid #ddd",
-        borderRadius: "18px",
-        padding: "8px",
-        minHeight: "95px",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        textAlign: "center",
-        cursor: "pointer",
-        backgroundColor: "#ffffff",
-        userSelect: "none"
-      }}
-    >
-      <strong style={{ fontSize: "13px" }}>
-        {a.Nome}
-      </strong>
+          {alimentoSelezionato && (
+            <>
+              {alimentoSelezionato.Categoria !== "Integratore" && alimentoSelezionato.Categoria !== "Insetto" && (
+                <p>Ca:P {rapportoAlimento(alimentoSelezionato)}:1</p>
+              )}
 
-      {a.Categoria !== "Integratore" && a.Categoria !== "Insetto" && (
-        <div style={{ fontSize: "11px" }}>
-          Ca:P {rapportoAlimento(a)}:1
+              {alimentoSelezionato.Categoria === "Insetto" && (
+                <p>🦗 Dose ENAPI: {alimentoSelezionato.DoseConsigliata} {alimentoSelezionato.UnitaMisura} per petauro</p>
+              )}
+
+              {alimentoSelezionato.Categoria === "Integratore" && <p>🧪 {alimentoSelezionato.Posologia}</p>}
+
+              {alimentoSelezionato.Note && <p>📝 {alimentoSelezionato.Note}</p>}
+            </>
+          )}
+
+          <input type="number" placeholder="Grammi" value={grammi} onChange={(e) => setGrammi(e.target.value)} style={inputStyle} />
+          <input type="date" value={dataDieta} onChange={(e) => setDataDieta(e.target.value)} style={inputStyle} />
+          <button onClick={salvaDieta} style={greenButton}>➕ Aggiungi alla dieta</button>
         </div>
       )}
 
-      {a.Categoria === "Insetto" && (
-        <div style={{ fontSize: "11px" }}>
-          🦗 {a.DoseConsigliata} {a.UnitaMisura}
-        </div>
-      )}
-
-      {a.Categoria === "Integratore" && (
-        <div style={{ fontSize: "11px" }}>
-          🧪 Posologia
-        </div>
-      )}
-    </div>
-   ))}
-    </div>
-  </div>
-))}
-</div>
-
-<p>DEBUG alimentoId: {alimentoId}</p>
-{alimentoId && (
-  <div style={cardStyle}>
-    <h2>{nomeAlimento(alimentoId)}</h2>
-
-    <p>
-      Ca:P {rapportoAlimento(getAlimento(alimentoId))}:1
-    </p>
-
-    <input
-      type="number"
-      placeholder="Grammi"
-      value={grammi}
-      onChange={(e) => setGrammi(e.target.value)}
-      style={inputStyle}
-    />
-
-    <button
-      onClick={salvaDieta}
-      style={greenButton}
-    >
-      ➕ Aggiungi alla dieta
-    </button>
-  </div>
-)}
-
-{/* Area Import CSV nascosta - solo amministrazione ENAPI */}
-    
       <div style={cardStyle}>
         <h2>🧪 Analisi Ca:P</h2>
-
         <p>Ca:P totale: {calcoloDieta.rapportoTotale.toFixed(2)}:1</p>
         <p>Ca:P vegetale: {calcoloDieta.rapportoVegetale.toFixed(2)}:1</p>
-
-        <p>
-          Calcio da aggiungere:{" "}
-          <strong>{calcoloDieta.calcioDaAggiungere.toFixed(2)} mg</strong>
-        </p>
+        <p>Calcio da aggiungere: <strong>{calcoloDieta.calcioDaAggiungere.toFixed(2)} mg</strong></p>
       </div>
 
       <div style={cardStyle}>
         <h2>📅 Settimane alimentari</h2>
-
-        <input
-          type="text"
-          placeholder="Nome settimana"
-          value={settimanaNome}
-          onChange={(e) => setSettimanaNome(e.target.value)}
-          style={inputStyle}
-        />
-
-        <select
-          value={giornoSettimana}
-          onChange={(e) => setGiornoSettimana(e.target.value)}
-          style={inputStyle}
-        >
-          {giorniSettimana.map((g) => (
-            <option key={g.nome} value={g.nome}>
-              {g.nome}
-            </option>
-          ))}
+        <input type="text" placeholder="Nome settimana" value={settimanaNome} onChange={(e) => setSettimanaNome(e.target.value)} style={inputStyle} />
+        <select value={giornoSettimana} onChange={(e) => setGiornoSettimana(e.target.value)} style={inputStyle}>
+          {giorniSettimana.map((g) => <option key={g.nome} value={g.nome}>{g.nome}</option>)}
         </select>
-
-        <button onClick={salvaSettimana} style={greenButton}>
-          Salva settimana
-        </button>
-
+        <button onClick={salvaSettimana} style={greenButton}>Salva settimana</button>
         <hr />
-
-        <select
-          value={settimanaDaApplicare}
-          onChange={(e) => setSettimanaDaApplicare(e.target.value)}
-          style={inputStyle}
-        >
+        <select value={settimanaDaApplicare} onChange={(e) => setSettimanaDaApplicare(e.target.value)} style={inputStyle}>
           <option value="">Seleziona settimana salvata</option>
-          {settimane.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.Nome}
-            </option>
-          ))}
+          {settimane.map((s) => <option key={s.id} value={s.id}>{s.Nome}</option>)}
         </select>
-
-        <input
-          type="date"
-          value={dataInizioSettimana}
-          onChange={(e) => setDataInizioSettimana(e.target.value)}
-          style={inputStyle}
-        />
-
-        <button onClick={applicaSettimana} style={greenButton}>
-          Applica settimana
-        </button>
+        <input type="date" value={dataInizioSettimana} onChange={(e) => setDataInizioSettimana(e.target.value)} style={inputStyle} />
+        <button onClick={applicaSettimana} style={greenButton}>Applica settimana</button>
       </div>
 
       <div style={cardStyle}>
         <h2>📊 Analisi automatica dieta</h2>
-
-        <p>
-          <strong>Alimento più usato:</strong>{" "}
-          {analisiCategorie.alimentoPiuUsato
-            ? `${analisiCategorie.alimentoPiuUsato.nome} (${analisiCategorie.alimentoPiuUsato.grammi} g)`
-            : "-"}
-        </p>
-
+        <p><strong>Alimento più usato:</strong> {analisiCategorie.alimentoPiuUsato ? `${analisiCategorie.alimentoPiuUsato.nome} (${analisiCategorie.alimentoPiuUsato.grammi} g)` : "-"}</p>
         <p>Frutta: {analisiCategorie.stats.Frutta || 0} g</p>
         <p>Verdura: {analisiCategorie.stats.Verdura || 0} g</p>
         <p>Insetti: {analisiCategorie.stats.Insetto || 0} g</p>
@@ -1045,9 +812,7 @@ const membriColonia = coloniaSelezionata
 
       <div style={cardStyle}>
         <h2>🛒 Lista spesa automatica</h2>
-
         {listaSpesa.length === 0 && <p>Nessun alimento inserito.</p>}
-
         {listaSpesa.map((item) => (
           <div key={item.nome} style={rowStyle}>
             <strong>{item.nome}</strong>
@@ -1056,10 +821,62 @@ const membriColonia = coloniaSelezionata
         ))}
       </div>
 
+      <div style={cardStyle}>
+        <h2>🍽️ Diete inserite</h2>
+        <button onClick={svuotaDiete} style={redButton}>Svuota tutte le diete</button>
+
+        {diete.map((dieta) => {
+          const alimento = getAlimento(dieta.alimento_id);
+
+          return (
+            <div key={dieta.id} style={dietCard}>
+              <p>Petauro: {nomePetauroDisplay(getPetauro(dieta.petauro_id))}</p>
+              <p>Colonia: {nomeColoniaDisplay(getColonia(dieta.colonia_id))}</p>
+              <p>Alimento: {nomeAlimento(dieta.alimento_id)}</p>
+
+              {alimento?.Categoria === "Insetto" && (
+                <p>🦗 Dose ENAPI: {alimento.DoseConsigliata} {alimento.UnitaMisura} per petauro</p>
+              )}
+
+              {alimento?.Categoria === "Integratore" && <p>🧪 {alimento.Posologia}</p>}
+
+              <p>Grammi: {dieta.grammi}</p>
+              <p>Data: {dieta.data}</p>
+              <button onClick={() => eliminaDieta(dieta.id)} style={redButton}>Elimina</button>
+            </div>
+          );
+        })}
+      </div>
+
+      <div style={cardStyle}>
+        <h2>🍎 Alimenti presenti</h2>
+        {["Frutta", "Verdura", "Insetto", "Integratore", "Tossico"].map((categoria) => (
+          <div key={categoria} style={{ marginBottom: "25px" }}>
+            <h3>
+              {categoria === "Frutta" && "🍎 Frutta"}
+              {categoria === "Verdura" && "🥬 Verdura"}
+              {categoria === "Insetto" && "🦗 Insetti"}
+              {categoria === "Integratore" && "🧪 Integratori"}
+              {categoria === "Tossico" && "☠️ Tossici"}
+            </h3>
+            {alimenti
+              .filter((a) => a.Categoria === categoria)
+              .sort((a, b) => a.Nome.localeCompare(b.Nome))
+              .map((a) => (
+                <div key={a.id} style={rowColumnStyle}>
+                  <strong>{a.Nome}</strong>
+                  <span>Ca: {a.Calcio} | P: {a.Fosforo}</span>
+                  <span>Rapporto Ca:P: {rapportoAlimento(a)}:1</span>
+                  {a.Note && <span>📝 {a.Note}</span>}
+                </div>
+              ))}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
- 
+
 const pageStyle = {
   minHeight: "100vh",
   backgroundColor: "#eef1ea",
