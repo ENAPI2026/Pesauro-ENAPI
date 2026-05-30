@@ -887,22 +887,25 @@ const membriColonia = coloniaSelezionata
         .sort((a, b) => a.Nome.localeCompare(b.Nome))
         .map((a) => (
           <div
-            key={a.id}
-           onClick={() => setAlimentoId(a.id)}
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: "50px",
-              padding: "8px",
-             minHeight: "78px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              textAlign: "center",
-              cursor: "pointer",
-              backgroundColor: "#ffffff"
-            }}
-          >
+  key={a.id}
+  onClick={() => {
+    console.log("CLICK", a.id);
+    setAlimentoId(String(a.id));
+  }}
+  style={{
+    border: "1px solid #ddd",
+    borderRadius: "50px",
+    padding: "8px",
+    minHeight: "78px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    textAlign: "center",
+    cursor: "pointer",
+    backgroundColor: "#ffffff"
+  }}
+>
             <strong style={{ fontSize: "13px" }}>{a.Nome}</strong>
 
             {a.Categoria !== "Integratore" && a.Categoria !== "Insetto" && (
@@ -929,7 +932,7 @@ const membriColonia = coloniaSelezionata
 ))}
  
 </div>
-
+<p>DEBUG alimentoId: {alimentoId}</p>
 {alimentoId && (
   <div style={cardStyle}>
     <h2>{nomeAlimento(alimentoId)}</h2>
