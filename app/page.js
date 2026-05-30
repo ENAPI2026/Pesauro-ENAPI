@@ -396,10 +396,10 @@ const { error: errorGiorni } = await supabase
   .from("settimane_dieta_giorni")
   .insert(records);
 
-
-    const { error: errorGiorni } = await supabase
-      .from("settimane_dieta_giorni")
-      .insert(records);
+if (errorGiorni) {
+  alert(errorGiorni.message);
+  return;
+}
 
     if (errorGiorni) {
       alert(errorGiorni.message);
