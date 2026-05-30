@@ -1072,15 +1072,7 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
-const giorniSettimana = [
-  { nome: "Lunedi", numero: 1 },
-  { nome: "Martedi", numero: 2 },
-  { nome: "Mercoledi", numero: 3 },
-  { nome: "Giovedi", numero: 4 },
-  { nome: "Venerdi", numero: 5 },
-  { nome: "Sabato", numero: 6 },
-  { nome: "Domenica", numero: 7 }
-];
+
 
 export default function Home() {
   const [petauri, setPetauri] = useState([]);
