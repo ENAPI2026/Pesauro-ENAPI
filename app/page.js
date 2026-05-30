@@ -863,99 +863,67 @@ const membriColonia = coloniaSelezionata
       <div style={cardStyle}>
   <h2>🍽️ Costruisci la dieta</h2>
 
-  {["Frutta", "Verdura", "Insetto", "Integratore"].map((categoria) => (
-    <div key={categoria} style={{ marginBottom: "25px" }}>
-      <h3>
-        {categoria === "Frutta" && "🍎 Frutta"}
-        {categoria === "Verdura" && "🥬 Verdura"}
-        {categoria === "Insetto" && "🦗 Insetti"}
-        {categoria === "Integratore" && "🧪 Integratori"}
-      </h3>
-<div
-     style={{
-  border: "1px solid #ddd",
-  borderRadius: "12px",
-  padding: "8px",
-  width: "140px",
-  minHeight: "110px",
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "space-between"
-}}
-      >
-        {alimenti
-          .filter((a) => a.Categoria === categoria)
-          .sort((a, b) => a.Nome.localeCompare(b.Nome))
-          .map((a) => (
-            <div
-              key={a.id}
-             style={{
-  border: "1px solid #ddd",
-  borderRadius: "12px",
-  padding: "8px",
-  width: "140px",
-  minHeight: "110px",
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "space-between"
-}}
-            >
-              <strong
-  style={{
-    fontSize: "16px"
-  }}
->
-  {a.Nome}
-</strong>
+{["Frutta", "Verdura", "Insetto", "Integratore"].map((categoria) => (
+  <div key={categoria} style={{ marginBottom: "25px" }}>
+    <h3>
+      {categoria === "Frutta" && "🍎 Frutta"}
+      {categoria === "Verdura" && "🥬 Verdura"}
+      {categoria === "Insetto" && "🦗 Insetti"}
+      {categoria === "Integratore" && "🧪 Integratori"}
+    </h3>
 
-              {a.Categoria !== "Integratore" &&
-                a.Categoria !== "Insetto" && (
-                  <div>
-                    Ca:P {rapportoAlimento(a)}:1
-                  </div>
-                )}
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(4, 1fr)",
+        gap: "8px"
+      }}
+    >
+      {alimenti
+        .filter((a) => a.Categoria === categoria)
+        .sort((a, b) => a.Nome.localeCompare(b.Nome))
+        .map((a) => (
+          <div
+            key={a.id}
+            onClick={() => setAlimentoId(a.id)}
+            style={{
+              border: "1px solid #ddd",
+              borderRadius: "18px",
+              padding: "8px",
+              minHeight: "95px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              textAlign: "center",
+              cursor: "pointer",
+              backgroundColor: "#ffffff"
+            }}
+          >
+            <strong style={{ fontSize: "13px" }}>{a.Nome}</strong>
 
-              {a.Categoria === "Insetto" && (
-                <div>
-                  🦗 {a.DoseConsigliata} {a.UnitaMisura} per petauro
-                </div>
-              )}
+            {a.Categoria !== "Integratore" && a.Categoria !== "Insetto" && (
+              <div style={{ fontSize: "11px" }}>
+                Ca:P {rapportoAlimento(a)}:1
+              </div>
+            )}
 
-              {a.Categoria === "Integratore" && (
-                <div>
-                  🧪 {a.Posologia}
-                </div>
-              )}
+            {a.Categoria === "Insetto" && (
+              <div style={{ fontSize: "11px" }}>
+                🦗 {a.DoseConsigliata} {a.UnitaMisura}
+              </div>
+            )}
 
-              {a.Note && (
-                <div style={{ fontSize: "12px" }}>
-                  {a.Note}
-                </div>
-              )}
-
-              <button
-  type="button"
-  onClick={() => setAlimentoId(a.id)}
-  style={{
-    marginTop: "8px",
-    borderRadius: "8px",
-    padding: "6px",
-    fontSize: "20px",
-    cursor: "pointer"
-  }}
->
-               
-                ➕
-              </button>
-            </div>
-          ))}
-      </div>
+            {a.Categoria === "Integratore" && (
+              <div style={{ fontSize: "11px" }}>
+                🧪 Posologia
+              </div>
+            )}
+          </div>
+        ))}
     </div>
-  ))}
-      
-      
-      
-</div>
+  </div>
+))}
       {/* Area Import CSV nascosta - solo amministrazione ENAPI */}
 
       <div style={cardStyle}>
