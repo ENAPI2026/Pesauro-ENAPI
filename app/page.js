@@ -886,12 +886,10 @@ const membriColonia = coloniaSelezionata
         .filter((a) => a.Categoria === categoria)
         .sort((a, b) => a.Nome.localeCompare(b.Nome))
         .map((a) => (
-          <div
+          <button
+  type="button"
   key={a.id}
-  onClick={() => {
-    console.log("CLICK", a.id);
-    setAlimentoId(String(a.id));
-  }}
+  onClick={() => setAlimentoId(String(a.id))}
   style={{
     border: "1px solid #ddd",
     borderRadius: "50px",
@@ -925,7 +923,7 @@ const membriColonia = coloniaSelezionata
                 🧪 Posologia
               </div>
             )}
-          </div>
+          </button>
         ))}
     </div>
   </div>
