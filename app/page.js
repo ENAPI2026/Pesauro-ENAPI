@@ -885,7 +885,10 @@ const membriColonia = coloniaSelezionata
         .map((a) => (
           <div
             key={a.id}
-            onClick={() => setAlimentoId(a.id)}
+            onClick={() => {
+  alert(a.Nome);
+  setAlimentoId(a.id);
+}}
             style={{
               border: "1px solid #ddd",
               borderRadius: "50px",
