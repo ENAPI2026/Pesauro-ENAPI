@@ -875,7 +875,7 @@ const membriColonia = coloniaSelezionata
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "repeat(4, 1fr)",
+        gridTemplateColumns: "repeat(auto-fill, minmax(95px, 1fr))",
         gap: "8px"
       }}
     >
@@ -888,9 +888,9 @@ const membriColonia = coloniaSelezionata
             onClick={() => setAlimentoId(a.id)}
             style={{
               border: "1px solid #ddd",
-              borderRadius: "18px",
+              borderRadius: "50px",
               padding: "8px",
-              minHeight: "95px",
+             minHeight: "78px",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
