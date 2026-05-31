@@ -751,31 +751,97 @@ export default function Home() {
         ))}
       </div>
 
-      {alimentoId && (
-        <div style={cardStyle}>
-          <h2>{nomeAlimento(alimentoId)}</h2>
+     {alimentoId && (
+  <div
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      backgroundColor: "rgba(0,0,0,0.6)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 9999
+    }}
+  >
+    <div
+      style={{
+        backgroundColor: "#fff",
+        padding: "25px",
+        borderRadius: "20px",
+        width: "90%",
+        maxWidth: "450px",
+        maxHeight: "90vh",
+        overflowY: "auto"
+      }}
+    >
+      <button
+        onClick={() => setAlimentoId("")}
+        style={{
+          float: "right",
+          border: "none",
+          background: "none",
+          fontSize: "24px",
+          cursor: "pointer"
+        }}
+      >
+        ✕
+      </button>
 
-          {alimentoSelezionato && (
-            <>
-              {alimentoSelezionato.Categoria !== "Integratore" && alimentoSelezionato.Categoria !== "Insetto" && (
-                <p>Ca:P {rapportoAlimento(alimentoSelezionato)}:1</p>
-              )}
+      <h2>{nomeAlimento(alimentoId)}</h2>
 
-              {alimentoSelezionato.Categoria === "Insetto" && (
-                <p>🦗 Dose ENAPI: {alimentoSelezionato.DoseConsigliata} {alimentoSelezionato.UnitaMisura} per petauro</p>
-              )}
+      {alimentoSelezionato && (
+        <>
+          {alimentoSelezionato.Categoria !== "Integratore" &&
+            alimentoSelezionato.Categoria !== "Insetto" && (
+              <p>
+                Ca:P {rapportoAlimento(alimentoSelezionato)}:1
+              </p>
+            )}
 
-              {alimentoSelezionato.Categoria === "Integratore" && <p>🧪 {alimentoSelezionato.Posologia}</p>}
-
-              {alimentoSelezionato.Note && <p>📝 {alimentoSelezionato.Note}</p>}
-            </>
+          {alimentoSelezionato.Categoria === "Insetto" && (
+            <p>
+              🦗 Dose ENAPI: {alimentoSelezionato.DoseConsigliata}{" "}
+              {alimentoSelezionato.UnitaMisura} per petauro
+            </p>
           )}
 
-          <input type="number" placeholder="Grammi" value={grammi} onChange={(e) => setGrammi(e.target.value)} style={inputStyle} />
-          <input type="date" value={dataDieta} onChange={(e) => setDataDieta(e.target.value)} style={inputStyle} />
-          <button onClick={salvaDieta} style={greenButton}>➕ Aggiungi alla dieta</button>
-        </div>
+          {alimentoSelezionato.Categoria === "Integratore" && (
+            <p>🧪 {alimentoSelezionato.Posologia}</p>
+          )}
+
+          {alimentoSelezionato.Note && (
+            <p>📝 {alimentoSelezionato.Note}</p>
+          )}
+        </>
       )}
+
+      <input
+        type="number"
+        placeholder="Grammi"
+        value={grammi}
+        onChange={(e) => setGrammi(e.target.value)}
+        style={inputStyle}
+      />
+
+      <input
+        type="date"
+        value={dataDieta}
+        onChange={(e) => setDataDieta(e.target.value)}
+        style={inputStyle}
+      />
+
+      <button
+        onClick={salvaDieta}
+        style={greenButton}
+      >
+        ➕ Aggiungi alla dieta
+      </button>
+    </div>
+  </div>
+)}
 
       <div style={cardStyle}>
         <h2>🧪 Analisi Ca:P</h2>
