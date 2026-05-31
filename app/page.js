@@ -246,10 +246,18 @@ export default function Home() {
       return;
     }
 
-    const numeroPetauri =
-      modalita === "colonia"
-        ? petauri.filter((p) => String(p.colonia_id) === String(coloniaId)).length
-        : 1;
+    const membriColonia = petauri.filter(
+  (p) => Number(p.colonia_id) === Number(coloniaId)
+);
+
+console.log("MODALITA:", modalita);
+console.log("COLONIA ID:", coloniaId);
+console.log("MEMBRI COLONIA:", membriColonia);
+
+const numeroPetauri =
+  modalita === "colonia"
+    ? membriColonia.length
+    : 1;
 
     quantitaDaSalvare = doseSingola * numeroPetauri;
   }
