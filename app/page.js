@@ -212,67 +212,114 @@ export default function Home() {
     loadPesi();
   }
 
-  async function salvaDieta() {
-    if (!alimentoId || !grammi || !dataDieta) {
-      alert("Seleziona alimento, grammi e data");
+ async function salvaDieta() {
+  if (!alimentoId || !dataDieta) {
+    alert("Seleziona alimento e data");
+    return;
+  }
+
+  const alimento = getAlimento(alimentoId);
+  if (!alimento) {
+    alert("Alimento non trovato");
+    return;
+  }
+
+  const isInsetto = alimento.Categoria === "Insetto";
+  const isIntegratore = alimento.Categoria === "Integratore";
+
+  let quantitaDaSalvare = Number(grammi);
+
+  if (!isInsetto && !isIntegratore && !grammi) {
+    alert("Inserisci i grammi");
+    return;
+  }
+
+  if (isInsetto) {
+    const doseSingola = Number(
+      String(alimento.DoseConsigliata || "")
+        .replace(",", ".")
+        .match(/\d+(\.\d+)?/)?.[0] || 0
+    );
+
+    if (!doseSingola) {
+      alert("Dose ENAPI non impostata per questo insetto");
       return;
     }
 
-    if (modalita === "petauro") {
-      if (!petauroId) {
-        alert("Seleziona un petauro");
-        return;
-      }
+    const numeroPetauri =
+      modalita === "colonia"
+        ? petauri.filter((p) => String(p.colonia_id) === String(coloniaId)).length
+        : 1;
 
-      const { error } = await supabase.from("diete").insert([
-        {
-          petauro_id: Number(petauroId),
-          colonia_id: null,
-          alimento_id: Number(alimentoId),
-          grammi: Number(grammi),
-          data: dataDieta
-        }
-      ]);
-
-      if (error) {
-        alert(error.message);
-        return;
-      }
-    }
-
-    if (modalita === "colonia") {
-      if (!coloniaId) {
-        alert("Seleziona una colonia");
-        return;
-      }
-
-      const membri = petauri.filter((p) => String(p.colonia_id) === String(coloniaId));
-
-      if (membri.length === 0) {
-        alert("Nessun petauro collegato a questa colonia");
-        return;
-      }
-
-      const records = membri.map((p) => ({
-        petauro_id: Number(p.id),
-        colonia_id: Number(coloniaId),
-        alimento_id: Number(alimentoId),
-        grammi: Number(grammi),
-        data: dataDieta
-      }));
-
-      const { error } = await supabase.from("diete").insert(records);
-
-      if (error) {
-        alert(error.message);
-        return;
-      }
-    }
-
-    setAlimentoId("");
-    setGrammi("");
-    loadDiete();
+    quantitaDaSalvare = doseSingola * numeroPetauri;
   }
+
+  if (isIntegratore) {
+    quantitaDaSalvare = 0;
+  }
+
+  if (modalita === "petauro") {
+    if (!petauroId) {
+      alert("Seleziona un petauro");
+      return;
+    }
+
+    const { error } = await supabase.from("diete").insert([
+      {
+        petauro_id: Number(petauroId),
+        colonia_id: null,
+        alimento_id: Number(alimentoId),
+        grammi: quantitaDaSalvare,
+        data: dataDieta
+      }
+    ]);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+  }
+
+  if (modalita === "colonia") {
+    if (!coloniaId) {
+      alert("Seleziona una colonia");
+      return;
+    }
+
+    const membri = petauri.filter(
+      (p) => String(p.colonia_id) === String(coloniaId)
+    );
+
+    if (membri.length === 0) {
+      alert("Nessun petauro collegato a questa colonia");
+      return;
+    }
+
+    const quantitaPerPetauro = isInsetto
+      ? quantitaDaSalvare / membri.length
+      : quantitaDaSalvare;
+
+    const records = membri.map((p) => ({
+      petauro_id: Number(p.id),
+      colonia_id: Number(coloniaId),
+      alimento_id: Number(alimentoId),
+      grammi: quantitaPerPetauro,
+      data: dataDieta
+    }));
+
+    const { error } = await supabase.from("diete").insert(records);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+  }
+
+  setAlimentoId("");
+  setGrammi("");
+  setDataDieta("");
+  loadDiete();
+}
 
   async function eliminaDieta(id) {
     const conferma = confirm("Eliminare questo alimento dalla dieta?");
@@ -751,97 +798,84 @@ export default function Home() {
         ))}
       </div>
 
-     {alimentoId && (
-  <div
-    style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: "100%",
-      backgroundColor: "rgba(0,0,0,0.6)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      zIndex: 9999
-    }}
-  >
-    <div
-      style={{
-        backgroundColor: "#fff",
-        padding: "25px",
-        borderRadius: "20px",
-        width: "90%",
-        maxWidth: "450px",
-        maxHeight: "90vh",
-        overflowY: "auto"
-      }}
-    >
-      <button
-        onClick={() => setAlimentoId("")}
-        style={{
-          float: "right",
-          border: "none",
-          background: "none",
-          fontSize: "24px",
-          cursor: "pointer"
-        }}
-      >
-        ✕
-      </button>
+    
+  {alimentoId && alimentoSelezionato && (() => {
+  const isInsetto = alimentoSelezionato.Categoria === "Insetto";
+  const isIntegratore = alimentoSelezionato.Categoria === "Integratore";
 
-      <h2>{nomeAlimento(alimentoId)}</h2>
+  const numeroPetauri =
+    modalita === "colonia"
+      ? petauri.filter((p) => String(p.colonia_id) === String(coloniaId)).length
+      : 1;
 
-      {alimentoSelezionato && (
-        <>
-          {alimentoSelezionato.Categoria !== "Integratore" &&
-            alimentoSelezionato.Categoria !== "Insetto" && (
-              <p>
-                Ca:P {rapportoAlimento(alimentoSelezionato)}:1
-              </p>
-            )}
+  const doseSingola = Number(
+    String(alimentoSelezionato.DoseConsigliata || "")
+      .replace(",", ".")
+      .match(/\d+(\.\d+)?/)?.[0] || 0
+  );
 
-          {alimentoSelezionato.Categoria === "Insetto" && (
+  const totaleInsetti = doseSingola * numeroPetauri;
+
+  return (
+    <div style={overlayStyle}>
+      <div style={modalStyle}>
+        <button onClick={() => setAlimentoId("")} style={closeButtonStyle}>
+          ✕
+        </button>
+
+        <h2>{nomeAlimento(alimentoId)}</h2>
+
+        {!isInsetto && !isIntegratore && (
+          <p>Ca:P {rapportoAlimento(alimentoSelezionato)}:1</p>
+        )}
+
+        {isInsetto && (
+          <>
             <p>
               🦗 Dose ENAPI: {alimentoSelezionato.DoseConsigliata}{" "}
               {alimentoSelezionato.UnitaMisura} per petauro
             </p>
-          )}
 
-          {alimentoSelezionato.Categoria === "Integratore" && (
-            <p>🧪 {alimentoSelezionato.Posologia}</p>
-          )}
+            <p>
+              Totale: <strong>{totaleInsetti}</strong>{" "}
+              {alimentoSelezionato.UnitaMisura}
+              {modalita === "colonia" && ` per ${numeroPetauri} petauri`}
+            </p>
+          </>
+        )}
 
-          {alimentoSelezionato.Note && (
-            <p>📝 {alimentoSelezionato.Note}</p>
-          )}
-        </>
-      )}
+        {isIntegratore && (
+          <p>🧪 {alimentoSelezionato.Posologia}</p>
+        )}
 
-      <input
-        type="number"
-        placeholder="Grammi"
-        value={grammi}
-        onChange={(e) => setGrammi(e.target.value)}
-        style={inputStyle}
-      />
+        {alimentoSelezionato.Note && (
+          <p>📝 {alimentoSelezionato.Note}</p>
+        )}
 
-      <input
-        type="date"
-        value={dataDieta}
-        onChange={(e) => setDataDieta(e.target.value)}
-        style={inputStyle}
-      />
+        {!isInsetto && !isIntegratore && (
+          <input
+            type="number"
+            placeholder="Grammi"
+            value={grammi}
+            onChange={(e) => setGrammi(e.target.value)}
+            style={inputStyle}
+          />
+        )}
 
-      <button
-        onClick={salvaDieta}
-        style={greenButton}
-      >
-        ➕ Aggiungi alla dieta
-      </button>
+        <input
+          type="date"
+          value={dataDieta}
+          onChange={(e) => setDataDieta(e.target.value)}
+          style={inputStyle}
+        />
+
+        <button onClick={salvaDieta} style={greenButton}>
+          ➕ Aggiungi alla dieta
+        </button>
+      </div>
     </div>
-  </div>
-)}
+  );
+})()}
 
       <div style={cardStyle}>
         <h2>🧪 Analisi Ca:P</h2>
@@ -938,7 +972,7 @@ export default function Home() {
               ))}
           </div>
         ))}
-      </div>
+          </div>
     </div>
   );
 }
@@ -1013,4 +1047,37 @@ const dietCard = {
   borderRadius: "15px",
   padding: "15px",
   marginBottom: "10px"
+};
+const overlayStyle = {
+  position: "fixed",
+  top: 0,
+  left: 0,
+  width: "100%",
+  height: "100%",
+  backgroundColor: "rgba(0,0,0,0.6)",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  zIndex: 9999
+};
+
+const modalStyle = {
+  backgroundColor: "white",
+  padding: "25px",
+  borderRadius: "20px",
+  width: "90%",
+  maxWidth: "450px",
+  maxHeight: "90vh",
+  overflowY: "auto",
+  display: "flex",
+  flexDirection: "column",
+  gap: "12px"
+};
+
+const closeButtonStyle = {
+  alignSelf: "flex-end",
+  border: "none",
+  background: "none",
+  fontSize: "24px",
+  cursor: "pointer"
 };
