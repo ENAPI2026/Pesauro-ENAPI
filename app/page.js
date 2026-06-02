@@ -891,12 +891,33 @@ async function svuotaDiete() {
   );
 })()}
 
-      <div style={cardStyle}>
-        <h2>🧪 Analisi Ca:P</h2>
-        <p>Ca:P totale: {calcoloDieta.rapportoTotale.toFixed(2)}:1</p>
-        <p>Ca:P vegetale: {calcoloDieta.rapportoVegetale.toFixed(2)}:1</p>
-        <p>Calcio da aggiungere: <strong>{calcoloDieta.calcioDaAggiungere.toFixed(2)} mg</strong></p>
-      </div>
+     <div style={cardStyle}>
+  <h2>🧪 Analisi Ca:P</h2>
+
+  <p
+    style={{
+      color:
+        calcoloDieta.rapportoTotale >= 2
+          ? "green"
+          : calcoloDieta.rapportoTotale >= 1
+          ? "orange"
+          : "red",
+      fontWeight: "bold",
+      fontSize: "18px"
+    }}
+  >
+    Ca:P totale: {calcoloDieta.rapportoTotale.toFixed(2)}:1
+  </p>
+
+  <p>
+    Ca:P vegetale: {calcoloDieta.rapportoVegetale.toFixed(2)}:1
+  </p>
+
+  <p>
+    Calcio da aggiungere:{" "}
+    <strong>{calcoloDieta.calcioDaAggiungere.toFixed(2)} mg</strong>
+  </p>
+</div>
 
       <div style={cardStyle}>
         <h2>📅 Settimane alimentari</h2>
