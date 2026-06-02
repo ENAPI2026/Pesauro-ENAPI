@@ -329,34 +329,40 @@ const numeroPetauri =
   loadDiete();
 }
 
-  async function eliminaDieta(id) {
-    const conferma = confirm("Eliminare questo alimento dalla dieta?");
-    if (!conferma) return;
 
-    const { error } = await supabase.from("diete").delete().eq("id", id);
+ async function eliminaDieta(id) {
+  const conferma = confirm("Eliminare questo alimento dalla dieta?");
+  if (!conferma) return;
 
-    if (error) {
-      alert(error.message);
-      return;
-    }
+  const { error } = await supabase
+    .from("diete")
+    .delete()
+    .eq("id", id);
 
-    loadDiete();
+  if (error) {
+    alert(error.message);
+    return;
   }
 
-  async function svuotaDiete() {
-    const conferma = confirm("Svuotare tutte le diete inserite?");
-    if (!conferma) return;
+  loadDiete();
+}
 
-    const { error } = await supabase.from("diete").delete().neq("id", 0);
+async function svuotaDiete() {
+  const conferma = confirm("Svuotare tutte le diete inserite?");
+  if (!conferma) return;
 
-    if (error) {
-      alert(error.message);
-      return;
-    }
+  const { error } = await supabase
+    .from("diete")
+    .delete()
+    .neq("id", 0);
 
-    loadDiete();
+  if (error) {
+    alert(error.message);
+    return;
   }
 
+  loadDiete();
+}
   async function importCSV() {
     if (!csvFile) {
       alert("Seleziona un file CSV");
