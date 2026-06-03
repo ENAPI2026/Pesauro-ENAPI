@@ -581,21 +581,38 @@ async function svuotaDiete() {
     return { stats, alimentoPiuUsato };
   }, [diete, alimenti]);
 
-  const listaSpesa = useMemo(() => {
-    const totale = {};
+  const dietePerData = useMemo(() => {
+  const gruppi = {};
 
-    diete.forEach((dieta) => {
-      const alimento = getAlimento(dieta.alimento_id);
-      if (!alimento) return;
+  diete.forEach((dieta) => {
+    const data = dieta.data || "Senza data";
 
-      if (!totale[alimento.Nome]) totale[alimento.Nome] = 0;
-      totale[alimento.Nome] += Number(dieta.grammi || 0);
-    });
+    if (!gruppi[data]) gruppi[data] = [];
 
-    return Object.entries(totale)
-      .map(([nome, grammi]) => ({ nome, grammi }))
-      .sort((a, b) => b.grammi - a.grammi);
-  }, [diete, alimenti]);
+    gruppi[data].push(dieta);
+  });
+
+  return Object.entries(gruppi).sort(
+    ([a], [b]) => new Date(b) - new Date(a)
+  );
+}, [diete]);
+
+const listaSpesa = useMemo(() => {
+  const totale = {};
+
+  diete.forEach((dieta) => {
+    const alimento = getAlimento(dieta.alimento_id);
+    if (!alimento) return;
+
+    if (!totale[alimento.Nome]) totale[alimento.Nome] = 0;
+
+    totale[alimento.Nome] += Number(dieta.grammi || 0);
+  });
+
+  return Object.entries(totale)
+    .map(([nome, grammi]) => ({ nome, grammi }))
+    .sort((a, b) => b.grammi - a.grammi);
+}, [diete, alimenti]);
 
   const calcoloDieta = useMemo(() => {
     let calcioTotale = 0;
@@ -644,6 +661,90 @@ async function svuotaDiete() {
           String(p.Colonia || "").trim() === String(coloniaSelezionata.Nome || "").trim()
       )
     : [];
+    const verificaEnapi = useMemo(() => {
+  const dataTarget = dataDieta;
+
+  if (!dataTarget) {
+    return {
+      frutti: 0,
+      verdure: 0,
+      insetti: 0,
+      punteggio: 0,
+      pollineOk: false,
+      loriOk: false,
+      gommaOk: false
+    };
+  }
+
+  let dieteFiltrate = [];
+
+  if (modalita === "petauro" && petauroId) {
+    dieteFiltrate = diete.filter(
+      (d) =>
+        String(d.petauro_id) === String(petauroId) &&
+        d.data === dataTarget
+    );
+  }
+
+  if (modalita === "colonia" && coloniaId) {
+    dieteFiltrate = diete.filter(
+      (d) =>
+        String(d.colonia_id) === String(coloniaId) &&
+        d.data === dataTarget
+    );
+  }
+
+  const alimentiUnici = [];
+
+  dieteFiltrate.forEach((d) => {
+    const alimento = getAlimento(d.alimento_id);
+    if (!alimento) return;
+
+    if (!alimentiUnici.find((a) => a.id === alimento.id)) {
+      alimentiUnici.push(alimento);
+    }
+  });
+
+  const frutti = alimentiUnici.filter(
+    (a) => a.Categoria === "Frutta"
+  ).length;
+
+  const verdure = alimentiUnici.filter(
+    (a) => a.Categoria === "Verdura"
+  ).length;
+
+  const insetti = alimentiUnici.filter(
+    (a) => a.Categoria === "Insetto"
+  ).length;
+
+  let punteggio = 0;
+
+  if (frutti >= 2) punteggio += 25;
+  else if (frutti === 1) punteggio += 10;
+
+  if (verdure >= 3) punteggio += 25;
+  else if (verdure === 2) punteggio += 10;
+
+  if (insetti > 0) punteggio += 25;
+
+  if (calcoloDieta.rapportoTotale >= 2) punteggio += 25;
+  else if (calcoloDieta.rapportoTotale >= 1) punteggio += 10;
+
+  return {
+    frutti,
+    verdure,
+    insetti,
+    punteggio
+  };
+}, [
+  diete,
+  alimenti,
+  petauroId,
+  coloniaId,
+  modalita,
+  dataDieta,
+  calcoloDieta
+]);
 
   const alimentoSelezionato = getAlimento(alimentoId);
 
@@ -917,6 +1018,31 @@ async function svuotaDiete() {
     Calcio da aggiungere:{" "}
     <strong>{calcoloDieta.calcioDaAggiungere.toFixed(2)} mg</strong>
   </p>
+ {calcoloDieta.rapportoTotale >= 2 ? (
+  <p
+    style={{
+      backgroundColor: "#e8f5e9",
+      color: "#2e7d32",
+      padding: "10px",
+      borderRadius: "10px",
+      fontWeight: "bold"
+    }}
+  >
+    ✅ Rapporto Ca:P corretto secondo le linee guida ENAPI
+  </p>
+) : (
+  <p
+    style={{
+      backgroundColor: "#ffebee",
+      color: "#c62828",
+      padding: "10px",
+      borderRadius: "10px",
+      fontWeight: "bold"
+    }}
+  >
+    ⚠️ Rapporto Ca:P insufficiente. Aggiungere calcio senza D3.
+  </p>
+)} 
 </div>
 
       <div style={cardStyle}>
@@ -936,14 +1062,62 @@ async function svuotaDiete() {
       </div>
 
       <div style={cardStyle}>
-        <h2>📊 Analisi automatica dieta</h2>
-        <p><strong>Alimento più usato:</strong> {analisiCategorie.alimentoPiuUsato ? `${analisiCategorie.alimentoPiuUsato.nome} (${analisiCategorie.alimentoPiuUsato.grammi} g)` : "-"}</p>
-        <p>Frutta: {analisiCategorie.stats.Frutta || 0} g</p>
-        <p>Verdura: {analisiCategorie.stats.Verdura || 0} g</p>
-        <p>Insetti: {analisiCategorie.stats.Insetto || 0} g</p>
-        <p>Integratori: {analisiCategorie.stats.Integratore || 0} g</p>
-        <p>Tossici: {analisiCategorie.stats.Tossico || 0} g</p>
-      </div>
+  <h2>📋 Verifica Dieta ENAPI</h2>
+
+  {!dataDieta ? (
+    <p>📅 Seleziona una data per effettuare la verifica.</p>
+  ) : (
+    <>
+      <p>
+        🍎 Frutti:
+        <strong>
+          {" "}
+          {verificaEnapi.frutti}/2{" "}
+          {verificaEnapi.frutti >= 2 ? "✅" : "⚠️"}
+        </strong>
+      </p>
+
+      <p>
+        🥬 Verdure:
+        <strong>
+          {" "}
+          {verificaEnapi.verdure}/3{" "}
+          {verificaEnapi.verdure >= 3 ? "✅" : "⚠️"}
+        </strong>
+      </p>
+
+      <p>
+        🦗 Insetti:
+        <strong>
+          {" "}
+          {verificaEnapi.insetti > 0 ? "Presenti ✅" : "Assenti ⚠️"}
+        </strong>
+      </p>
+
+      <p>
+        ⚖️ Rapporto Ca:P:
+        <strong>
+          {" "}
+          {calcoloDieta.rapportoTotale.toFixed(2)}:1
+        </strong>
+      </p>
+
+      <p>
+        🧪 Calcio da aggiungere:
+        <strong>
+          {" "}
+          {calcoloDieta.calcioDaAggiungere.toFixed(2)} mg
+        </strong>
+      </p>
+
+      <hr />
+
+      <h3>
+        ⭐ Punteggio ENAPI: {verificaEnapi.punteggio}/100
+      </h3>
+    </>
+  )}
+</div>
 
       <div style={cardStyle}>
         <h2>🛒 Lista spesa automatica</h2>
@@ -955,7 +1129,37 @@ async function svuotaDiete() {
           </div>
         ))}
       </div>
+<div style={cardStyle}>
+  <h2>📅 Storico Diete</h2>
 
+  {dietePerData.length === 0 && (
+    <p>Nessuna dieta registrata.</p>
+  )}
+
+  {dietePerData.map(([data, records]) => (
+    <div
+      key={data}
+      style={{
+        border: "1px solid #ddd",
+        borderRadius: "15px",
+        padding: "15px",
+        marginBottom: "15px"
+      }}
+    >
+      <h3>📅 {data}</h3>
+
+      <p>
+        Totale alimenti inseriti: <strong>{records.length}</strong>
+      </p>
+
+      {[...new Set(
+        records.map((r) => nomeAlimento(r.alimento_id))
+      )].map((nome) => (
+        <div key={nome}>• {nome}</div>
+      ))}
+    </div>
+  ))}
+</div>
       <div style={cardStyle}>
         <h2>🍽️ Diete inserite</h2>
         <button onClick={svuotaDiete} style={redButton}>Svuota tutte le diete</button>
