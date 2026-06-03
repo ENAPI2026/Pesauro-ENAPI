@@ -661,80 +661,100 @@ const listaSpesa = useMemo(() => {
           String(p.Colonia || "").trim() === String(coloniaSelezionata.Nome || "").trim()
       )
     : [];
-    const verificaEnapi = useMemo(() => {
-  const dataTarget = dataDieta;
-
-  if (!dataTarget) {
-    return {
-      frutti: 0,
-      verdure: 0,
-      insetti: 0,
-      punteggio: 0,
-      pollineOk: false,
-      loriOk: false,
-      gommaOk: false
-    };
-  }
-
-  let dieteFiltrate = [];
+   const verificaEnapi = useMemo(() => {
+  let records = [];
 
   if (modalita === "petauro" && petauroId) {
-    dieteFiltrate = diete.filter(
-      (d) =>
-        String(d.petauro_id) === String(petauroId) &&
-        d.data === dataTarget
+    records = diete.filter(
+      (d) => String(d.petauro_id) === String(petauroId)
     );
   }
 
   if (modalita === "colonia" && coloniaId) {
-    dieteFiltrate = diete.filter(
-      (d) =>
-        String(d.colonia_id) === String(coloniaId) &&
-        d.data === dataTarget
+    records = diete.filter(
+      (d) => String(d.colonia_id) === String(coloniaId)
     );
   }
 
-  const alimentiUnici = [];
+  const alimentiUnici = new Map();
 
-  dieteFiltrate.forEach((d) => {
-    const alimento = getAlimento(d.alimento_id);
+  records.forEach((record) => {
+    const alimento = getAlimento(record.alimento_id);
+
     if (!alimento) return;
 
-    if (!alimentiUnici.find((a) => a.id === alimento.id)) {
-      alimentiUnici.push(alimento);
+    if (!alimentiUnici.has(alimento.id)) {
+      alimentiUnici.set(alimento.id, alimento);
     }
   });
 
-  const frutti = alimentiUnici.filter(
+  const lista = Array.from(alimentiUnici.values());
+
+  const frutti = lista.filter(
     (a) => a.Categoria === "Frutta"
-  ).length;
+  );
 
-  const verdure = alimentiUnici.filter(
+  const verdure = lista.filter(
     (a) => a.Categoria === "Verdura"
-  ).length;
+  );
 
-  const insetti = alimentiUnici.filter(
+  const insetti = lista.filter(
     (a) => a.Categoria === "Insetto"
-  ).length;
+  );
+
+  const integratori = lista.filter(
+    (a) => a.Categoria === "Integratore"
+  );
+
+  const cercaIntegratore = (testo) =>
+    integratori.some((i) =>
+      String(i.Nome || "")
+        .toLowerCase()
+        .includes(testo.toLowerCase())
+    );
+
+  const pollineOk = cercaIntegratore("polline");
+  const loriOk = cercaIntegratore("lori");
+  const gommaOk =
+    cercaIntegratore("gomma") ||
+    cercaIntegratore("arabica");
 
   let punteggio = 0;
 
-  if (frutti >= 2) punteggio += 25;
-  else if (frutti === 1) punteggio += 10;
+  if (frutti.length >= 2) punteggio += 25;
+  else if (frutti.length === 1) punteggio += 10;
 
-  if (verdure >= 3) punteggio += 25;
-  else if (verdure === 2) punteggio += 10;
+  if (verdure.length >= 3) punteggio += 25;
+  else if (verdure.length === 2) punteggio += 10;
 
-  if (insetti > 0) punteggio += 25;
+  if (insetti.length > 0) punteggio += 25;
 
   if (calcoloDieta.rapportoTotale >= 2) punteggio += 25;
   else if (calcoloDieta.rapportoTotale >= 1) punteggio += 10;
 
+  const numeroPetauri =
+    modalita === "colonia"
+      ? membriColonia.length || 1
+      : 1;
+
   return {
-    frutti,
-    verdure,
-    insetti,
-    punteggio
+    frutti: frutti.length,
+    verdure: verdure.length,
+    insetti: insetti.length,
+    varietaTotale: lista.length,
+
+    pollineOk,
+    loriOk,
+    gommaOk,
+
+    punteggio,
+
+    calcioTotale:
+      calcoloDieta.calcioDaAggiungere,
+
+    calcioPerPetauro:
+      calcoloDieta.calcioDaAggiungere /
+      numeroPetauri
   };
 }, [
   diete,
@@ -742,10 +762,9 @@ const listaSpesa = useMemo(() => {
   petauroId,
   coloniaId,
   modalita,
-  dataDieta,
+  membriColonia,
   calcoloDieta
 ]);
-
   const alimentoSelezionato = getAlimento(alimentoId);
 
   return (
@@ -769,20 +788,32 @@ const listaSpesa = useMemo(() => {
         </select>
 
         {modalita === "petauro" ? (
-          <select value={petauroId} onChange={(e) => setPetauroId(e.target.value)} style={inputStyle}>
-            <option value="">Seleziona petauro</option>
-            {petauri.map((p) => (
-              <option key={p.id} value={p.id}>{nomePetauroDisplay(p)}</option>
-            ))}
-          </select>
-        ) : (
-          <select value={coloniaId} onChange={(e) => setColoniaId(e.target.value)} style={inputStyle}>
-            <option value="">Seleziona colonia</option>
-            {colonie.map((c) => (
-              <option key={c.id} value={c.id}>{nomeColoniaDisplay(c)}</option>
-            ))}
-          </select>
-        )}
+  <select
+    value={petauroId}
+    onChange={(e) => setPetauroId(e.target.value)}
+    style={inputStyle}
+  >
+    <option value="">Seleziona petauro</option>
+    {petauri.map((p) => (
+      <option key={p.id} value={p.id}>
+        {nomePetauroDisplay(p)}
+      </option>
+    ))}
+  </select>
+) : (
+  <select
+    value={coloniaId}
+    onChange={(e) => setColoniaId(e.target.value)}
+    style={inputStyle}
+  >
+    <option value="">Seleziona colonia</option>
+    {colonie.map((c) => (
+      <option key={c.id} value={c.id}>
+        {nomeColoniaDisplay(c)}
+      </option>
+    ))}
+  </select>
+)}
       </div>
 
       <div style={cardStyle}>
@@ -1060,65 +1091,124 @@ const listaSpesa = useMemo(() => {
         <input type="date" value={dataInizioSettimana} onChange={(e) => setDataInizioSettimana(e.target.value)} style={inputStyle} />
         <button onClick={applicaSettimana} style={greenButton}>Applica settimana</button>
       </div>
-
-      <div style={cardStyle}>
+<div style={cardStyle}>
   <h2>📋 Verifica Dieta ENAPI</h2>
 
-  {!dataDieta ? (
-    <p>📅 Seleziona una data per effettuare la verifica.</p>
-  ) : (
-    <>
-      <p>
-        🍎 Frutti:
-        <strong>
-          {" "}
-          {verificaEnapi.frutti}/2{" "}
-          {verificaEnapi.frutti >= 2 ? "✅" : "⚠️"}
-        </strong>
-      </p>
+  <p>
+    🍎 Frutti diversi:
+    <strong>
+      {" "}
+      {verificaEnapi.frutti}
+      {verificaEnapi.frutti >= 2 ? " ✅" : " ⚠️"}
+    </strong>
+  </p>
 
-      <p>
-        🥬 Verdure:
-        <strong>
-          {" "}
-          {verificaEnapi.verdure}/3{" "}
-          {verificaEnapi.verdure >= 3 ? "✅" : "⚠️"}
-        </strong>
-      </p>
+  <p>
+    🥬 Verdure diverse:
+    <strong>
+      {" "}
+      {verificaEnapi.verdure}
+      {verificaEnapi.verdure >= 3 ? " ✅" : " ⚠️"}
+    </strong>
+  </p>
 
-      <p>
-        🦗 Insetti:
-        <strong>
-          {" "}
-          {verificaEnapi.insetti > 0 ? "Presenti ✅" : "Assenti ⚠️"}
-        </strong>
-      </p>
+  <p>
+    🦗 Insetti:
+    <strong>
+      {" "}
+      {verificaEnapi.insetti > 0
+        ? `${verificaEnapi.insetti} varietà ✅`
+        : "Assenti ⚠️"}
+    </strong>
+  </p>
 
-      <p>
-        ⚖️ Rapporto Ca:P:
-        <strong>
-          {" "}
-          {calcoloDieta.rapportoTotale.toFixed(2)}:1
-        </strong>
-      </p>
+  <hr />
 
-      <p>
-        🧪 Calcio da aggiungere:
-        <strong>
-          {" "}
-          {calcoloDieta.calcioDaAggiungere.toFixed(2)} mg
-        </strong>
-      </p>
+  <p>
+    📊 Varietà alimentare totale:
+    <strong> {verificaEnapi.varietaTotale}</strong>
+  </p>
 
-      <hr />
+  <hr />
 
-      <h3>
-        ⭐ Punteggio ENAPI: {verificaEnapi.punteggio}/100
-      </h3>
-    </>
+  <p>
+    ⚖️ Rapporto Ca:P vegetale:
+    <strong>
+      {" "}
+      {calcoloDieta.rapportoVegetale.toFixed(2)}:1
+    </strong>
+  </p>
+
+  <p>
+    ⚖️ Rapporto Ca:P totale:
+    <strong>
+      {" "}
+      {calcoloDieta.rapportoTotale.toFixed(2)}:1
+    </strong>
+  </p>
+
+  <hr />
+
+  <p>
+    🧪 Calcio da aggiungere:
+    <strong>
+      {" "}
+      {verificaEnapi.calcioTotale.toFixed(2)} mg
+    </strong>
+  </p>
+
+  {modalita === "colonia" && (
+    <p>
+      👥 Calcio per petauro:
+      <strong>
+        {" "}
+        {verificaEnapi.calcioPerPetauro.toFixed(2)} mg
+      </strong>
+    </p>
   )}
-</div>
 
+  <hr />
+
+  <p>
+    🌼 Polline:
+    <strong>
+      {" "}
+      {verificaEnapi.pollineOk ? "✅ Presente" : "⚠️ Assente"}
+    </strong>
+  </p>
+
+  <p>
+    🦜 Lori:
+    <strong>
+      {" "}
+      {verificaEnapi.loriOk ? "✅ Presente" : "⚠️ Assente"}
+    </strong>
+  </p>
+
+  <p>
+    🌳 Gomma arabica:
+    <strong>
+      {" "}
+      {verificaEnapi.gommaOk ? "✅ Presente" : "⚠️ Assente"}
+    </strong>
+  </p>
+
+  <hr />
+
+  <h3
+    style={{
+      color:
+        verificaEnapi.punteggio >= 90
+          ? "green"
+          : verificaEnapi.punteggio >= 60
+          ? "orange"
+          : "red"
+    }}
+  >
+    ⭐ Punteggio ENAPI: {verificaEnapi.punteggio}/100
+  </h3>
+</div>
+     
       <div style={cardStyle}>
         <h2>🛒 Lista spesa automatica</h2>
         {listaSpesa.length === 0 && <p>Nessun alimento inserito.</p>}
