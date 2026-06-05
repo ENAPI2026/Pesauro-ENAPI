@@ -174,7 +174,58 @@ export default function Home() {
     if (alimento?.Rapporto) return Number(alimento.Rapporto).toFixed(2);
     return "0.00";
   }
+function valutazioneAlimento(alimento) {
+  const categoria = alimento?.Categoria || "";
+  const rapporto = Number(rapportoAlimento(alimento));
 
+  if (categoria === "Tossico") {
+    return {
+      coloreSfondo: "#ffebee",
+      coloreTesto: "#c62828",
+      icona: "🔴",
+      titolo: "Non adatto",
+      testo: "Alimento tossico o da evitare."
+    };
+  }
+
+  if (categoria === "Insetto" || categoria === "Integratore") {
+    return {
+      coloreSfondo: "#e3f2fd",
+      coloreTesto: "#1565c0",
+      icona: "ℹ️",
+      titolo: "Informazione",
+      testo: "Seguire la dose o la posologia indicata."
+    };
+  }
+
+  if (rapporto >= 2) {
+    return {
+      coloreSfondo: "#e8f5e9",
+      coloreTesto: "#2e7d32",
+      icona: "🟢",
+      titolo: "Ottimo rapporto Ca:P",
+      testo: "Alimento favorevole per il bilanciamento calcio/fosforo."
+    };
+  }
+
+  if (rapporto >= 1) {
+    return {
+      coloreSfondo: "#fff8e1",
+      coloreTesto: "#f57f17",
+      icona: "🟡",
+      titolo: "Rapporto intermedio",
+      testo: "Alimento utilizzabile, ma da bilanciare con alimenti più ricchi di calcio."
+    };
+  }
+
+  return {
+    coloreSfondo: "#ffebee",
+    coloreTesto: "#c62828",
+    icona: "🔴",
+    titolo: "Rapporto sfavorevole",
+    testo: "Alimento povero di calcio rispetto al fosforo: usare con attenzione e bilanciare la dieta."
+  };
+}
   async function aggiungiColonia() {
     if (!nomeColonia) {
       alert("Inserisci il nome della colonia");
@@ -985,14 +1036,14 @@ const listaSpesa = useMemo(() => {
         ))}
       </div>
 
-    
-  {alimentoId && alimentoSelezionato && (() => {
+ {alimentoId && alimentoSelezionato && (() => {
   const isInsetto = alimentoSelezionato.Categoria === "Insetto";
   const isIntegratore = alimentoSelezionato.Categoria === "Integratore";
+  const isTossico = alimentoSelezionato.Categoria === "Tossico";
 
   const numeroPetauri =
     modalita === "colonia"
-      ? petauri.filter((p) => String(p.colonia_id) === String(coloniaId)).length
+      ? petauri.filter((p) => String(p.colonia_id) === String(coloniaId)).length || 1
       : 1;
 
   const doseSingola = Number(
@@ -1001,7 +1052,16 @@ const listaSpesa = useMemo(() => {
       .match(/\d+(\.\d+)?/)?.[0] || 0
   );
 
+  const doseIntegratoreSingola = Number(
+    String(alimentoSelezionato.DoseConsigliata || alimentoSelezionato.Posologia || "")
+      .replace(",", ".")
+      .match(/\d+(\.\d+)?/)?.[0] || 0
+  );
+
   const totaleInsetti = doseSingola * numeroPetauri;
+  const totaleIntegratore = doseIntegratoreSingola * numeroPetauri;
+
+  const unitaMisura = alimentoSelezionato.UnitaMisura || "";
 
   return (
     <div style={overlayStyle}>
@@ -1012,34 +1072,117 @@ const listaSpesa = useMemo(() => {
 
         <h2>{nomeAlimento(alimentoId)}</h2>
 
-        {!isInsetto && !isIntegratore && (
-          <p>Ca:P {rapportoAlimento(alimentoSelezionato)}:1</p>
+        <p>
+          Categoria: <strong>{alimentoSelezionato.Categoria}</strong>
+        </p>
+
+     {!isInsetto && !isIntegratore && (() => {
+  const valutazione = valutazioneAlimento(alimentoSelezionato);
+
+  return (
+    <div
+      style={{
+        backgroundColor: valutazione.coloreSfondo,
+        color: valutazione.coloreTesto,
+        padding: "12px",
+        borderRadius: "12px",
+        fontWeight: "bold"
+      }}
+    >
+      <p style={{ margin: 0 }}>
+        {valutazione.icona} {valutazione.titolo}
+      </p>
+
+      <p style={{ margin: "6px 0 0 0" }}>
+        Ca:P {rapportoAlimento(alimentoSelezionato)}:1
+      </p>
+
+      <p style={{ margin: "6px 0 0 0", fontWeight: "normal" }}>
+        {valutazione.testo}
+      </p>
+    </div>
+  );
+})()}
+
+        {isTossico && (
+          <p
+            style={{
+              backgroundColor: "#ffebee",
+              color: "#c62828",
+              padding: "10px",
+              borderRadius: "10px",
+              fontWeight: "bold"
+            }}
+          >
+            ☠️ Attenzione: alimento tossico / non consigliato.
+          </p>
         )}
 
         {isInsetto && (
           <>
             <p>
-              🦗 Dose ENAPI: {alimentoSelezionato.DoseConsigliata}{" "}
-              {alimentoSelezionato.UnitaMisura} per petauro
+              🦗 Dose ENAPI per petauro:{" "}
+              <strong>
+                {alimentoSelezionato.DoseConsigliata} {unitaMisura}
+              </strong>
             </p>
 
             <p>
-              Totale: <strong>{totaleInsetti}</strong>{" "}
-              {alimentoSelezionato.UnitaMisura}
+              Totale da somministrare:{" "}
+              <strong>
+                {totaleInsetti} {unitaMisura}
+              </strong>
               {modalita === "colonia" && ` per ${numeroPetauri} petauri`}
             </p>
           </>
         )}
 
         {isIntegratore && (
-          <p>🧪 {alimentoSelezionato.Posologia}</p>
+          <>
+            {alimentoSelezionato.Posologia && (
+              <p>
+                🧪 Posologia: <strong>{alimentoSelezionato.Posologia}</strong>
+              </p>
+            )}
+
+            {doseIntegratoreSingola > 0 && (
+              <>
+                <p>
+                  Dose per petauro:{" "}
+                  <strong>
+                    {doseIntegratoreSingola} {unitaMisura}
+                  </strong>
+                </p>
+
+                {modalita === "colonia" && (
+                  <p>
+                    Totale per colonia:{" "}
+                    <strong>
+                      {totaleIntegratore} {unitaMisura}
+                    </strong>{" "}
+                    per {numeroPetauri} petauri
+                  </p>
+                )}
+              </>
+            )}
+          </>
         )}
 
         {alimentoSelezionato.Note && (
-          <p>📝 {alimentoSelezionato.Note}</p>
+          <p
+            style={{
+              backgroundColor: "#fff8e1",
+              color: "#6d4c00",
+              padding: "10px",
+              borderRadius: "10px",
+              fontWeight: "bold"
+            }}
+          >
+            📝 Note: {alimentoSelezionato.Note}
+          </p>
         )}
 
-        {!isInsetto && !isIntegratore && (
+        {!isInsetto && !isIntegratore && !isTossico && (
           <input
             type="number"
             placeholder="Grammi"
@@ -1056,13 +1199,16 @@ const listaSpesa = useMemo(() => {
           style={inputStyle}
         />
 
-        <button onClick={salvaDieta} style={greenButton}>
-          ➕ Aggiungi alla dieta
-        </button>
+        {!isTossico && (
+          <button onClick={salvaDieta} style={greenButton}>
+            ➕ Aggiungi alla dieta
+          </button>
+        )}
       </div>
     </div>
   );
-})()}
+})()}   
+  
 
      <div style={cardStyle}>
   <h2>🧪 Analisi Ca:P</h2>
@@ -1317,32 +1463,36 @@ const listaSpesa = useMemo(() => {
           );
         })}
       </div>
+{false && (
+  <div style={cardStyle}>
+    <h2>🍎 Alimenti presenti</h2>
 
-      <div style={cardStyle}>
-        <h2>🍎 Alimenti presenti</h2>
-        {["Frutta", "Verdura", "Insetto", "Integratore", "Tossico"].map((categoria) => (
-          <div key={categoria} style={{ marginBottom: "25px" }}>
-            <h3>
-              {categoria === "Frutta" && "🍎 Frutta"}
-              {categoria === "Verdura" && "🥬 Verdura"}
-              {categoria === "Insetto" && "🦗 Insetti"}
-              {categoria === "Integratore" && "🧪 Integratori"}
-              {categoria === "Tossico" && "☠️ Tossici"}
-            </h3>
-            {alimenti
-              .filter((a) => a.Categoria === categoria)
-              .sort((a, b) => a.Nome.localeCompare(b.Nome))
-              .map((a) => (
-                <div key={a.id} style={rowColumnStyle}>
-                  <strong>{a.Nome}</strong>
-                  <span>Ca: {a.Calcio} | P: {a.Fosforo}</span>
-                  <span>Rapporto Ca:P: {rapportoAlimento(a)}:1</span>
-                  {a.Note && <span>📝 {a.Note}</span>}
-                </div>
-              ))}
-          </div>
-        ))}
-          </div>
+    {["Frutta", "Verdura", "Insetto", "Integratore", "Tossico"].map((categoria) => (
+      <div key={categoria} style={{ marginBottom: "25px" }}>
+        <h3>
+          {categoria === "Frutta" && "🍎 Frutta"}
+          {categoria === "Verdura" && "🥬 Verdura"}
+          {categoria === "Insetto" && "🦗 Insetti"}
+          {categoria === "Integratore" && "🧪 Integratori"}
+          {categoria === "Tossico" && "☠️ Tossici"}
+        </h3>
+
+        {alimenti
+          .filter((a) => a.Categoria === categoria)
+          .sort((a, b) => a.Nome.localeCompare(b.Nome))
+          .map((a) => (
+            <div key={a.id} style={rowColumnStyle}>
+              <strong>{a.Nome}</strong>
+              <span>Ca: {a.Calcio} | P: {a.Fosforo}</span>
+              <span>Rapporto Ca:P: {rapportoAlimento(a)}:1</span>
+              {a.Note && <span>📝 {a.Note}</span>}
+            </div>
+          ))}
+      </div>
+    ))}
+  </div>
+)}
+
     </div>
   );
 }
