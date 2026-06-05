@@ -74,15 +74,31 @@ export default function Home() {
     ]);
   }
 
-  async function loadPetauri() {
-    const { data } = await supabase.from("petauri").select("*");
-    if (data) setPetauri(data);
+ async function loadPetauri() {
+  const { data, error } = await supabase
+    .from("petauri")
+    .select("*");
+
+  if (error) {
+    alert("ERRORE PETAURI: " + error.message);
+    return;
   }
 
+  setPetauri(data || []);
+}
+
   async function loadColonie() {
-    const { data } = await supabase.from("colonie").select("*");
-    if (data) setColonie(data);
+  const { data, error } = await supabase
+    .from("colonie")
+    .select("*");
+
+  if (error) {
+    alert("ERRORE COLONIE: " + error.message);
+    return;
   }
+
+  setColonie(data || []);
+}
 
   async function loadPesi() {
     const { data } = await supabase
@@ -94,9 +110,17 @@ export default function Home() {
   }
 
   async function loadAlimenti() {
-    const { data } = await supabase.from("alimenti").select("*");
-    if (data) setAlimenti(data);
+  const { data, error } = await supabase
+    .from("alimenti")
+    .select("*");
+
+  if (error) {
+    alert("ERRORE ALIMENTI: " + error.message);
+    return;
   }
+
+  setAlimenti(data || []);
+}
 
   async function loadDiete() {
     const { data } = await supabase
@@ -330,38 +354,55 @@ const numeroPetauri =
 }
 
 
- async function eliminaDieta(id) {
+async function eliminaDieta(id) {
   const conferma = confirm("Eliminare questo alimento dalla dieta?");
   if (!conferma) return;
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("diete")
     .delete()
-    .eq("id", id);
+    .eq("id", Number(id))
+    .select("id");
 
   if (error) {
-    alert(error.message);
+    alert("Errore eliminazione dieta: " + error.message);
     return;
   }
 
-  loadDiete();
-}
+  if (!data || data.length === 0) {
+    alert("Nessuna dieta eliminata. Controlla permessi/policy DELETE su Supabase.");
+    return;
+  }
 
+  setDiete((precedenti) =>
+    precedenti.filter((dieta) => String(dieta.id) !== String(id))
+  );
+
+  await loadDiete();
+}
 async function svuotaDiete() {
   const conferma = confirm("Svuotare tutte le diete inserite?");
   if (!conferma) return;
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("diete")
     .delete()
-    .neq("id", 0);
+    .gte("id", 0)
+    .select("id");
 
   if (error) {
-    alert(error.message);
+    alert("Errore svuota diete: " + error.message);
     return;
   }
 
-  loadDiete();
+  if (!data || data.length === 0) {
+    alert("Nessuna dieta eliminata. La tabella potrebbe essere già vuota oppure la DELETE è bloccata.");
+    return;
+  }
+
+  setDiete([]);
+
+  await loadDiete();
 }
   async function importCSV() {
     if (!csvFile) {
