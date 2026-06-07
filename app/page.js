@@ -57,7 +57,8 @@ export default function Home() {
   const [giornoSettimana, setGiornoSettimana] = useState("Lunedi");
   const [settimanaDaApplicare, setSettimanaDaApplicare] = useState("");
   const [dataInizioSettimana, setDataInizioSettimana] = useState("");
-
+const [giornoReplicaAperto, setGiornoReplicaAperto] = useState("");
+const [dataReplica, setDataReplica] = useState("");
   useEffect(() => {
     loadAll();
   }, []);
@@ -443,6 +444,39 @@ async function svuotaDiete() {
 
   setDiete([]);
 
+  await loadDiete();
+}
+async function replicaGiornata(giorno, nuovaData) {
+  if (!nuovaData) {
+    alert("Seleziona una data per replicare la dieta.");
+    return;
+  }
+
+  const recordsDaInserire = giorno.records.map((record) => ({
+    petauro_id: record.petauro_id ? Number(record.petauro_id) : null,
+    colonia_id: record.colonia_id ? Number(record.colonia_id) : null,
+    alimento_id: Number(record.alimento_id),
+    grammi: Number(record.grammi || 0),
+    data: nuovaData
+  }));
+
+  if (recordsDaInserire.length === 0) {
+    alert("Nessuna dieta da replicare.");
+    return;
+  }
+
+  const { error } = await supabase
+    .from("diete")
+    .insert(recordsDaInserire);
+
+  if (error) {
+    alert("Errore replica dieta: " + error.message);
+    return;
+  }
+
+  alert("Dieta replicata correttamente.");
+  setGiornoReplicaAperto("");
+  setDataReplica("");
   await loadDiete();
 }
   async function importCSV() {
@@ -1410,6 +1444,7 @@ const verificaEnapi = useMemo(() => {
     Calcio da aggiungere:{" "}
     <strong>{calcoloDieta.calcioDaAggiungere.toFixed(2)} mg</strong>
   </p>
+  
  {calcoloDieta.rapportoTotale >= 2 ? (
   <p
     style={{
@@ -1778,6 +1813,48 @@ const verificaEnapi = useMemo(() => {
         Calcio da aggiungere:{" "}
         <strong>{giorno.calcioDaAggiungere.toFixed(2)} mg</strong>
       </p>
+<button
+  onClick={() => {
+    setGiornoReplicaAperto(
+      `${giorno.data}-${giorno.tipo}-${giorno.idRiferimento}`
+    );
+    setDataReplica(new Date().toISOString().split("T")[0]);
+  }}
+  style={greenButton}
+>
+  🔁 Replica questa dieta
+</button>
+
+{giornoReplicaAperto ===
+  `${giorno.data}-${giorno.tipo}-${giorno.idRiferimento}` && (
+  <div
+    style={{
+      marginTop: "10px",
+      padding: "10px",
+      border: "1px solid #ddd",
+      borderRadius: "12px",
+      backgroundColor: "white"
+    }}
+  >
+    <p>
+      Seleziona la nuova data:
+    </p>
+
+    <input
+      type="date"
+      value={dataReplica}
+      onChange={(e) => setDataReplica(e.target.value)}
+      style={inputStyle}
+    />
+
+    <button
+      onClick={() => replicaGiornata(giorno, dataReplica)}
+      style={greenButton}
+    >
+      ✅ Conferma replica
+    </button>
+  </div>
+)}
     </div>
   ))}
 </div>
