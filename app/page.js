@@ -663,21 +663,92 @@ async function svuotaDiete() {
     return { stats, alimentoPiuUsato };
   }, [diete, alimenti]);
 
-  const dietePerData = useMemo(() => {
+const dietePerData = useMemo(() => {
   const gruppi = {};
 
   diete.forEach((dieta) => {
     const data = dieta.data || "Senza data";
 
-    if (!gruppi[data]) gruppi[data] = [];
+    const tipo = dieta.colonia_id ? "colonia" : "petauro";
+    const idRiferimento = dieta.colonia_id || dieta.petauro_id || "senza-id";
+    const chiave = `${data}-${tipo}-${idRiferimento}`;
 
-    gruppi[data].push(dieta);
+    if (!gruppi[chiave]) {
+      gruppi[chiave] = {
+        data,
+        tipo,
+        idRiferimento,
+        records: []
+      };
+    }
+
+    gruppi[chiave].records.push(dieta);
   });
 
-  return Object.entries(gruppi).sort(
-    ([a], [b]) => new Date(b) - new Date(a)
-  );
-}, [diete]);
+  return Object.values(gruppi)
+    .map((gruppo) => {
+      const records = gruppo.records;
+
+      const nomeSoggetto =
+        gruppo.tipo === "colonia"
+          ? nomeColoniaDisplay(getColonia(gruppo.idRiferimento))
+          : nomePetauroDisplay(getPetauro(gruppo.idRiferimento));
+
+      const nomiPerCategoria = (categoria) => [
+        ...new Set(
+          records
+            .map((record) => getAlimento(record.alimento_id))
+            .filter((alimento) => alimento?.Categoria === categoria)
+            .map((alimento) => alimento.Nome)
+        )
+      ];
+
+      const frutti = nomiPerCategoria("Frutta");
+      const verdure = nomiPerCategoria("Verdura");
+      const insetti = nomiPerCategoria("Insetto");
+      const integratori = nomiPerCategoria("Integratore");
+
+      let calcioVegetale = 0;
+      let fosforoVegetale = 0;
+      let grammiFruttaVerdura = 0;
+
+      records.forEach((record) => {
+        const alimento = getAlimento(record.alimento_id);
+        if (!alimento) return;
+
+        const grammiRecord = Number(record.grammi || 0);
+
+        if (alimento.Categoria === "Frutta" || alimento.Categoria === "Verdura") {
+          grammiFruttaVerdura += grammiRecord;
+
+          calcioVegetale += (Number(alimento.Calcio || 0) / 100) * grammiRecord;
+          fosforoVegetale += (Number(alimento.Fosforo || 0) / 100) * grammiRecord;
+        }
+      });
+
+      const rapportoVegetale =
+        fosforoVegetale > 0 ? calcioVegetale / fosforoVegetale : 0;
+
+      const calcioNecessario = fosforoVegetale * 2;
+      const calcioDaAggiungere =
+        calcioVegetale < calcioNecessario
+          ? calcioNecessario - calcioVegetale
+          : 0;
+
+      return {
+        ...gruppo,
+        nomeSoggetto,
+        frutti,
+        verdure,
+        insetti,
+        integratori,
+        grammiFruttaVerdura,
+        rapportoVegetale,
+        calcioDaAggiungere
+      };
+    })
+    .sort((a, b) => new Date(b.data) - new Date(a.data));
+}, [diete, alimenti, petauri, colonie]);
 
 const listaSpesa = useMemo(() => {
   const totale = {};
@@ -1643,27 +1714,70 @@ const verificaEnapi = useMemo(() => {
     <p>Nessuna dieta registrata.</p>
   )}
 
-  {dietePerData.map(([data, records]) => (
+  {dietePerData.map((giorno) => (
     <div
-      key={data}
+      key={`${giorno.data}-${giorno.tipo}-${giorno.idRiferimento}`}
       style={{
         border: "1px solid #ddd",
         borderRadius: "15px",
         padding: "15px",
-        marginBottom: "15px"
+        marginBottom: "15px",
+        backgroundColor: "#fafafa"
       }}
     >
-      <h3>📅 {data}</h3>
+      <h3>📅 {giorno.data}</h3>
 
       <p>
-        Totale alimenti inseriti: <strong>{records.length}</strong>
+        {giorno.tipo === "colonia" ? "👥 Colonia:" : "🐿️ Petauro:"}{" "}
+        <strong>{giorno.nomeSoggetto}</strong>
       </p>
 
-      {[...new Set(
-        records.map((r) => nomeAlimento(r.alimento_id))
-      )].map((nome) => (
-        <div key={nome}>• {nome}</div>
-      ))}
+      <p>
+        🍎 Frutti:{" "}
+        <strong>
+          {giorno.frutti.length > 0 ? giorno.frutti.join(", ") : "nessuno"}
+        </strong>
+      </p>
+
+      <p>
+        🥬 Verdure:{" "}
+        <strong>
+          {giorno.verdure.length > 0 ? giorno.verdure.join(", ") : "nessuna"}
+        </strong>
+      </p>
+
+      <p>
+        🦗 Insetti:{" "}
+        <strong>
+          {giorno.insetti.length > 0 ? giorno.insetti.join(", ") : "assenti"}
+        </strong>
+      </p>
+
+      <p>
+        🧪 Integratori:{" "}
+        <strong>
+          {giorno.integratori.length > 0
+            ? giorno.integratori.join(", ")
+            : "nessuno"}
+        </strong>
+      </p>
+
+      <hr />
+
+      <p>
+        Frutta + verdura inserite:{" "}
+        <strong>{giorno.grammiFruttaVerdura.toFixed(1)} g</strong>
+      </p>
+
+      <p>
+        Ca:P vegetale:{" "}
+        <strong>{giorno.rapportoVegetale.toFixed(2)}:1</strong>
+      </p>
+
+      <p>
+        Calcio da aggiungere:{" "}
+        <strong>{giorno.calcioDaAggiungere.toFixed(2)} mg</strong>
+      </p>
     </div>
   ))}
 </div>
