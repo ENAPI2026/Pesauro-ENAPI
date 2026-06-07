@@ -743,6 +743,7 @@ const listaSpesa = useMemo(() => {
           String(p.Colonia || "").trim() === String(coloniaSelezionata.Nome || "").trim()
       )
     : [];
+  let records = [];
 const verificaEnapi = useMemo(() => {
   let records = [];
 
@@ -801,6 +802,72 @@ const verificaEnapi = useMemo(() => {
   const insetti = listaGiorno.filter(
     (a) => a.Categoria === "Insetto"
   );
+
+  const grammiFruttaVerdura = recordsGiorno.reduce((totale, record) => {
+    const alimento = alimentoDaRecord(record);
+    if (!alimento) return totale;
+
+    if (alimento.Categoria === "Frutta" || alimento.Categoria === "Verdura") {
+      return totale + Number(record.grammi || 0);
+    }
+
+    return totale;
+  }, 0);
+
+  const ultimoPesoPetauro = (idPetauro) => {
+    const storico = pesi
+      .filter((p) => String(p.petauro_id) === String(idPetauro))
+      .sort((a, b) => new Date(b.data) - new Date(a.data));
+
+    if (storico.length === 0) return null;
+
+    return Number(storico[0].peso || 0);
+  };
+
+  let pesoTotale = 0;
+  let pesoDisponibile = true;
+  let petauriSenzaPeso = [];
+
+  if (modalita === "petauro") {
+    const pesoPetauro = ultimoPesoPetauro(petauroId);
+
+    if (!pesoPetauro) {
+      pesoDisponibile = false;
+      petauriSenzaPeso = [nomePetauroDisplay(getPetauro(petauroId))];
+    } else {
+      pesoTotale = pesoPetauro;
+    }
+  }
+
+  if (modalita === "colonia") {
+    membriColonia.forEach((petauro) => {
+      const pesoPetauro = ultimoPesoPetauro(petauro.id);
+
+      if (!pesoPetauro) {
+        pesoDisponibile = false;
+        petauriSenzaPeso.push(nomePetauroDisplay(petauro));
+        return;
+      }
+
+      pesoTotale += pesoPetauro;
+    });
+
+    if (membriColonia.length === 0) {
+      pesoDisponibile = false;
+    }
+  }
+
+  const grammiConsigliati = pesoDisponibile
+    ? pesoTotale * 0.3
+    : 0;
+
+  const differenzaGrammi = pesoDisponibile
+    ? grammiFruttaVerdura - grammiConsigliati
+    : 0;
+
+  const quantitaSufficiente = pesoDisponibile
+    ? grammiFruttaVerdura >= grammiConsigliati
+    : false;
 
   const integratorePresenteNegliUltimiGiorni = (testo, giorni) => {
     return records.some((record) => {
@@ -865,6 +932,14 @@ const verificaEnapi = useMemo(() => {
     loriOk,
     gommaOk,
 
+    pesoTotale,
+    pesoDisponibile,
+    petauriSenzaPeso,
+    grammiFruttaVerdura,
+    grammiConsigliati,
+    differenzaGrammi,
+    quantitaSufficiente,
+
     punteggio,
 
     calcioTotale:
@@ -882,7 +957,8 @@ const verificaEnapi = useMemo(() => {
   modalita,
   membriColonia,
   calcoloDieta,
-  dataDieta
+  dataDieta,
+  pesi
 ]);
   const alimentoSelezionato = getAlimento(alimentoId);
 
@@ -1395,7 +1471,73 @@ const verificaEnapi = useMemo(() => {
     </p>
   )}
 
-  <hr />
+<hr />
+
+<h3>⚖️ Quantità frutta + verdura</h3>
+
+{verificaEnapi.pesoDisponibile ? (
+  <>
+    <p>
+      Peso totale considerato:
+      <strong> {verificaEnapi.pesoTotale.toFixed(1)} g</strong>
+    </p>
+
+    <p>
+      Razione consigliata 30%:
+      <strong> {verificaEnapi.grammiConsigliati.toFixed(1)} g</strong>
+    </p>
+
+    <p>
+      Frutta + verdura inserite:
+      <strong> {verificaEnapi.grammiFruttaVerdura.toFixed(1)} g</strong>
+    </p>
+
+    {verificaEnapi.quantitaSufficiente ? (
+      <p
+        style={{
+          backgroundColor: "#e8f5e9",
+          color: "#2e7d32",
+          padding: "10px",
+          borderRadius: "10px",
+          fontWeight: "bold"
+        }}
+      >
+        ✅ Quantità sufficiente per il peso registrato.
+      </p>
+    ) : (
+      <p
+        style={{
+          backgroundColor: "#fff8e1",
+          color: "#f57f17",
+          padding: "10px",
+          borderRadius: "10px",
+          fontWeight: "bold"
+        }}
+      >
+        ⚠️ Mancano circa{" "}
+        {Math.abs(verificaEnapi.differenzaGrammi).toFixed(1)} g di frutta/verdura
+        per raggiungere il 30% del peso corporeo.
+      </p>
+    )}
+  </>
+) : (
+  <p
+    style={{
+      backgroundColor: "#fff8e1",
+      color: "#f57f17",
+      padding: "10px",
+      borderRadius: "10px",
+      fontWeight: "bold"
+    }}
+  >
+    ⚠️ Peso non disponibile: calcolo quantità non effettuato.
+    La dieta può comunque essere salvata.
+    {verificaEnapi.petauriSenzaPeso?.length > 0 &&
+      ` Petauri senza peso: ${verificaEnapi.petauriSenzaPeso.join(", ")}.`}
+  </p>
+)}
+
+<hr />
 
   <p>
   🌼 Polline:
