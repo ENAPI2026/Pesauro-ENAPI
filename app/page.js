@@ -783,7 +783,50 @@ const dietePerData = useMemo(() => {
     })
     .sort((a, b) => new Date(b.data) - new Date(a.data));
 }, [diete, alimenti, petauri, colonie]);
+const settimaneRiepilogo = useMemo(() => {
+  return settimane.map((settimana) => {
+    const giorni = giorniDB
+      .filter((g) => String(g.settimana_id) === String(settimana.id))
+      .sort((a, b) => Number(a.giorno_numero || 0) - Number(b.giorno_numero || 0));
 
+    const gruppiGiorno = {};
+
+    giorni.forEach((record) => {
+      const nomeGiorno = record.giorno_nome || "Giorno";
+      if (!gruppiGiorno[nomeGiorno]) gruppiGiorno[nomeGiorno] = [];
+
+      gruppiGiorno[nomeGiorno].push(record);
+    });
+
+    const riepilogoGiorni = Object.entries(gruppiGiorno).map(([nomeGiorno, records]) => {
+      const alimentiGiorno = records
+        .map((record) => getAlimento(record.alimento_id))
+        .filter(Boolean);
+
+      const nomiPerCategoria = (categoria) => [
+        ...new Set(
+          alimentiGiorno
+            .filter((alimento) => alimento.Categoria === categoria)
+            .map((alimento) => alimento.Nome)
+        )
+      ];
+
+      return {
+        nomeGiorno,
+        records,
+        frutti: nomiPerCategoria("Frutta"),
+        verdure: nomiPerCategoria("Verdura"),
+        insetti: nomiPerCategoria("Insetto"),
+        integratori: nomiPerCategoria("Integratore")
+      };
+    });
+
+    return {
+      ...settimana,
+      giorni: riepilogoGiorni
+    };
+  });
+}, [settimane, giorniDB, alimenti]);
 const listaSpesa = useMemo(() => {
   const totale = {};
 
@@ -1486,6 +1529,66 @@ const verificaEnapi = useMemo(() => {
         </select>
         <input type="date" value={dataInizioSettimana} onChange={(e) => setDataInizioSettimana(e.target.value)} style={inputStyle} />
         <button onClick={applicaSettimana} style={greenButton}>Applica settimana</button>
+<hr />
+
+<h3>📚 Settimane salvate</h3>
+
+{settimaneRiepilogo.length === 0 && (
+  <p>Nessuna settimana salvata.</p>
+)}
+
+{settimaneRiepilogo.map((settimana) => (
+  <div key={settimana.id} style={dietCard}>
+    <h3>📅 {settimana.Nome}</h3>
+
+    {settimana.giorni.length === 0 && (
+      <p>Nessun alimento salvato in questa settimana.</p>
+    )}
+
+    {settimana.giorni.map((giorno) => (
+      <div
+        key={`${settimana.id}-${giorno.nomeGiorno}`}
+        style={{
+          borderTop: "1px solid #ddd",
+          paddingTop: "10px",
+          marginTop: "10px"
+        }}
+      >
+        <strong>{giorno.nomeGiorno}</strong>
+
+        <p>
+          🍎 Frutti:{" "}
+          <strong>
+            {giorno.frutti.length > 0 ? giorno.frutti.join(", ") : "nessuno"}
+          </strong>
+        </p>
+
+        <p>
+          🥬 Verdure:{" "}
+          <strong>
+            {giorno.verdure.length > 0 ? giorno.verdure.join(", ") : "nessuna"}
+          </strong>
+        </p>
+
+        <p>
+          🦗 Insetti:{" "}
+          <strong>
+            {giorno.insetti.length > 0 ? giorno.insetti.join(", ") : "assenti"}
+          </strong>
+        </p>
+
+        <p>
+          🧪 Integratori:{" "}
+          <strong>
+            {giorno.integratori.length > 0
+              ? giorno.integratori.join(", ")
+              : "nessuno"}
+          </strong>
+        </p>
+      </div>
+    ))}
+  </div>
+))}
       </div>
 <div style={cardStyle}>
   <h2>📋 Verifica Dieta ENAPI</h2>
@@ -1858,8 +1961,9 @@ const verificaEnapi = useMemo(() => {
     </div>
   ))}
 </div>
-      <div style={cardStyle}>
-        <h2>🍽️ Diete inserite</h2>
+      {false && (
+  <div style={cardStyle}>
+    <h2>🍽️ Diete inserite</h2>
         <button onClick={svuotaDiete} style={redButton}>Svuota tutte le diete</button>
 
         {diete.map((dieta) => {
@@ -1883,7 +1987,9 @@ const verificaEnapi = useMemo(() => {
             </div>
           );
         })}
+  
       </div>
+      )}
 {false && (
   <div style={cardStyle}>
     <h2>🍎 Alimenti presenti</h2>
