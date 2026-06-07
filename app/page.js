@@ -743,7 +743,7 @@ const listaSpesa = useMemo(() => {
           String(p.Colonia || "").trim() === String(coloniaSelezionata.Nome || "").trim()
       )
     : [];
-   const verificaEnapi = useMemo(() => {
+const verificaEnapi = useMemo(() => {
   let records = [];
 
   if (modalita === "petauro" && petauroId) {
@@ -758,48 +758,82 @@ const listaSpesa = useMemo(() => {
     );
   }
 
-  const alimentiUnici = new Map();
+  const dataRiferimento = dataDieta
+    ? new Date(dataDieta)
+    : new Date();
 
-  records.forEach((record) => {
-    const alimento = getAlimento(record.alimento_id);
+  const stessaData = (dataA, dataB) => {
+    if (!dataA || !dataB) return false;
 
+    const a = new Date(dataA).toISOString().split("T")[0];
+    const b = new Date(dataB).toISOString().split("T")[0];
+
+    return a === b;
+  };
+
+  const recordsGiorno = records.filter((record) =>
+    stessaData(record.data, dataRiferimento)
+  );
+
+  const alimentoDaRecord = (record) => getAlimento(record.alimento_id);
+
+  const alimentiUniciGiorno = new Map();
+
+  recordsGiorno.forEach((record) => {
+    const alimento = alimentoDaRecord(record);
     if (!alimento) return;
 
-    if (!alimentiUnici.has(alimento.id)) {
-      alimentiUnici.set(alimento.id, alimento);
+    if (!alimentiUniciGiorno.has(alimento.id)) {
+      alimentiUniciGiorno.set(alimento.id, alimento);
     }
   });
 
-  const lista = Array.from(alimentiUnici.values());
+  const listaGiorno = Array.from(alimentiUniciGiorno.values());
 
-  const frutti = lista.filter(
+  const frutti = listaGiorno.filter(
     (a) => a.Categoria === "Frutta"
   );
 
-  const verdure = lista.filter(
+  const verdure = listaGiorno.filter(
     (a) => a.Categoria === "Verdura"
   );
 
-  const insetti = lista.filter(
+  const insetti = listaGiorno.filter(
     (a) => a.Categoria === "Insetto"
   );
 
-  const integratori = lista.filter(
-    (a) => a.Categoria === "Integratore"
-  );
+  const integratorePresenteNegliUltimiGiorni = (testo, giorni) => {
+    return records.some((record) => {
+      const alimento = alimentoDaRecord(record);
+      if (!alimento) return false;
 
-  const cercaIntegratore = (testo) =>
-    integratori.some((i) =>
-      String(i.Nome || "")
-        .toLowerCase()
-        .includes(testo.toLowerCase())
-    );
+      if (alimento.Categoria !== "Integratore") return false;
 
-  const pollineOk = cercaIntegratore("polline");
-  const loriOk = cercaIntegratore("lori");
+      const nome = String(alimento.Nome || "").toLowerCase();
+      const posologia = String(alimento.Posologia || "").toLowerCase();
+      const cerca = testo.toLowerCase();
+
+      const corrisponde =
+        nome.includes(cerca) ||
+        posologia.includes(cerca);
+
+      if (!corrisponde) return false;
+      if (!record.data) return false;
+
+      const dataRecord = new Date(record.data);
+      const differenzaMs = dataRiferimento - dataRecord;
+      const differenzaGiorni = differenzaMs / (1000 * 60 * 60 * 24);
+
+      return differenzaGiorni >= 0 && differenzaGiorni <= giorni;
+    });
+  };
+
+  const pollineOk = integratorePresenteNegliUltimiGiorni("polline", 7);
+  const loriOk = integratorePresenteNegliUltimiGiorni("lori", 7);
+
   const gommaOk =
-    cercaIntegratore("gomma") ||
-    cercaIntegratore("arabica");
+    integratorePresenteNegliUltimiGiorni("gomma", 10) ||
+    integratorePresenteNegliUltimiGiorni("arabica", 10);
 
   let punteggio = 0;
 
@@ -820,10 +854,12 @@ const listaSpesa = useMemo(() => {
       : 1;
 
   return {
+    dataRiferimento: dataRiferimento.toISOString().split("T")[0],
+
     frutti: frutti.length,
     verdure: verdure.length,
     insetti: insetti.length,
-    varietaTotale: lista.length,
+    varietaTotale: listaGiorno.length,
 
     pollineOk,
     loriOk,
@@ -845,7 +881,8 @@ const listaSpesa = useMemo(() => {
   coloniaId,
   modalita,
   membriColonia,
-  calcoloDieta
+  calcoloDieta,
+  dataDieta
 ]);
   const alimentoSelezionato = getAlimento(alimentoId);
 
@@ -1361,29 +1398,76 @@ const listaSpesa = useMemo(() => {
   <hr />
 
   <p>
-    🌼 Polline:
-    <strong>
-      {" "}
-      {verificaEnapi.pollineOk ? "✅ Presente" : "⚠️ Assente"}
-    </strong>
-  </p>
+  🌼 Polline:
+  <strong>
+    {" "}
+    {verificaEnapi.pollineOk
+      ? "✅ Inserito negli ultimi 7 giorni"
+      : "⚠️ Non risulta inserito negli ultimi 7 giorni"}
+  </strong>
+</p>
 
-  <p>
-    🦜 Lori:
-    <strong>
-      {" "}
-      {verificaEnapi.loriOk ? "✅ Presente" : "⚠️ Assente"}
-    </strong>
+{!verificaEnapi.pollineOk && (
+  <p
+    style={{
+      backgroundColor: "#fff8e1",
+      color: "#f57f17",
+      padding: "10px",
+      borderRadius: "10px",
+      fontWeight: "bold"
+    }}
+  >
+    ⚠️ Controlla la posologia: il polline va inserito secondo frequenza ENAPI.
   </p>
+)}
 
-  <p>
-    🌳 Gomma arabica:
-    <strong>
-      {" "}
-      {verificaEnapi.gommaOk ? "✅ Presente" : "⚠️ Assente"}
-    </strong>
+<p>
+  🦜 Lori:
+  <strong>
+    {" "}
+    {verificaEnapi.loriOk
+      ? "✅ Inserito negli ultimi 7 giorni"
+      : "⚠️ Non risulta inserito negli ultimi 7 giorni"}
+  </strong>
+</p>
+
+{!verificaEnapi.loriOk && (
+  <p
+    style={{
+      backgroundColor: "#fff8e1",
+      color: "#f57f17",
+      padding: "10px",
+      borderRadius: "10px",
+      fontWeight: "bold"
+    }}
+  >
+    ⚠️ Controlla la posologia: Lori va inserito secondo frequenza ENAPI.
   </p>
+)}
 
+<p>
+  🌳 Gomma arabica:
+  <strong>
+    {" "}
+    {verificaEnapi.gommaOk
+      ? "✅ Inserita negli ultimi 10 giorni"
+      : "⚠️ Non risulta inserita negli ultimi 10 giorni"}
+  </strong>
+</p>
+
+{!verificaEnapi.gommaOk && (
+  <p
+    style={{
+      backgroundColor: "#fff8e1",
+      color: "#f57f17",
+      padding: "10px",
+      borderRadius: "10px",
+      fontWeight: "bold"
+    }}
+  >
+    ⚠️ Controlla la posologia: la gomma arabica va inserita secondo frequenza ENAPI.
+  </p>
+)}
   <hr />
 
   <h3
