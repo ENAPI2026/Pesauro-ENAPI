@@ -188,16 +188,6 @@ function valutazioneAlimento(alimento) {
     };
   }
 
-  if (categoria === "Insetto" || categoria === "Integratore") {
-    return {
-      coloreSfondo: "#e3f2fd",
-      coloreTesto: "#1565c0",
-      icona: "ℹ️",
-      titolo: "Informazione",
-      testo: "Seguire la dose o la posologia indicata."
-    };
-  }
-
   if (rapporto >= 2) {
     return {
       coloreSfondo: "#e8f5e9",
@@ -1308,6 +1298,20 @@ const listaSpesa = useMemo(() => {
         : "Assenti ⚠️"}
     </strong>
   </p>
+  {verificaEnapi.insetti === 0 && (
+  <p
+    style={{
+      backgroundColor: "#ffebee",
+      color: "#c62828",
+      padding: "10px",
+      borderRadius: "10px",
+      fontWeight: "bold"
+    }}
+  >
+    ⚠️ Attenzione: nella dieta non è stato inserito nessun insetto.  
+    Gli insetti vivi sono obbligatori nella dieta ENAPI.
+  </p>
+)}
 
   <hr />
 
