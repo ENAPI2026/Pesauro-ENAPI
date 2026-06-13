@@ -1248,39 +1248,74 @@ const verificaEnapi = useMemo(() => {
                 .filter((a) => a.Categoria === categoria)
                 .sort((a, b) => a.Nome.localeCompare(b.Nome))
                 .map((a) => (
-                  <button
-                    key={a.id}
-                    type="button"
-                    onClick={() => setAlimentoId(String(a.id))}
-                    style={{
-                      border: String(alimentoId) === String(a.id) ? "2px solid #234b2d" : "1px solid #ddd",
-                      borderRadius: "18px",
-                      padding: "8px",
-                      minHeight: "95px",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      textAlign: "center",
-                      cursor: "pointer",
-                      backgroundColor: "#ffffff",
-                      fontFamily: "inherit"
-                    }}
-                  >
-                    <strong style={{ fontSize: "13px" }}>{a.Nome}</strong>
+     <button
+  key={a.id}
+  type="button"
+  onClick={() => setAlimentoId(String(a.id))}
+  style={{
+    border: String(alimentoId) === String(a.id) ? "2px solid #234b2d" : "1px solid #ddd",
+    borderRadius: "18px",
+    padding: "8px",
+    minHeight: "125px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    textAlign: "center",
+    cursor: "pointer",
+    backgroundColor: "#ffffff",
+    fontFamily: "inherit",
+    overflow: "hidden"
+  }}
+>
+  {a.FotoUrl ? (
+    <img
+      src={a.FotoUrl}
+      alt={a.Nome}
+      style={{
+        width: "58px",
+        height: "58px",
+        objectFit: "cover",
+        borderRadius: "50%",
+        marginBottom: "6px",
+        border: "1px solid #ddd"
+      }}
+    />
+  ) : (
+    <div
+      style={{
+        width: "58px",
+        height: "58px",
+        borderRadius: "50%",
+        marginBottom: "6px",
+        backgroundColor: "#eef1ea",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: "26px"
+      }}
+    >
+      {a.Categoria === "Frutta" && "🍎"}
+      {a.Categoria === "Verdura" && "🥬"}
+      {a.Categoria === "Insetto" && "🦗"}
+      {a.Categoria === "Integratore" && "🧪"}
+    </div>
+  )}
 
-                    {a.Categoria !== "Integratore" && a.Categoria !== "Insetto" && (
-                      <div style={{ fontSize: "11px" }}>Ca:P {rapportoAlimento(a)}:1</div>
-                    )}
+  <strong style={{ fontSize: "13px" }}>{a.Nome}</strong>
 
-                    {a.Categoria === "Insetto" && (
-                      <div style={{ fontSize: "11px" }}>🦗 {a.DoseConsigliata} {a.UnitaMisura}</div>
-                    )}
+  {a.Categoria !== "Integratore" && a.Categoria !== "Insetto" && (
+    <div style={{ fontSize: "11px" }}>Ca:P {rapportoAlimento(a)}:1</div>
+  )}
 
-                    {a.Categoria === "Integratore" && (
-                      <div style={{ fontSize: "11px" }}>🧪 Posologia</div>
-                    )}
-                  </button>
+  {a.Categoria === "Insetto" && (
+    <div style={{ fontSize: "11px" }}>🦗 {a.DoseConsigliata} {a.UnitaMisura}</div>
+  )}
+
+  {a.Categoria === "Integratore" && (
+    <div style={{ fontSize: "11px" }}>🧪 Posologia</div>
+  )}
+</button>
                 ))}
             </div>
           </div>
@@ -1458,138 +1493,8 @@ const verificaEnapi = useMemo(() => {
       </div>
     </div>
   );
-})()}   
-  
+})()}
 
-     <div style={cardStyle}>
-  <h2>🧪 Analisi Ca:P</h2>
-
-  <p
-    style={{
-      color:
-        calcoloDieta.rapportoTotale >= 2
-          ? "green"
-          : calcoloDieta.rapportoTotale >= 1
-          ? "orange"
-          : "red",
-      fontWeight: "bold",
-      fontSize: "18px"
-    }}
-  >
-    Ca:P totale: {calcoloDieta.rapportoTotale.toFixed(2)}:1
-  </p>
-
-  <p>
-    Ca:P vegetale: {calcoloDieta.rapportoVegetale.toFixed(2)}:1
-  </p>
-
-  <p>
-    Calcio da aggiungere:{" "}
-    <strong>{calcoloDieta.calcioDaAggiungere.toFixed(2)} mg</strong>
-  </p>
-  
- {calcoloDieta.rapportoTotale >= 2 ? (
-  <p
-    style={{
-      backgroundColor: "#e8f5e9",
-      color: "#2e7d32",
-      padding: "10px",
-      borderRadius: "10px",
-      fontWeight: "bold"
-    }}
-  >
-    ✅ Rapporto Ca:P corretto secondo le linee guida ENAPI
-  </p>
-) : (
-  <p
-    style={{
-      backgroundColor: "#ffebee",
-      color: "#c62828",
-      padding: "10px",
-      borderRadius: "10px",
-      fontWeight: "bold"
-    }}
-  >
-    ⚠️ Rapporto Ca:P insufficiente. Aggiungere calcio senza D3.
-  </p>
-)} 
-</div>
-
-      <div style={cardStyle}>
-        <h2>📅 Settimane alimentari</h2>
-        <input type="text" placeholder="Nome settimana" value={settimanaNome} onChange={(e) => setSettimanaNome(e.target.value)} style={inputStyle} />
-        <select value={giornoSettimana} onChange={(e) => setGiornoSettimana(e.target.value)} style={inputStyle}>
-          {giorniSettimana.map((g) => <option key={g.nome} value={g.nome}>{g.nome}</option>)}
-        </select>
-        <button onClick={salvaSettimana} style={greenButton}>Salva settimana</button>
-        <hr />
-        <select value={settimanaDaApplicare} onChange={(e) => setSettimanaDaApplicare(e.target.value)} style={inputStyle}>
-          <option value="">Seleziona settimana salvata</option>
-          {settimane.map((s) => <option key={s.id} value={s.id}>{s.Nome}</option>)}
-        </select>
-        <input type="date" value={dataInizioSettimana} onChange={(e) => setDataInizioSettimana(e.target.value)} style={inputStyle} />
-        <button onClick={applicaSettimana} style={greenButton}>Applica settimana</button>
-<hr />
-
-<h3>📚 Settimane salvate</h3>
-
-{settimaneRiepilogo.length === 0 && (
-  <p>Nessuna settimana salvata.</p>
-)}
-
-{settimaneRiepilogo.map((settimana) => (
-  <div key={settimana.id} style={dietCard}>
-    <h3>📅 {settimana.Nome}</h3>
-
-    {settimana.giorni.length === 0 && (
-      <p>Nessun alimento salvato in questa settimana.</p>
-    )}
-
-    {settimana.giorni.map((giorno) => (
-      <div
-        key={`${settimana.id}-${giorno.nomeGiorno}`}
-        style={{
-          borderTop: "1px solid #ddd",
-          paddingTop: "10px",
-          marginTop: "10px"
-        }}
-      >
-        <strong>{giorno.nomeGiorno}</strong>
-
-        <p>
-          🍎 Frutti:{" "}
-          <strong>
-            {giorno.frutti.length > 0 ? giorno.frutti.join(", ") : "nessuno"}
-          </strong>
-        </p>
-
-        <p>
-          🥬 Verdure:{" "}
-          <strong>
-            {giorno.verdure.length > 0 ? giorno.verdure.join(", ") : "nessuna"}
-          </strong>
-        </p>
-
-        <p>
-          🦗 Insetti:{" "}
-          <strong>
-            {giorno.insetti.length > 0 ? giorno.insetti.join(", ") : "assenti"}
-          </strong>
-        </p>
-
-        <p>
-          🧪 Integratori:{" "}
-          <strong>
-            {giorno.integratori.length > 0
-              ? giorno.integratori.join(", ")
-              : "nessuno"}
-          </strong>
-        </p>
-      </div>
-    ))}
-  </div>
-))}
-      </div>
 <div style={cardStyle}>
   <h2>📋 Verifica Dieta ENAPI</h2>
 
@@ -1834,6 +1739,82 @@ const verificaEnapi = useMemo(() => {
     ⭐ Punteggio ENAPI: {verificaEnapi.punteggio}/100
   </h3>
 </div>
+
+      <div style={cardStyle}>
+        <h2>📅 Settimane alimentari</h2>
+        <input type="text" placeholder="Nome settimana" value={settimanaNome} onChange={(e) => setSettimanaNome(e.target.value)} style={inputStyle} />
+        <select value={giornoSettimana} onChange={(e) => setGiornoSettimana(e.target.value)} style={inputStyle}>
+          {giorniSettimana.map((g) => <option key={g.nome} value={g.nome}>{g.nome}</option>)}
+        </select>
+        <button onClick={salvaSettimana} style={greenButton}>Salva settimana</button>
+        <hr />
+        <select value={settimanaDaApplicare} onChange={(e) => setSettimanaDaApplicare(e.target.value)} style={inputStyle}>
+          <option value="">Seleziona settimana salvata</option>
+          {settimane.map((s) => <option key={s.id} value={s.id}>{s.Nome}</option>)}
+        </select>
+        <input type="date" value={dataInizioSettimana} onChange={(e) => setDataInizioSettimana(e.target.value)} style={inputStyle} />
+        <button onClick={applicaSettimana} style={greenButton}>Applica settimana</button>
+<hr />
+
+<h3>📚 Settimane salvate</h3>
+
+{settimaneRiepilogo.length === 0 && (
+  <p>Nessuna settimana salvata.</p>
+)}
+
+{settimaneRiepilogo.map((settimana) => (
+  <div key={settimana.id} style={dietCard}>
+    <h3>📅 {settimana.Nome}</h3>
+
+    {settimana.giorni.length === 0 && (
+      <p>Nessun alimento salvato in questa settimana.</p>
+    )}
+
+    {settimana.giorni.map((giorno) => (
+      <div
+        key={`${settimana.id}-${giorno.nomeGiorno}`}
+        style={{
+          borderTop: "1px solid #ddd",
+          paddingTop: "10px",
+          marginTop: "10px"
+        }}
+      >
+        <strong>{giorno.nomeGiorno}</strong>
+
+        <p>
+          🍎 Frutti:{" "}
+          <strong>
+            {giorno.frutti.length > 0 ? giorno.frutti.join(", ") : "nessuno"}
+          </strong>
+        </p>
+
+        <p>
+          🥬 Verdure:{" "}
+          <strong>
+            {giorno.verdure.length > 0 ? giorno.verdure.join(", ") : "nessuna"}
+          </strong>
+        </p>
+
+        <p>
+          🦗 Insetti:{" "}
+          <strong>
+            {giorno.insetti.length > 0 ? giorno.insetti.join(", ") : "assenti"}
+          </strong>
+        </p>
+
+        <p>
+          🧪 Integratori:{" "}
+          <strong>
+            {giorno.integratori.length > 0
+              ? giorno.integratori.join(", ")
+              : "nessuno"}
+          </strong>
+        </p>
+      </div>
+    ))}
+  </div>
+))}
+      </div>
      
       <div style={cardStyle}>
         <h2>🛒 Lista spesa automatica</h2>
