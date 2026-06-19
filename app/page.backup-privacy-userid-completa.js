@@ -96,7 +96,7 @@ const [authMessaggio, setAuthMessaggio] = useState("");
 const [authModalita, setAuthModalita] = useState("login");
 const [isAdmin, setIsAdmin] = useState(false);
 const [sezioneAttiva, setSezioneAttiva] = useState("home");
-const [stepDietauroAperto, setStepDietauroAperto] = useState("destinatario");
+
 useEffect(() => {
   inizializzaApp();
 
@@ -2799,196 +2799,29 @@ const prodottiUtili = [
   }
 ];
 const alimentoSelezionato = getAlimento(alimentoId);
-function toggleStepDietauro(step) {
-  setStepDietauroAperto((stepAttuale) =>
-    stepAttuale === step ? "" : step
-  );
-}
-function HomeIcon({ tipo }) {
-  if (tipo === "dietauro") {
-    return (
-      <div style={homeIconStyle}>
-        <svg viewBox="0 0 160 160" style={homeSvgStyle}>
-          <defs>
-            <radialGradient id="dietBg" cx="50%" cy="45%" r="60%">
-              <stop offset="0%" stopColor="#f8f1dc" />
-              <stop offset="100%" stopColor="#dfe8c9" />
-            </radialGradient>
-            <linearGradient id="bowl" x1="0" x2="1" y1="0" y2="1">
-              <stop offset="0%" stopColor="#8fa36a" />
-              <stop offset="100%" stopColor="#315c37" />
-            </linearGradient>
-            <linearGradient id="leaf" x1="0" x2="1">
-              <stop offset="0%" stopColor="#9fb77a" />
-              <stop offset="100%" stopColor="#365f37" />
-            </linearGradient>
-            <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
-              <feDropShadow dx="0" dy="7" stdDeviation="5" floodColor="#234b2d" floodOpacity="0.22" />
-            </filter>
-          </defs>
 
-          <circle cx="80" cy="80" r="66" fill="url(#dietBg)" />
-
-          <g filter="url(#softShadow)">
-            <path
-              d="M38 82c5 30 23 47 43 47s38-17 43-47H38z"
-              fill="url(#bowl)"
-              stroke="#234b2d"
-              strokeWidth="5"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M43 82h76"
-              stroke="#17351f"
-              strokeWidth="6"
-              strokeLinecap="round"
-            />
-
-            <path
-              d="M66 69c-20-14-25-34-9-51 18 9 23 30 9 51z"
-              fill="url(#leaf)"
-              stroke="#234b2d"
-              strokeWidth="4"
-            />
-            <path
-              d="M86 70c8-25 28-34 49-22-11 22-31 31-49 22z"
-              fill="#91a85f"
-              stroke="#234b2d"
-              strokeWidth="4"
-            />
-            <path
-              d="M55 78c-18-7-25-20-19-34 17 2 27 16 19 34z"
-              fill="#6f8b50"
-              stroke="#234b2d"
-              strokeWidth="4"
-            />
-
-            <circle cx="77" cy="76" r="13" fill="#c47a3a" stroke="#8b5e34" strokeWidth="4" />
-            <circle cx="98" cy="78" r="10" fill="#d9a94a" stroke="#8b5e34" strokeWidth="3" />
-          </g>
-        </svg>
-      </div>
-    );
-  }
-
-  if (tipo === "pesauro") {
-    return (
-      <div style={homeIconStyle}>
-        <svg viewBox="0 0 160 160" style={homeSvgStyle}>
-          <defs>
-            <radialGradient id="pesoBg" cx="50%" cy="45%" r="60%">
-              <stop offset="0%" stopColor="#f8f1dc" />
-              <stop offset="100%" stopColor="#dfe8c9" />
-            </radialGradient>
-            <linearGradient id="scaleGreen" x1="0" x2="1" y1="0" y2="1">
-              <stop offset="0%" stopColor="#9caf72" />
-              <stop offset="100%" stopColor="#315c37" />
-            </linearGradient>
-            <filter id="scaleShadow" x="-30%" y="-30%" width="160%" height="160%">
-              <feDropShadow dx="0" dy="8" stdDeviation="5" floodColor="#234b2d" floodOpacity="0.24" />
-            </filter>
-          </defs>
-
-          <circle cx="80" cy="80" r="66" fill="url(#pesoBg)" />
-
-          <g filter="url(#scaleShadow)">
-            <rect x="45" y="34" width="70" height="18" rx="9" fill="#6f7f3f" stroke="#234b2d" strokeWidth="5" />
-            <rect x="59" y="50" width="42" height="19" rx="7" fill="#8fa36a" stroke="#234b2d" strokeWidth="4" />
-
-            <path
-              d="M43 75c0-10 8-18 18-18h38c10 0 18 8 18 18v35c0 10-8 18-18 18H61c-10 0-18-8-18-18V75z"
-              fill="url(#scaleGreen)"
-              stroke="#234b2d"
-              strokeWidth="5"
-            />
-
-            <circle cx="80" cy="93" r="27" fill="#fffaf0" stroke="#17351f" strokeWidth="5" />
-            <path d="M80 93l15-17" stroke="#234b2d" strokeWidth="5" strokeLinecap="round" />
-            <circle cx="80" cy="93" r="5" fill="#234b2d" />
-
-            <path d="M61 128h38" stroke="#8b5e34" strokeWidth="8" strokeLinecap="round" />
-          </g>
-        </svg>
-      </div>
-    );
-  }
-
-  return (
-    <div style={homeIconStyle}>
-      <svg viewBox="0 0 160 160" style={homeSvgStyle}>
-        <defs>
-          <radialGradient id="bookBg" cx="50%" cy="45%" r="60%">
-            <stop offset="0%" stopColor="#f8f1dc" />
-            <stop offset="100%" stopColor="#dfe8c9" />
-          </radialGradient>
-          <filter id="bookShadow" x="-30%" y="-30%" width="160%" height="160%">
-            <feDropShadow dx="0" dy="8" stdDeviation="5" floodColor="#234b2d" floodOpacity="0.22" />
-          </filter>
-        </defs>
-
-        <circle cx="80" cy="80" r="66" fill="url(#bookBg)" />
-
-        <g filter="url(#bookShadow)">
-          <path
-            d="M36 44c19-7 34-2 44 11v74c-11-11-26-15-44-9V44z"
-            fill="#fffaf0"
-            stroke="#234b2d"
-            strokeWidth="5"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M124 44c-19-7-34-2-44 11v74c11-11 26-15 44-9V44z"
-            fill="#f2ead6"
-            stroke="#234b2d"
-            strokeWidth="5"
-            strokeLinejoin="round"
-          />
-
-          <path d="M53 64h16M53 78h16M53 92h13" stroke="#8b5e34" strokeWidth="4" strokeLinecap="round" />
-          <path d="M92 64h16M92 78h16M94 92h12" stroke="#8b5e34" strokeWidth="4" strokeLinecap="round" />
-
-          <path
-            d="M91 118c10-24 30-29 46-14-14 17-32 22-46 14z"
-            fill="#8fa36a"
-            stroke="#234b2d"
-            strokeWidth="4"
-          />
-          <path
-            d="M70 122c-8-18-22-23-37-13 10 16 25 21 37 13z"
-            fill="#9caf72"
-            stroke="#234b2d"
-            strokeWidth="4"
-          />
-        </g>
-      </svg>
-    </div>
-  );
-}
   return (
     <div style={pageStyle}>
- <header style={heroHeaderStyle}>
+     <header style={heroHeaderStyle}>
   <img
     src="/logo.jpg"
     alt="Logo Pesauro ENAPI"
     style={logoStyle}
   />
 
-  <div style={heroTextBlockStyle}>
-    <div style={heroKickerStyle}>ENAPI</div>
-
-    <h1 style={heroTitleStyle}>Pesauro</h1>
-
+  <div>
+    <h1 style={heroTitleStyle}>Pesauro ENAPI</h1>
     <p style={heroSubtitleStyle}>
-      Dieta, pesi e benessere del petauro dello zucchero
+      Gestionale per dieta, pesi e benessere del petauro dello zucchero
     </p>
   </div>
-</header>    
-<div style={accessCardStyle}>
-<div style={sectionTitleStyle}>
-  <div style={accessHeaderIconStyle}>🔐</div>
-  <h2>Accesso</h2>
-  <p>Entra nel tuo spazio personale Pesauro ENAPI.</p>
-</div>  
+</header>
+<div style={cardStyle}>
+  <div style={sectionTitleStyle}>
+    <h2>🔐 Accesso</h2>
+    <p>Accedi per usare le funzioni riservate e la gestione admin.</p>
+  </div>
+
   {authUser ? (
     <div style={miniPanelStyle}>
       <strong>Accesso effettuato</strong>
@@ -3084,61 +2917,31 @@ function HomeIcon({ tipo }) {
       <p>Scegli la sezione dell'app che vuoi utilizzare.</p>
     </div>
 
-   <div style={homeGridStyle}>
-  <div style={homeCardStyle} onClick={() => setSezioneAttiva("dietauro")}>
-    <img
-  src="/icons/icon-dietauro.png"
-  alt="Dietauro"
-  style={homeImageIconStyle}
-/>
+    <div style={homeGridStyle}>
+      <div style={homeCardStyle} onClick={() => setSezioneAttiva("dietauro")}>
+        <div style={homeIconStyle}>🥗</div>
+        <div style={homeTitleStyle}>Dietauro</div>
+        <div style={homeTextStyle}>
+          Diete, verifica ENAPI, rapporto Ca:P, dieta automatica, storico e lista della spesa.
+        </div>
+      </div>
 
-    <div style={homeTitleStyle}>Dietauro</div>
+      <div style={homeCardStyle} onClick={() => setSezioneAttiva("pesauro")}>
+        <div style={homeIconStyle}>⚖️</div>
+        <div style={homeTitleStyle}>Pesauro</div>
+        <div style={homeTextStyle}>
+          Petauri, colonie, pesate, grafici, documenti e schede degli animali.
+        </div>
+      </div>
 
-    <div style={homeTextStyle}>
-      Crea e verifica diete bilanciate secondo lo standard ENAPI.
+      <div style={homeCardStyle} onClick={() => setSezioneAttiva("risorse")}>
+        <div style={homeIconStyle}>📚</div>
+        <div style={homeTitleStyle}>Risorse ENAPI</div>
+        <div style={homeTextStyle}>
+          Link consigliati, prodotti utili, integratori, documenti e materiali ENAPI.
+        </div>
+      </div>
     </div>
-
-    <div style={homeActionStyle}>
-      Inizia <span>›</span>
-    </div>
-  </div>
-
-  <div style={homeCardStyle} onClick={() => setSezioneAttiva("pesauro")}>
-    <img
-  src="/icons/icon-pesauro.png"
-  alt="Pesauro"
-  style={homeImageIconStyle}
-/>
-
-    <div style={homeTitleStyle}>Pesauro</div>
-
-    <div style={homeTextStyle}>
-      Monitora i pesi, controlla l'andamento e il benessere.
-    </div>
-
-    <div style={homeActionStyle}>
-      Inizia <span>›</span>
-    </div>
-  </div>
-
-  <div style={homeCardStyle} onClick={() => setSezioneAttiva("risorse")}>
-    <img
-  src="/icons/icon-risorse.png"
-  alt="Risorse ENAPI"
-  style={homeImageIconStyle}
-/>
-
-    <div style={homeTitleStyle}>Risorse ENAPI</div>
-
-    <div style={homeTextStyle}>
-      Linee guida, articoli, tabelle e materiali educativi.
-    </div>
-
-    <div style={homeActionStyle}>
-      Esplora <span>›</span>
-    </div>
-  </div>
-</div>
   </div>
 )}
 
@@ -3785,39 +3588,13 @@ function HomeIcon({ tipo }) {
 {sezioneAttiva === "dietauro" && (
   <>
 
-<div style={dietauroStepStyle}>
-  <button
-    type="button"
-    onClick={() => toggleStepDietauro("destinatario")}
-    style={dietauroStepHeaderStyle}
-  >
-    <span>
-      1. Per chi prepari la dieta?
-      <br />
-      <span style={dietauroStepSummaryStyle}>
-        {modalita === "petauro"
-          ? petauroId
-            ? `Petauro: ${nomePetauroDisplay(getPetauro(petauroId))}`
-            : "Petauro singolo non selezionato"
-          : coloniaId
-          ? `Colonia: ${nomeColoniaDisplay(getColonia(coloniaId))}`
-          : "Colonia non selezionata"}
-      </span>
-    </span>
+<div style={cardStyle}>
+  <div style={sectionTitleStyle}>
+    <h2>🍽️ Dietauro</h2>
+    <p>Scegli se stai preparando la dieta per un singolo petauro o per una colonia.</p>
+  </div>
 
-    <span>
-      {stepDietauroAperto === "destinatario" ? "▲" : "▼"}
-    </span>
-  </button>
-
-  {stepDietauroAperto === "destinatario" && (
-    <div style={dietauroStepBodyStyle}>
-      <div style={sectionTitleStyle}>
-        <h2>🍽️ Dietauro</h2>
-        <p>Scegli se stai preparando la dieta per un singolo petauro o per una colonia.</p>
-      </div>
-
-      <div style={formGridStyle}>
+  <div style={formGridStyle}>
     <div style={miniPanelStyle}>
       <h3>Modalità dieta</h3>
 
@@ -3897,33 +3674,11 @@ function HomeIcon({ tipo }) {
         )}
       </div>
     )}
-      </div>
-    </div>
-  )}
+  </div>
 </div>
 
-<div style={dietauroStepStyle}>
-  <button
-    type="button"
-    onClick={() => toggleStepDietauro("costruisci")}
-    style={dietauroStepHeaderStyle}
-  >
-    <span>
-      2. Costruisci la dieta
-      <br />
-      <span style={dietauroStepSummaryStyle}>
-        Scegli frutta, verdura, insetti e integratori
-      </span>
-    </span>
-
-    <span>
-      {stepDietauroAperto === "costruisci" ? "▲" : "▼"}
-    </span>
-  </button>
-
-  {stepDietauroAperto === "costruisci" && (
-    <div style={dietauroStepBodyStyle}>
-      <h2>🍽️ Costruisci la dieta</h2> 
+<div style={cardStyle}>
+  <h2>🍽️ Costruisci la dieta</h2> 
 
         {["Frutta", "Verdura", "Insetto", "Integratore", "Tossico"].map((categoria) => (
           <div key={categoria} style={{ marginBottom: "25px" }}>
@@ -4010,15 +3765,13 @@ function HomeIcon({ tipo }) {
     <div style={{ fontSize: "11px" }}>🧪 Posologia</div>
   )}
 </button>
-           ))}
+                ))}
             </div>
           </div>
         ))}
       </div>
-  )}
-</div>
 
-{alimentoId && alimentoSelezionato && (() => {        
+{alimentoId && alimentoSelezionato && (() => {
   const isInsetto = alimentoSelezionato.Categoria === "Insetto";
   const isIntegratore = alimentoSelezionato.Categoria === "Integratore";
   const isTossico = alimentoSelezionato.Categoria === "Tossico";
@@ -4248,29 +4001,7 @@ function HomeIcon({ tipo }) {
   );
 })()}
 
-<div style={dietauroStepStyle}>
-  <button
-    type="button"
-    onClick={() => toggleStepDietauro("verifica")}
-    style={dietauroStepHeaderStyle}
-  >
-    <span>
-      3. Verifica Dieta ENAPI
-      <br />
-      <span style={dietauroStepSummaryStyle}>
-        {verificaEnapi.punteggio}/100 -{" "}
-        {verificaEnapi.insetti > 0 ? "Insetti presenti" : "Insetti assenti"} -{" "}
-        Ca:P {calcoloDieta.rapportoVegetale.toFixed(2)}:1
-      </span>
-    </span>
-
-    <span>
-      {stepDietauroAperto === "verifica" ? "▲" : "▼"}
-    </span>
-  </button>
-
-  {stepDietauroAperto === "verifica" && (
-    <div style={dietauroStepBodyStyle}>
+<div style={cardStyle}>
   <div style={sectionTitleStyle}>
     <h2>📋 Verifica Dieta ENAPI</h2>
     <p>Controllo rapido di varietà, insetti, calcio, quantità e integratori.</p>
@@ -4479,32 +4210,9 @@ function HomeIcon({ tipo }) {
   >
     <span>⭐ Punteggio ENAPI</span>
     <strong>{verificaEnapi.punteggio}/100</strong>
+  </div>
 </div>
-    </div>
-  )}
-</div>
-
-<div style={dietauroStepStyle}>
-  <button
-    type="button"
-    onClick={() => toggleStepDietauro("automatica")}
-    style={dietauroStepHeaderStyle}
-  >
-    <span>
-      4. Dieta automatica e lista spesa
-      <br />
-      <span style={dietauroStepSummaryStyle}>
-        Genera dieta giornaliera o settimanale e prepara la lista spesa
-      </span>
-    </span>
-
-    <span>
-      {stepDietauroAperto === "automatica" ? "▲" : "▼"}
-    </span>
-  </button>
-
-  {stepDietauroAperto === "automatica" && (
-    <div style={dietauroStepBodyStyle}>
+<div style={cardStyle}>
   <div style={sectionTitleStyle}>
     <h2>✨ Dieta automatica</h2>
     <p>Genera una dieta per un solo giorno oppure un'anteprima di 7 giorni con 2 frutti, 3 verdure, insetti e integratori secondo frequenza.</p>
@@ -4732,7 +4440,7 @@ function HomeIcon({ tipo }) {
       </div>
     </div>
   )}
-
+</div>
 <div style={miniPanelStyle}>
   <h3>🛒 Lista spesa della dieta generata</h3>
 
@@ -4757,34 +4465,10 @@ function HomeIcon({ tipo }) {
 <button onClick={apriWhatsAppListaSpesaAutomatica} style={greenButton}>
   Invia lista spesa su WhatsApp
 </button>
-    </div>
-  )}
-</div>
 
-<div style={dietauroStepStyle}>
-  <button
-    type="button"
-    onClick={() => toggleStepDietauro("storico")}
-    style={dietauroStepHeaderStyle}
-  >
-    <span>
-      5. Settimane e storico
-      <br />
-      <span style={dietauroStepSummaryStyle}>
-        {settimaneRiepilogo.length} settimane salvate - {dietePerData.length} diete nello storico
-      </span>
-    </span>
-
-    <span>
-      {stepDietauroAperto === "storico" ? "▲" : "▼"}
-    </span>
-  </button>
-
-  {stepDietauroAperto === "storico" && (
-  <div style={dietauroStepBodyStyle}>
-      <div style={cardStyle}>
-        <div style={sectionTitleStyle}>
-          <h2>📅 Settimane salvate</h2> 
+<div style={cardStyle}>
+  <div style={sectionTitleStyle}>
+    <h2>📅 Settimane salvate</h2>
     <p>Qui trovi le settimane alimentari generate e salvate.</p>
   </div>
 
@@ -5089,11 +4773,7 @@ function HomeIcon({ tipo }) {
       ))}
     </div>
   )}
-</div>
-    </div>
-  )}
-</div>
-
+</div> 
   </>
 )}
 
@@ -5271,65 +4951,44 @@ function HomeIcon({ tipo }) {
     </div>
   );
 }
-const enapiColors = {
-  panna: "#f6efdf",
-  pannaChiaro: "#fffaf0",
-  salvia: "#e8eddc",
-  salviaChiaro: "#f3f5ec",
-  bosco: "#234b2d",
-  boscoScuro: "#17351f",
-  oliva: "#6f7f3f",
-  marrone: "#4a3b2a",
-  marroneChiaro: "#6b5841",
-  bordo: "#d8ddcf",
-  oro: "#c9a646",
-  bianco: "#fffdf7"
-};
 const pageStyle = {
   minHeight: "100vh",
-  background: "linear-gradient(135deg, #f6efdf 0%, #eef1ea 48%, #f8f1e4 100%)",
-  padding: "clamp(10px, 3vw, 24px)",
+  backgroundColor: "#eef1ea",
+  padding: "clamp(10px, 3vw, 20px)",
   fontFamily: "Arial, sans-serif",
-  boxSizing: "border-box",
-  color: enapiColors.marrone
+  boxSizing: "border-box"
 };
 
 const cardStyle = {
-  backgroundColor: enapiColors.bianco,
-  padding: "clamp(16px, 3vw, 24px)",
-  borderRadius: "24px",
-  marginBottom: "18px",
+  backgroundColor: "white",
+  padding: "clamp(14px, 3vw, 20px)",
+  borderRadius: "16px",
+  marginBottom: "16px",
   display: "flex",
   flexDirection: "column",
-  gap: "12px",
-  boxSizing: "border-box",
-  border: `1px solid ${enapiColors.bordo}`,
-  boxShadow: "0 10px 28px rgba(35, 75, 45, 0.08)"
+  gap: "10px",
+  boxSizing: "border-box"
 };
 
 const inputStyle = {
   width: "100%",
-  padding: "13px 14px",
-  borderRadius: "14px",
-  border: `1px solid ${enapiColors.bordo}`,
+  padding: "12px",
+  borderRadius: "10px",
+  border: "1px solid #ccc",
   fontSize: "16px",
-  boxSizing: "border-box",
-  backgroundColor: enapiColors.bianco,
-  color: enapiColors.marrone,
-  outlineColor: enapiColors.oliva
+  boxSizing: "border-box"
 };
 
 const greenButton = {
-  background: "linear-gradient(135deg, #234b2d 0%, #17351f 100%)",
+  backgroundColor: "#234b2d",
   color: "white",
   border: "none",
-  padding: "14px 18px",
-  borderRadius: "999px",
+  padding: "14px",
+  borderRadius: "12px",
   cursor: "pointer",
-  minHeight: "46px",
+  minHeight: "44px",
   fontSize: "15px",
-  fontWeight: "bold",
-  boxShadow: "0 6px 14px rgba(35, 75, 45, 0.22)"
+  fontWeight: "bold"
 };
 
 const redButton = {
@@ -5556,14 +5215,13 @@ const formGridStyle = {
 };
 
 const miniPanelStyle = {
-  backgroundColor: enapiColors.salviaChiaro,
-  border: `1px solid ${enapiColors.bordo}`,
-  borderRadius: "20px",
-  padding: "16px",
+  backgroundColor: "#f7f8f3",
+  border: "1px solid #d8ddcf",
+  borderRadius: "16px",
+  padding: "14px",
   display: "flex",
   flexDirection: "column",
-  gap: "12px",
-  boxShadow: "0 6px 16px rgba(35, 75, 45, 0.05)"
+  gap: "10px"
 };
 
 const summaryBoxStyle = {
@@ -5859,47 +5517,37 @@ const amazonButtonStyle = {
   fontWeight: "bold"
 };
 const heroHeaderStyle = {
-  background:
-    "linear-gradient(135deg, rgba(255,253,247,0.95) 0%, rgba(246,239,223,0.9) 55%, rgba(232,237,220,0.82) 100%)",
-  border: `1px solid ${enapiColors.bordo}`,
-  borderRadius: "28px",
-  padding: "clamp(14px, 3vw, 22px)",
-  marginBottom: "18px",
+  backgroundColor: "#f7f1e6",
+  border: "1px solid #d8ddcf",
+  borderRadius: "22px",
+  padding: "18px",
+  marginBottom: "20px",
   display: "flex",
   alignItems: "center",
-  gap: "14px",
-  boxShadow: "0 12px 30px rgba(35, 75, 45, 0.09)",
-  position: "relative",
-  overflow: "hidden"
+  gap: "16px"
 };
 
 const logoStyle = {
-  width: "clamp(72px, 14vw, 96px)",
-  height: "clamp(72px, 14vw, 96px)",
+  width: "82px",
+  height: "82px",
   objectFit: "contain",
   borderRadius: "50%",
   backgroundColor: "white",
-  padding: "7px",
-  flexShrink: 0,
-  border: `1px solid ${enapiColors.bordo}`,
-  boxShadow: "0 8px 18px rgba(35, 75, 45, 0.12)"
+  padding: "6px",
+  flexShrink: 0
 };
 
 const heroTitleStyle = {
   margin: 0,
-  color: enapiColors.bosco,
-  fontSize: "clamp(32px, 6vw, 46px)",
-  lineHeight: "1.02",
-  fontWeight: "850",
-  letterSpacing: "-0.035em"
+  color: "#234b2d",
+  fontSize: "32px",
+  lineHeight: "1.1"
 };
 
 const heroSubtitleStyle = {
-  margin: "7px 0 0",
-  color: enapiColors.marrone,
-  fontSize: "clamp(15px, 3vw, 18px)",
-  lineHeight: "1.35",
-  maxWidth: "520px"
+  margin: "6px 0 0",
+  color: "#4a3b2a",
+  fontSize: "15px"
 };
 const petauroPhotoStyle = {
   width: "72px",
@@ -5997,88 +5645,54 @@ const authTabsStyle = {
 };
 
 const authTabStyle = {
-  backgroundColor: enapiColors.bianco,
-  color: enapiColors.bosco,
-  border: `1px solid ${enapiColors.bordo}`,
-  padding: "10px 14px",
+  backgroundColor: "#eef1ea",
+  color: "#234b2d",
+  border: "1px solid #d8ddcf",
+  padding: "8px 10px",
   borderRadius: "999px",
   cursor: "pointer",
-  fontWeight: "bold",
-  boxShadow: "0 4px 10px rgba(35,75,45,0.05)"
+  fontWeight: "bold"
 };
 
 const authTabActiveStyle = {
   ...authTabStyle,
-  background: "linear-gradient(135deg, #234b2d 0%, #17351f 100%)",
-  color: "white",
-  border: "1px solid #234b2d"
+  backgroundColor: "#234b2d",
+  color: "white"
 };
 const homeGridStyle = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+  gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))",
   gap: "18px",
-  marginTop: "18px"
+  marginTop: "22px"
 };
 
 const homeCardStyle = {
-  background:
-    "linear-gradient(145deg, rgba(255,253,247,0.96) 0%, rgba(243,245,236,0.96) 100%)",
-  border: `1px solid ${enapiColors.bordo}`,
-  borderRadius: "26px",
+  backgroundColor: "#f7f8f3",
+  border: "1px solid #d8ddcf",
+  borderRadius: "22px",
   padding: "24px",
   cursor: "pointer",
-  boxShadow: "0 12px 26px rgba(35, 75, 45, 0.10)",
+  boxShadow: "0 8px 20px rgba(0,0,0,0.06)",
   display: "flex",
   flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: "12px",
-  minHeight: "250px",
-  textAlign: "center",
-  color: enapiColors.marrone,
-  position: "relative",
-  overflow: "hidden"
+  gap: "10px",
+  minHeight: "170px"
 };
 
 const homeIconStyle = {
-  width: "132px",
-  height: "132px",
-  borderRadius: "50%",
-  background:
-    "radial-gradient(circle at 45% 35%, #f8f1dc 0%, #e8eddc 60%, #dfe8c9 100%)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  boxShadow: "inset 0 0 0 1px rgba(35,75,45,0.08), 0 10px 22px rgba(35,75,45,0.12)"
+  fontSize: "42px"
 };
 
 const homeTitleStyle = {
-  fontSize: "clamp(25px, 4vw, 34px)",
-  fontWeight: "800",
-  color: enapiColors.bosco,
-  lineHeight: "1.05"
+  fontSize: "22px",
+  fontWeight: "bold",
+  color: "#234b2d"
 };
 
 const homeTextStyle = {
   fontSize: "15px",
-  color: enapiColors.marrone,
-  lineHeight: "1.45",
-  maxWidth: "260px"
-};
-
-const homeActionStyle = {
-  marginTop: "8px",
-  background: "linear-gradient(135deg, #234b2d 0%, #17351f 100%)",
-  color: "white",
-  borderRadius: "999px",
-  padding: "10px 18px",
-  minWidth: "120px",
-  fontWeight: "bold",
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: "10px",
-  boxShadow: "0 8px 18px rgba(35, 75, 45, 0.20)"
+  color: "#4b3b2a",
+  lineHeight: "1.4"
 };
 
 const backHomeButtonStyle = {
@@ -6090,102 +5704,4 @@ const backHomeButtonStyle = {
   padding: "10px 16px",
   cursor: "pointer",
   fontWeight: "bold"
-};
-const dietauroStepStyle = {
-  background:
-    "linear-gradient(145deg, rgba(255,253,247,0.98) 0%, rgba(243,245,236,0.96) 100%)",
-  border: `1px solid ${enapiColors.bordo}`,
-  borderRadius: "24px",
-  marginBottom: "16px",
-  overflow: "hidden",
-  boxShadow: "0 12px 28px rgba(35, 75, 45, 0.09)"
-};
-
-const dietauroStepHeaderStyle = {
-  width: "100%",
-  border: "none",
-  background:
-    "linear-gradient(135deg, rgba(232,237,220,0.98) 0%, rgba(247,241,230,0.98) 100%)",
-  color: enapiColors.bosco,
-  padding: "18px",
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  gap: "12px",
-  cursor: "pointer",
-  fontWeight: "800",
-  fontSize: "18px",
-  textAlign: "left",
-  fontFamily: "inherit",
-  borderBottom: `1px solid ${enapiColors.bordo}`
-};
-
-const dietauroStepBodyStyle = {
-  padding: "clamp(14px, 3vw, 20px)",
-  display: "flex",
-  flexDirection: "column",
-  gap: "16px",
-  backgroundColor: "rgba(255,250,240,0.72)"
-};
-
-const dietauroStepSummaryStyle = {
-  fontSize: "13px",
-  color: enapiColors.marroneChiaro,
-  fontWeight: "500",
-  lineHeight: "1.35"
-};
-const homeSvgStyle = {
-  width: "128px",
-  height: "128px",
-  display: "block"
-};
-const homeImageIconStyle = {
-  width: "132px",
-  height: "132px",
-  objectFit: "contain",
-  borderRadius: "50%",
-  display: "block",
-  filter: "drop-shadow(0 10px 16px rgba(35, 75, 45, 0.18))"
-};
-const accessCardStyle = {
-  background:
-    "linear-gradient(145deg, rgba(255,253,247,0.98) 0%, rgba(243,245,236,0.96) 100%)",
-  padding: "clamp(18px, 4vw, 26px)",
-  borderRadius: "28px",
-  marginBottom: "20px",
-  display: "flex",
-  flexDirection: "column",
-  gap: "14px",
-  boxSizing: "border-box",
-  border: `1px solid ${enapiColors.bordo}`,
-  boxShadow: "0 14px 34px rgba(35, 75, 45, 0.10)",
-  position: "relative",
-  overflow: "hidden"
-};
-
-const accessHeaderIconStyle = {
-  width: "46px",
-  height: "46px",
-  borderRadius: "50%",
-  backgroundColor: enapiColors.salvia,
-  color: enapiColors.bosco,
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontSize: "22px",
-  marginBottom: "4px"
-};
-const heroTextBlockStyle = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "2px",
-  minWidth: 0
-};
-
-const heroKickerStyle = {
-  color: enapiColors.oliva,
-  fontSize: "13px",
-  fontWeight: "800",
-  letterSpacing: "0.18em",
-  textTransform: "uppercase"
 };

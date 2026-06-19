@@ -1,5 +1,4 @@
-
- "use client";
+"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
@@ -16,14 +15,7 @@ import {
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true
-    }
-  }
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
 const giorniSettimana = [
@@ -57,8 +49,7 @@ export default function Home() {
 
   const [alimentoId, setAlimentoId] = useState("");
   const [grammi, setGrammi] = useState("");
-  const oggiISO = new Date().toISOString().split("T")[0];
-  const [dataDieta, setDataDieta] = useState(oggiISO);
+  const [dataDieta, setDataDieta] = useState("");
 
   const [csvFile, setCsvFile] = useState(null);
 
@@ -96,7 +87,7 @@ const [authMessaggio, setAuthMessaggio] = useState("");
 const [authModalita, setAuthModalita] = useState("login");
 const [isAdmin, setIsAdmin] = useState(false);
 const [sezioneAttiva, setSezioneAttiva] = useState("home");
-const [stepDietauroAperto, setStepDietauroAperto] = useState("destinatario");
+
 useEffect(() => {
   inizializzaApp();
 
@@ -767,19 +758,11 @@ async function salvaPesoDaScheda() {
     return;
   }
 
-  const userId = await getUserIdCorrente();
-
-  if (!userId) {
-    alert("Devi effettuare l'accesso per salvare una pesata.");
-    return;
-  }
-
   const { error } = await supabase.from("pesi").insert([
     {
       petauro_id: Number(petauroSchedaId),
       peso: Number(pesoScheda),
-      data: dataPesoScheda,
-      user_id: userId
+      data: dataPesoScheda
     }
   ]);
 
@@ -792,107 +775,70 @@ async function salvaPesoDaScheda() {
   setDataPesoScheda("");
   await loadPesi();
 }
- async function aggiungiColonia() {
-  if (!nomeColonia) {
-    alert("Inserisci il nome della colonia");
-    return;
-  }
-
-  const userId = await getUserIdCorrente();
-
-  if (!userId) {
-    alert("Devi effettuare l'accesso per creare una colonia.");
-    return;
-  }
-
-  const { error } = await supabase.from("colonie").insert([
-    {
-      Nome: nomeColonia,
-      user_id: userId
+  async function aggiungiColonia() {
+    if (!nomeColonia) {
+      alert("Inserisci il nome della colonia");
+      return;
     }
-  ]);
 
-  if (error) {
-    alert(error.message);
-    return;
+    const { error } = await supabase.from("colonie").insert([{ Nome: nomeColonia }]);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    setNomeColonia("");
+    loadColonie();
   }
-
-  setNomeColonia("");
-  loadColonie();
-} 
 
   async function aggiungiPetauro() {
-  if (!nomePetauro) {
-    alert("Inserisci il nome del petauro");
-    return;
-  }
-
-  const userId = await getUserIdCorrente();
-
-  if (!userId) {
-    alert("Devi effettuare l'accesso per creare un petauro.");
-    return;
-  }
-
-  const nuovoPetauro = {
-    Nome: nomePetauro,
-    user_id: userId
-  };
-
-  if (coloniaId) nuovoPetauro.colonia_id = Number(coloniaId);
-
-  const { error } = await supabase.from("petauri").insert([nuovoPetauro]);
-
-  if (error) {
-    alert(error.message);
-    return;
-  }
-
-  setNomePetauro("");
-  loadPetauri();
-}
-
-async function salvaPeso() {
-  if (!petauroId || !peso || !dataPeso) {
-    alert("Seleziona petauro, peso e data");
-    return;
-  }
-
-  const userId = await getUserIdCorrente();
-
-  if (!userId) {
-    alert("Devi effettuare l'accesso per salvare una pesata.");
-    return;
-  }
-
-  const { error } = await supabase.from("pesi").insert([
-    {
-      petauro_id: Number(petauroId),
-      peso: Number(peso),
-      data: dataPeso,
-      user_id: userId
+    if (!nomePetauro) {
+      alert("Inserisci il nome del petauro");
+      return;
     }
-  ]);
 
-  if (error) {
-    alert(error.message);
-    return;
+    const nuovoPetauro = { Nome: nomePetauro };
+    if (coloniaId) nuovoPetauro.colonia_id = Number(coloniaId);
+
+    const { error } = await supabase.from("petauri").insert([nuovoPetauro]);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    setNomePetauro("");
+    loadPetauri();
   }
 
-  setPeso("");
-  setDataPeso("");
-  loadPesi();
-}
-async function salvaDieta() {
+  async function salvaPeso() {
+    if (!petauroId || !peso || !dataPeso) {
+      alert("Seleziona petauro, peso e data");
+      return;
+    }
+
+    const { error } = await supabase.from("pesi").insert([
+      {
+        petauro_id: Number(petauroId),
+        peso: Number(peso),
+        data: dataPeso
+      }
+    ]);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    setPeso("");
+    setDataPeso("");
+    loadPesi();
+  }
+
+ async function salvaDieta() {
   if (!alimentoId || !dataDieta) {
     alert("Seleziona alimento e data");
-    return;
-  }
-
-  const userId = await getUserIdCorrente();
-
-  if (!userId) {
-    alert("Devi effettuare l'accesso per salvare una dieta.");
     return;
   }
 
@@ -905,7 +851,12 @@ async function salvaDieta() {
   const isInsetto = alimento.Categoria === "Insetto";
   const isIntegratore = alimento.Categoria === "Integratore";
 
-  let quantitaDaSalvare = grammi ? Number(grammi) : 0;
+  let quantitaDaSalvare = Number(grammi);
+
+  if (!isInsetto && !isIntegratore && !grammi) {
+    alert("Inserisci i grammi");
+    return;
+  }
 
   if (isInsetto) {
     const doseSingola = Number(
@@ -947,8 +898,7 @@ async function salvaDieta() {
         colonia_id: null,
         alimento_id: Number(alimentoId),
         grammi: quantitaDaSalvare,
-        data: dataDieta,
-        user_id: userId
+        data: dataDieta
       }
     ]);
 
@@ -982,8 +932,7 @@ async function salvaDieta() {
       colonia_id: Number(coloniaId),
       alimento_id: Number(alimentoId),
       grammi: quantitaPerPetauro,
-      data: dataDieta,
-      user_id: userId
+      data: dataDieta
     }));
 
     const { error } = await supabase.from("diete").insert(records);
@@ -996,6 +945,7 @@ async function salvaDieta() {
 
   setAlimentoId("");
   setGrammi("");
+  setDataDieta("");
   loadDiete();
 }
 
@@ -1133,20 +1083,12 @@ async function replicaGiornata(giorno, nuovaData) {
     return;
   }
 
-  const userId = await getUserIdCorrente();
-
-  if (!userId) {
-    alert("Devi effettuare l'accesso per replicare una dieta.");
-    return;
-  }
-
   const recordsDaInserire = giorno.records.map((record) => ({
     petauro_id: record.petauro_id ? Number(record.petauro_id) : null,
     colonia_id: record.colonia_id ? Number(record.colonia_id) : null,
-    alimento_id: Number(leggiAlimentoId(record)),
+   alimento_id: Number(leggiAlimentoId(record)),
     grammi: Number(record.grammi || 0),
-    data: nuovaData,
-    user_id: userId
+    data: nuovaData
   }));
 
   if (recordsDaInserire.length === 0) {
@@ -1240,49 +1182,34 @@ function leggiAlimentoId(record) {
 }
 
 async function inserisciGiorniSettimana(recordsBase) {
-  const userId = await getUserIdCorrente();
-
-  if (!userId) {
-    return { message: "Utente non autenticato." };
-  }
-
-  const recordsConUserId = recordsBase.map((record) => ({
-    ...record,
-    user_id: record.user_id || userId
-  }));
-
   const tentativi = [
     (r) => ({
       settimana_id: r.settimana_id,
       giorno_nome: r.giornoNome,
       giorno_numero: r.giornoNumero,
       alimento_id: r.alimentoId,
-      grammi: r.grammi,
-      user_id: r.user_id
+      grammi: r.grammi
     }),
     (r) => ({
       settimana_id: r.settimana_id,
       giorno: r.giornoNome,
       giorno_numero: r.giornoNumero,
       alimento_id: r.alimentoId,
-      grammi: r.grammi,
-      user_id: r.user_id
+      grammi: r.grammi
     }),
     (r) => ({
       settimana_id: r.settimana_id,
       giorno: r.giornoNome,
       numero_giorno: r.giornoNumero,
       alimento_id: r.alimentoId,
-      grammi: r.grammi,
-      user_id: r.user_id
+      grammi: r.grammi
     }),
     (r) => ({
       settimana_id: r.settimana_id,
       Giorno: r.giornoNome,
       NumeroGiorno: r.giornoNumero,
       AlimentoId: r.alimentoId,
-      grammi: r.grammi,
-      user_id: r.user_id
+      grammi: r.grammi
     })
   ];
 
@@ -1291,7 +1218,7 @@ async function inserisciGiorniSettimana(recordsBase) {
   for (const creaRecord of tentativi) {
     const { error } = await supabase
       .from("settimane_dieta_giorni")
-      .insert(recordsConUserId.map(creaRecord));
+      .insert(recordsBase.map(creaRecord));
 
     if (!error) return null;
 
@@ -1301,146 +1228,121 @@ async function inserisciGiorniSettimana(recordsBase) {
   return ultimoErrore;
 }
 
-async function salvaSettimana() {
-  if (!settimanaNome) {
-    alert("Inserisci il nome della settimana");
-    return;
+  async function salvaSettimana() {
+    if (!settimanaNome) {
+      alert("Inserisci il nome della settimana");
+      return;
+    }
+
+    if (diete.length === 0) {
+      alert("Non ci sono diete da salvare");
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("settimane_dieta")
+      .insert([{ nome: settimanaNome }])
+      .select()
+      .single();
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    const giornoObj = giorniSettimana.find((g) => g.nome === giornoSettimana) || giorniSettimana[0];
+    const records = diete.map((dieta) => ({
+      settimana_id: data.id,
+      giornoNome: giornoObj.nome,
+      giornoNumero: giornoObj.numero,
+      alimentoId: Number(dieta.alimento_id),
+      grammi: Number(dieta.grammi || 0)
+    }));
+
+    const errorGiorni = await inserisciGiorniSettimana(records);
+
+    if (errorGiorni) {
+      alert(errorGiorni.message);
+      return;
+    }
+
+    alert("Settimana salvata");
+    setSettimanaNome("");
+    loadSettimane();
+    loadGiorniDB();
   }
 
-  if (diete.length === 0) {
-    alert("Non ci sono diete da salvare");
-    return;
-  }
+  async function applicaSettimana() {
+    if (!settimanaDaApplicare || !dataInizioSettimana) {
+      alert("Seleziona settimana e data inizio");
+      return;
+    }
 
-  const userId = await getUserIdCorrente();
+    if (modalita === "petauro" && !petauroId) {
+      alert("Seleziona un petauro");
+      return;
+    }
 
-  if (!userId) {
-    alert("Devi effettuare l'accesso per salvare una settimana.");
-    return;
-  }
+    if (modalita === "colonia" && !coloniaId) {
+      alert("Seleziona una colonia");
+      return;
+    }
 
-  const { data, error } = await supabase
-    .from("settimane_dieta")
-    .insert([
-      {
-        nome: settimanaNome,
-        user_id: userId
-      }
-    ])
-    .select()
-    .single();
+    const recordsSettimana = giorniDB.filter(
+      (g) => String(g.settimana_id) === String(settimanaDaApplicare)
+    );
 
-  if (error) {
-    alert(error.message);
-    return;
-  }
+    const base = new Date(dataInizioSettimana);
+    const recordsFinali = [];
 
-  const giornoObj =
-    giorniSettimana.find((g) => g.nome === giornoSettimana) ||
-    giorniSettimana[0];
+    recordsSettimana.forEach((record) => {
+      const nuovaData = new Date(base);
+      nuovaData.setDate(base.getDate() + leggiGiornoNumero(record) - 1);
+      const dataFinale = nuovaData.toISOString().split("T")[0];
 
-  const records = diete.map((dieta) => ({
-    settimana_id: data.id,
-    giornoNome: giornoObj.nome,
-    giornoNumero: giornoObj.numero,
-    alimentoId: Number(dieta.alimento_id),
-    grammi: Number(dieta.grammi || 0),
-    user_id: userId
-  }));
-
-  const errorGiorni = await inserisciGiorniSettimana(records);
-
-  if (errorGiorni) {
-    alert(errorGiorni.message);
-    return;
-  }
-
-  alert("Settimana salvata");
-  setSettimanaNome("");
-  loadSettimane();
-  loadGiorniDB();
-}
-
- async function applicaSettimana() {
-  if (!settimanaDaApplicare || !dataInizioSettimana) {
-    alert("Seleziona settimana e data inizio");
-    return;
-  }
-
-  const userId = await getUserIdCorrente();
-
-  if (!userId) {
-    alert("Devi effettuare l'accesso per applicare una settimana.");
-    return;
-  }
-
-  if (modalita === "petauro" && !petauroId) {
-    alert("Seleziona un petauro");
-    return;
-  }
-
-  if (modalita === "colonia" && !coloniaId) {
-    alert("Seleziona una colonia");
-    return;
-  }
-
-  const recordsSettimana = giorniDB.filter(
-    (g) => String(g.settimana_id) === String(settimanaDaApplicare)
-  );
-
-  const base = new Date(dataInizioSettimana);
-  const recordsFinali = [];
-
-  recordsSettimana.forEach((record) => {
-    const nuovaData = new Date(base);
-    nuovaData.setDate(base.getDate() + leggiGiornoNumero(record) - 1);
-    const dataFinale = nuovaData.toISOString().split("T")[0];
-
-    if (modalita === "petauro") {
-      recordsFinali.push({
-        petauro_id: Number(petauroId),
-        colonia_id: null,
-        alimento_id: Number(leggiAlimentoId(record)),
-        grammi: Number(record.grammi),
-        data: dataFinale,
-        user_id: userId
-      });
-    } else {
-      const membri = petauri.filter((p) =>
-        petauroAppartieneAColonia(p, coloniaId)
-      );
-
-      membri.forEach((p) => {
+      if (modalita === "petauro") {
         recordsFinali.push({
-          petauro_id: Number(p.id),
-          colonia_id: Number(coloniaId),
+          petauro_id: Number(petauroId),
+          colonia_id: null,
           alimento_id: Number(leggiAlimentoId(record)),
           grammi: Number(record.grammi),
-          data: dataFinale,
-          user_id: userId
+          data: dataFinale
         });
-      });
+      } else {
+        const membri = petauri.filter((p) =>
+          petauroAppartieneAColonia(p, coloniaId)
+        );
+
+        membri.forEach((p) => {
+          recordsFinali.push({
+            petauro_id: Number(p.id),
+            colonia_id: Number(coloniaId),
+            alimento_id: Number(leggiAlimentoId(record)),
+            grammi: Number(record.grammi),
+            data: dataFinale
+          });
+        });
+      }
+    });
+
+    if (recordsFinali.length === 0) {
+      alert("Nessun dato da applicare");
+      return;
     }
-  });
 
-  if (recordsFinali.length === 0) {
-    alert("Nessun dato da applicare");
-    return;
+    const { error } = await supabase.from("diete").insert(recordsFinali);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    alert("Settimana applicata allo storico diete");
+setSettimanaApplicazioneAperta("");
+setSettimanaDaApplicare("");
+setDataInizioSettimana("");
+loadDiete();
   }
-
-  const { error } = await supabase.from("diete").insert(recordsFinali);
-
-  if (error) {
-    alert(error.message);
-    return;
-  }
-
-  alert("Settimana applicata allo storico diete");
-  setSettimanaApplicazioneAperta("");
-  setSettimanaDaApplicare("");
-  setDataInizioSettimana("");
-  loadDiete();
-}
 
   const datiGrafico = useMemo(() => {
     if (!petauroId) return [];
@@ -2111,75 +2013,6 @@ const verificaEnapi = useMemo(() => {
   dataDieta,
   pesi
 ]);
-function calcolaDosePraticaCalcio(rapportoInput, grammiVegetaliInput) {
-  const grammiVegetali = Number(grammiVegetaliInput || 0);
-  const rapporto = Number(rapportoInput || 0);
-
-  if (grammiVegetali <= 0) {
-    return {
-      icona: "🟠",
-      titolo: "Dose indicativa",
-      dose: "1 cucchiaino di calcio senza D3",
-      testo: "Non sono stati inseriti i grammi della frutta e della verdura: la posologia è indicativa.",
-      backgroundColor: "#fff3e0",
-      borderColor: "#ffb74d",
-      color: "#8a4b00"
-    };
-  }
-
-  if (rapporto > 2) {
-    return {
-      icona: "🟢",
-      titolo: "Rapporto favorevole",
-      dose: "⅓ di cucchiaino di calcio senza D3",
-      testo: "Il rapporto Ca:P è favorevole. Si consiglia solo una piccola integrazione prudenziale.",
-      backgroundColor: "#e8f5e9",
-      borderColor: "#81c784",
-      color: "#1b5e20"
-    };
-  }
-
-  if (rapporto >= 1.5) {
-    return {
-      icona: "🟡",
-      titolo: "Piccola correzione",
-      dose: "½ cucchiaino di calcio senza D3",
-      testo: "Il rapporto Ca:P è vicino al valore consigliato, ma richiede una piccola integrazione.",
-      backgroundColor: "#fffde7",
-      borderColor: "#fdd835",
-      color: "#7a5d00"
-    };
-  }
-
-  if (rapporto >= 1) {
-    return {
-      icona: "🟠",
-      titolo: "Correzione media",
-      dose: "1 cucchiaino di calcio senza D3",
-      testo: "Il rapporto Ca:P è sotto il valore consigliato e richiede una correzione più evidente.",
-      backgroundColor: "#fff3e0",
-      borderColor: "#ffb74d",
-      color: "#8a4b00"
-    };
-  }
-
-  return {
-    icona: "🔴",
-    titolo: "Correzione alta",
-    dose: "1 cucchiaino e ½ di calcio senza D3",
-    testo: "Il rapporto Ca:P è molto sfavorevole: oltre alla dose pratica, valuta anche gli alimenti scelti.",
-    backgroundColor: "#ffebee",
-    borderColor: "#ef9a9a",
-    color: "#b00020"
-  };
-}
-
-const dosePraticaCalcio = useMemo(() => {
-  return calcolaDosePraticaCalcio(
-    calcoloDieta.rapportoVegetale,
-    verificaEnapi.grammiFruttaVerdura
-  );
-}, [verificaEnapi.grammiFruttaVerdura, calcoloDieta.rapportoVegetale]);
 const petauriRiepilogo = useMemo(() => {
   return petauri.map((petauro) => {
     const storico = pesi
@@ -2246,62 +2079,62 @@ function calcolaCaPAlimenti(listaAlimenti, grammiPerAlimento) {
 
 function preparaDatiDietaAutomatica() {
   const normalizzaNome = (testo) =>
-    String(testo || "")
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .trim();
+  String(testo || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
 
-  const fruttiBase = [
-    "mela",
-    "pera",
-    "banana",
-    "melone",
-    "anguria",
-    "pesca",
-    "albicocca",
-    "mango",
-    "papaya",
-    "mirtillo",
-    "lampone",
-    "fragola",
-    "uva"
-  ];
+const fruttiBase = [
+  "mela",
+  "pera",
+  "banana",
+  "melone",
+  "anguria",
+  "pesca",
+  "albicocca",
+  "mango",
+  "papaya",
+  "mirtillo",
+  "lampone",
+  "fragola",
+  "uva"
+];
 
-  const verdureBase = [
-    "carota",
-    "zucchina",
-    "finocchio",
-    "cetriolo",
-    "sedano",
-    "radicchio",
-    "indivia",
-    "scarola",
-    "lattuga romana",
-    "peperone",
-    "fagiolino",
-    "piselli",
-    "pisello",
-    "okra",
-    "fiori di zucca",
-    "cicoria",
-    "rucola",
-    "valeriana",
-    "catalogna"
-  ];
+const verdureBase = [
+  "carota",
+  "zucchina",
+  "finocchio",
+  "cetriolo",
+  "sedano",
+  "radicchio",
+  "indivia",
+  "scarola",
+  "lattuga romana",
+  "peperone",
+  "fagiolino",
+  "piselli",
+  "pisello",
+  "okra",
+  "fiori di zucca",
+  "cicoria",
+  "rucola",
+  "valeriana",
+  "catalogna"
+];
 
-  const alimentoInLista = (alimento, lista) =>
-    lista.some((nome) => normalizzaNome(alimento.Nome).includes(nome));
+const alimentoInLista = (alimento, lista) =>
+  lista.some((nome) => normalizzaNome(alimento.Nome).includes(nome));
 
-  const frutti = alimenti
-    .filter((a) => a.Categoria === "Frutta")
-    .filter((a) => alimentoInLista(a, fruttiBase))
-    .sort((a, b) => Number(rapportoAlimento(b)) - Number(rapportoAlimento(a)));
+const frutti = alimenti
+  .filter((a) => a.Categoria === "Frutta")
+  .filter((a) => alimentoInLista(a, fruttiBase))
+  .sort((a, b) => Number(rapportoAlimento(b)) - Number(rapportoAlimento(a)));
 
-  const verdure = alimenti
-    .filter((a) => a.Categoria === "Verdura")
-    .filter((a) => alimentoInLista(a, verdureBase))
-    .sort((a, b) => normalizzaNome(a.Nome).localeCompare(normalizzaNome(b.Nome)));
+const verdure = alimenti
+  .filter((a) => a.Categoria === "Verdura")
+  .filter((a) => alimentoInLista(a, verdureBase))
+  .sort((a, b) => normalizzaNome(a.Nome).localeCompare(normalizzaNome(b.Nome)));
 
   const insetti = alimenti
     .filter((a) => a.Categoria === "Insetto")
@@ -2311,14 +2144,14 @@ function preparaDatiDietaAutomatica() {
     .filter((a) => a.Categoria === "Integratore");
 
   if (frutti.length < 2 || verdure.length < 3 || insetti.length < 1) {
-    alert("Servono almeno 2 frutti base, 3 verdure base e 1 insetto nel database alimenti.");
+   alert("Servono almeno 2 frutti base, 3 verdure base e 1 insetto nel database alimenti."); 
     return;
   }
 
   const ultimoPesoPetauro = (idPetauro) => {
     const storico = pesi
       .filter((p) => String(p.petauro_id) === String(idPetauro))
-      .sort(ordinaPesiDalPiuRecente);
+      .sort(ordinaPesiDalPiuRecente)
 
     if (storico.length === 0) return null;
     return Number(storico[0].peso || 0);
@@ -2326,69 +2159,43 @@ function preparaDatiDietaAutomatica() {
 
   let pesoTotale = 0;
   let pesoDisponibile = true;
-  let numeroPetauri = 1;
-  let selezioneMancante = false;
 
   if (modalita === "petauro") {
     if (!petauroId) {
-      const conferma = confirm(
-        "Non hai selezionato nessun petauro. Vuoi generare comunque una dieta automatica indicativa? Potrai usare l'anteprima e la lista spesa, ma per salvarla nello storico dovrai scegliere un petauro."
-      );
+      alert("Seleziona prima un petauro.");
+      return;
+    }
 
-      if (!conferma) return;
+    const pesoPetauro = ultimoPesoPetauro(petauroId);
 
+    if (!pesoPetauro) {
       pesoDisponibile = false;
-      selezioneMancante = true;
-      numeroPetauri = 1;
     } else {
-      const pesoPetauro = ultimoPesoPetauro(petauroId);
-
-      if (!pesoPetauro) {
-        pesoDisponibile = false;
-      } else {
-        pesoTotale = pesoPetauro;
-      }
-
-      numeroPetauri = 1;
+      pesoTotale = pesoPetauro;
     }
   }
 
   if (modalita === "colonia") {
     if (!coloniaId) {
-      const conferma = confirm(
-        "Non hai selezionato nessuna colonia. Vuoi generare comunque una dieta automatica indicativa per 1 petauro? Potrai usare l'anteprima e la lista spesa, ma per salvarla nello storico dovrai scegliere una colonia."
-      );
-
-      if (!conferma) return;
-
-      pesoDisponibile = false;
-      selezioneMancante = true;
-      numeroPetauri = 1;
-    } else {
-      if (membriColonia.length === 0) {
-        const conferma = confirm(
-          "La colonia selezionata non ha petauri collegati. Vuoi generare comunque una dieta automatica indicativa per 1 petauro?"
-        );
-
-        if (!conferma) return;
-
-        pesoDisponibile = false;
-        numeroPetauri = 1;
-      } else {
-        numeroPetauri = membriColonia.length;
-
-        membriColonia.forEach((petauro) => {
-          const pesoPetauro = ultimoPesoPetauro(petauro.id);
-
-          if (!pesoPetauro) {
-            pesoDisponibile = false;
-            return;
-          }
-
-          pesoTotale += pesoPetauro;
-        });
-      }
+      alert("Seleziona prima una colonia.");
+      return;
     }
+
+    if (membriColonia.length === 0) {
+      alert("La colonia selezionata non ha petauri collegati.");
+      return;
+    }
+
+    membriColonia.forEach((petauro) => {
+      const pesoPetauro = ultimoPesoPetauro(petauro.id);
+
+      if (!pesoPetauro) {
+        pesoDisponibile = false;
+        return;
+      }
+
+      pesoTotale += pesoPetauro;
+    });
   }
 
   const quantitaTotale = pesoDisponibile ? pesoTotale * 0.3 : 50;
@@ -2406,6 +2213,11 @@ function preparaDatiDietaAutomatica() {
     return nome.includes("gomma") || nome.includes("arabica");
   });
 
+  const numeroPetauri =
+    modalita === "colonia"
+      ? membriColonia.length || 1
+      : 1;
+
   return {
     frutti,
     verdure,
@@ -2415,7 +2227,6 @@ function preparaDatiDietaAutomatica() {
     quantitaTotale,
     grammiPerAlimento,
     numeroPetauri,
-    selezioneMancante,
     polline,
     lori,
     gomma
@@ -2544,8 +2355,8 @@ function apriWhatsAppListaSpesaAutomatica() {
   }
 
   const righe = listaSpesaDietaAutomatica.map(
-  (item) => `- ${item.nome} (circa ${Number(item.quantita).toFixed(0)} ${item.unita} previsti)`
-);
+    (item) => `- ${item.nome}: ${Number(item.quantita).toFixed(1)} ${item.unita}`
+  );
 
   const testo = [
     "Lista spesa Pesauro - dieta automatica",
@@ -2563,25 +2374,13 @@ async function salvaDietaAutomaticaSettimanale() {
     return;
   }
 
-  const userId = await getUserIdCorrente();
-
-  if (!userId) {
-    alert("Devi effettuare l'accesso per salvare una dieta automatica.");
-    return;
-  }
-
   const nomeSettimana =
     nomeDietaAutomatica.trim() ||
     `Dieta automatica ${new Date().toLocaleDateString("it-IT")}`;
 
   const { data, error } = await supabase
     .from("settimane_dieta")
-    .insert([
-      {
-        nome: nomeSettimana,
-        user_id: userId
-      }
-    ])
+    .insert([{ nome: nomeSettimana }])
     .select()
     .single();
 
@@ -2595,7 +2394,7 @@ async function salvaDietaAutomaticaSettimanale() {
     const giornoNome = giorno.giorno;
 
     const grammiVegetaleDaSalvare =
-      modalita === "colonia" && coloniaId
+      modalita === "colonia"
         ? Number(giorno.grammiPerAlimento || 0) / Number(giorno.numeroPetauri || 1)
         : Number(giorno.grammiPerAlimento || 0);
 
@@ -2604,8 +2403,7 @@ async function salvaDietaAutomaticaSettimanale() {
       giornoNome,
       giornoNumero,
       alimentoId: Number(alimento.id),
-      grammi: grammiVegetaleDaSalvare,
-      user_id: userId
+      grammi: grammiVegetaleDaSalvare
     }));
 
     const insetto = {
@@ -2613,8 +2411,7 @@ async function salvaDietaAutomaticaSettimanale() {
       giornoNome,
       giornoNumero,
       alimentoId: Number(giorno.insetto.id),
-      grammi: Number(giorno.doseInsettoSingola || 0),
-      user_id: userId
+      grammi: Number(giorno.doseInsettoSingola || 0)
     };
 
     const integratori = giorno.integratori.map((integratore) => ({
@@ -2622,8 +2419,7 @@ async function salvaDietaAutomaticaSettimanale() {
       giornoNome,
       giornoNumero,
       alimentoId: Number(integratore.id),
-      grammi: 0,
-      user_id: userId
+      grammi: 0
     }));
 
     return [...vegetali, insetto, ...integratori];
@@ -2649,23 +2445,6 @@ async function salvaDietaAutomaticaGiornaliera() {
 
   if (!dataDietaAutomaticaGiornaliera) {
     alert("Seleziona la data della dieta giornaliera.");
-    return;
-  }
-
-  const userId = await getUserIdCorrente();
-
-  if (!userId) {
-    alert("Devi effettuare l'accesso per salvare una dieta automatica.");
-    return;
-  }
-
-  if (modalita === "petauro" && !petauroId) {
-    alert("Per salvare la dieta giornaliera nello storico devi selezionare un petauro.");
-    return;
-  }
-
-  if (modalita === "colonia" && !coloniaId) {
-    alert("Per salvare la dieta giornaliera nello storico devi selezionare una colonia.");
     return;
   }
 
@@ -2698,17 +2477,26 @@ async function salvaDietaAutomaticaGiornaliera() {
   let records = [];
 
   if (modalita === "petauro") {
+    if (!petauroId) {
+      alert("Seleziona prima un petauro.");
+      return;
+    }
+
     records = elementi.map((item) => ({
       petauro_id: Number(petauroId),
       colonia_id: null,
       alimento_id: Number(item.alimento.id),
       grammi: Number(item.grammi || 0),
-      data: dataDietaAutomaticaGiornaliera,
-      user_id: userId
+      data: dataDietaAutomaticaGiornaliera
     }));
   }
 
   if (modalita === "colonia") {
+    if (!coloniaId) {
+      alert("Seleziona prima una colonia.");
+      return;
+    }
+
     if (membriColonia.length === 0) {
       alert("La colonia selezionata non ha petauri collegati.");
       return;
@@ -2720,8 +2508,7 @@ async function salvaDietaAutomaticaGiornaliera() {
         colonia_id: Number(coloniaId),
         alimento_id: Number(item.alimento.id),
         grammi: Number(item.grammi || 0),
-        data: dataDietaAutomaticaGiornaliera,
-        user_id: userId
+        data: dataDietaAutomaticaGiornaliera
       }))
     );
   }
@@ -2799,196 +2586,29 @@ const prodottiUtili = [
   }
 ];
 const alimentoSelezionato = getAlimento(alimentoId);
-function toggleStepDietauro(step) {
-  setStepDietauroAperto((stepAttuale) =>
-    stepAttuale === step ? "" : step
-  );
-}
-function HomeIcon({ tipo }) {
-  if (tipo === "dietauro") {
-    return (
-      <div style={homeIconStyle}>
-        <svg viewBox="0 0 160 160" style={homeSvgStyle}>
-          <defs>
-            <radialGradient id="dietBg" cx="50%" cy="45%" r="60%">
-              <stop offset="0%" stopColor="#f8f1dc" />
-              <stop offset="100%" stopColor="#dfe8c9" />
-            </radialGradient>
-            <linearGradient id="bowl" x1="0" x2="1" y1="0" y2="1">
-              <stop offset="0%" stopColor="#8fa36a" />
-              <stop offset="100%" stopColor="#315c37" />
-            </linearGradient>
-            <linearGradient id="leaf" x1="0" x2="1">
-              <stop offset="0%" stopColor="#9fb77a" />
-              <stop offset="100%" stopColor="#365f37" />
-            </linearGradient>
-            <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
-              <feDropShadow dx="0" dy="7" stdDeviation="5" floodColor="#234b2d" floodOpacity="0.22" />
-            </filter>
-          </defs>
 
-          <circle cx="80" cy="80" r="66" fill="url(#dietBg)" />
-
-          <g filter="url(#softShadow)">
-            <path
-              d="M38 82c5 30 23 47 43 47s38-17 43-47H38z"
-              fill="url(#bowl)"
-              stroke="#234b2d"
-              strokeWidth="5"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M43 82h76"
-              stroke="#17351f"
-              strokeWidth="6"
-              strokeLinecap="round"
-            />
-
-            <path
-              d="M66 69c-20-14-25-34-9-51 18 9 23 30 9 51z"
-              fill="url(#leaf)"
-              stroke="#234b2d"
-              strokeWidth="4"
-            />
-            <path
-              d="M86 70c8-25 28-34 49-22-11 22-31 31-49 22z"
-              fill="#91a85f"
-              stroke="#234b2d"
-              strokeWidth="4"
-            />
-            <path
-              d="M55 78c-18-7-25-20-19-34 17 2 27 16 19 34z"
-              fill="#6f8b50"
-              stroke="#234b2d"
-              strokeWidth="4"
-            />
-
-            <circle cx="77" cy="76" r="13" fill="#c47a3a" stroke="#8b5e34" strokeWidth="4" />
-            <circle cx="98" cy="78" r="10" fill="#d9a94a" stroke="#8b5e34" strokeWidth="3" />
-          </g>
-        </svg>
-      </div>
-    );
-  }
-
-  if (tipo === "pesauro") {
-    return (
-      <div style={homeIconStyle}>
-        <svg viewBox="0 0 160 160" style={homeSvgStyle}>
-          <defs>
-            <radialGradient id="pesoBg" cx="50%" cy="45%" r="60%">
-              <stop offset="0%" stopColor="#f8f1dc" />
-              <stop offset="100%" stopColor="#dfe8c9" />
-            </radialGradient>
-            <linearGradient id="scaleGreen" x1="0" x2="1" y1="0" y2="1">
-              <stop offset="0%" stopColor="#9caf72" />
-              <stop offset="100%" stopColor="#315c37" />
-            </linearGradient>
-            <filter id="scaleShadow" x="-30%" y="-30%" width="160%" height="160%">
-              <feDropShadow dx="0" dy="8" stdDeviation="5" floodColor="#234b2d" floodOpacity="0.24" />
-            </filter>
-          </defs>
-
-          <circle cx="80" cy="80" r="66" fill="url(#pesoBg)" />
-
-          <g filter="url(#scaleShadow)">
-            <rect x="45" y="34" width="70" height="18" rx="9" fill="#6f7f3f" stroke="#234b2d" strokeWidth="5" />
-            <rect x="59" y="50" width="42" height="19" rx="7" fill="#8fa36a" stroke="#234b2d" strokeWidth="4" />
-
-            <path
-              d="M43 75c0-10 8-18 18-18h38c10 0 18 8 18 18v35c0 10-8 18-18 18H61c-10 0-18-8-18-18V75z"
-              fill="url(#scaleGreen)"
-              stroke="#234b2d"
-              strokeWidth="5"
-            />
-
-            <circle cx="80" cy="93" r="27" fill="#fffaf0" stroke="#17351f" strokeWidth="5" />
-            <path d="M80 93l15-17" stroke="#234b2d" strokeWidth="5" strokeLinecap="round" />
-            <circle cx="80" cy="93" r="5" fill="#234b2d" />
-
-            <path d="M61 128h38" stroke="#8b5e34" strokeWidth="8" strokeLinecap="round" />
-          </g>
-        </svg>
-      </div>
-    );
-  }
-
-  return (
-    <div style={homeIconStyle}>
-      <svg viewBox="0 0 160 160" style={homeSvgStyle}>
-        <defs>
-          <radialGradient id="bookBg" cx="50%" cy="45%" r="60%">
-            <stop offset="0%" stopColor="#f8f1dc" />
-            <stop offset="100%" stopColor="#dfe8c9" />
-          </radialGradient>
-          <filter id="bookShadow" x="-30%" y="-30%" width="160%" height="160%">
-            <feDropShadow dx="0" dy="8" stdDeviation="5" floodColor="#234b2d" floodOpacity="0.22" />
-          </filter>
-        </defs>
-
-        <circle cx="80" cy="80" r="66" fill="url(#bookBg)" />
-
-        <g filter="url(#bookShadow)">
-          <path
-            d="M36 44c19-7 34-2 44 11v74c-11-11-26-15-44-9V44z"
-            fill="#fffaf0"
-            stroke="#234b2d"
-            strokeWidth="5"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M124 44c-19-7-34-2-44 11v74c11-11 26-15 44-9V44z"
-            fill="#f2ead6"
-            stroke="#234b2d"
-            strokeWidth="5"
-            strokeLinejoin="round"
-          />
-
-          <path d="M53 64h16M53 78h16M53 92h13" stroke="#8b5e34" strokeWidth="4" strokeLinecap="round" />
-          <path d="M92 64h16M92 78h16M94 92h12" stroke="#8b5e34" strokeWidth="4" strokeLinecap="round" />
-
-          <path
-            d="M91 118c10-24 30-29 46-14-14 17-32 22-46 14z"
-            fill="#8fa36a"
-            stroke="#234b2d"
-            strokeWidth="4"
-          />
-          <path
-            d="M70 122c-8-18-22-23-37-13 10 16 25 21 37 13z"
-            fill="#9caf72"
-            stroke="#234b2d"
-            strokeWidth="4"
-          />
-        </g>
-      </svg>
-    </div>
-  );
-}
   return (
     <div style={pageStyle}>
- <header style={heroHeaderStyle}>
+     <header style={heroHeaderStyle}>
   <img
     src="/logo.jpg"
     alt="Logo Pesauro ENAPI"
     style={logoStyle}
   />
 
-  <div style={heroTextBlockStyle}>
-    <div style={heroKickerStyle}>ENAPI</div>
-
-    <h1 style={heroTitleStyle}>Pesauro</h1>
-
+  <div>
+    <h1 style={heroTitleStyle}>Pesauro ENAPI</h1>
     <p style={heroSubtitleStyle}>
-      Dieta, pesi e benessere del petauro dello zucchero
+      Gestionale per dieta, pesi e benessere del petauro dello zucchero
     </p>
   </div>
-</header>    
-<div style={accessCardStyle}>
-<div style={sectionTitleStyle}>
-  <div style={accessHeaderIconStyle}>🔐</div>
-  <h2>Accesso</h2>
-  <p>Entra nel tuo spazio personale Pesauro ENAPI.</p>
-</div>  
+</header>
+<div style={cardStyle}>
+  <div style={sectionTitleStyle}>
+    <h2>🔐 Accesso</h2>
+    <p>Accedi per usare le funzioni riservate e la gestione admin.</p>
+  </div>
+
   {authUser ? (
     <div style={miniPanelStyle}>
       <strong>Accesso effettuato</strong>
@@ -3084,61 +2704,31 @@ function HomeIcon({ tipo }) {
       <p>Scegli la sezione dell'app che vuoi utilizzare.</p>
     </div>
 
-   <div style={homeGridStyle}>
-  <div style={homeCardStyle} onClick={() => setSezioneAttiva("dietauro")}>
-    <img
-  src="/icons/icon-dietauro.png"
-  alt="Dietauro"
-  style={homeImageIconStyle}
-/>
+    <div style={homeGridStyle}>
+      <div style={homeCardStyle} onClick={() => setSezioneAttiva("dietauro")}>
+        <div style={homeIconStyle}>🥗</div>
+        <div style={homeTitleStyle}>Dietauro</div>
+        <div style={homeTextStyle}>
+          Diete, verifica ENAPI, rapporto Ca:P, dieta automatica, storico e lista della spesa.
+        </div>
+      </div>
 
-    <div style={homeTitleStyle}>Dietauro</div>
+      <div style={homeCardStyle} onClick={() => setSezioneAttiva("pesauro")}>
+        <div style={homeIconStyle}>⚖️</div>
+        <div style={homeTitleStyle}>Pesauro</div>
+        <div style={homeTextStyle}>
+          Petauri, colonie, pesate, grafici, documenti e schede degli animali.
+        </div>
+      </div>
 
-    <div style={homeTextStyle}>
-      Crea e verifica diete bilanciate secondo lo standard ENAPI.
+      <div style={homeCardStyle} onClick={() => setSezioneAttiva("risorse")}>
+        <div style={homeIconStyle}>📚</div>
+        <div style={homeTitleStyle}>Risorse ENAPI</div>
+        <div style={homeTextStyle}>
+          Link consigliati, prodotti utili, integratori, documenti e materiali ENAPI.
+        </div>
+      </div>
     </div>
-
-    <div style={homeActionStyle}>
-      Inizia <span>›</span>
-    </div>
-  </div>
-
-  <div style={homeCardStyle} onClick={() => setSezioneAttiva("pesauro")}>
-    <img
-  src="/icons/icon-pesauro.png"
-  alt="Pesauro"
-  style={homeImageIconStyle}
-/>
-
-    <div style={homeTitleStyle}>Pesauro</div>
-
-    <div style={homeTextStyle}>
-      Monitora i pesi, controlla l'andamento e il benessere.
-    </div>
-
-    <div style={homeActionStyle}>
-      Inizia <span>›</span>
-    </div>
-  </div>
-
-  <div style={homeCardStyle} onClick={() => setSezioneAttiva("risorse")}>
-    <img
-  src="/icons/icon-risorse.png"
-  alt="Risorse ENAPI"
-  style={homeImageIconStyle}
-/>
-
-    <div style={homeTitleStyle}>Risorse ENAPI</div>
-
-    <div style={homeTextStyle}>
-      Linee guida, articoli, tabelle e materiali educativi.
-    </div>
-
-    <div style={homeActionStyle}>
-      Esplora <span>›</span>
-    </div>
-  </div>
-</div>
   </div>
 )}
 
@@ -3784,146 +3374,8 @@ function HomeIcon({ tipo }) {
 
 {sezioneAttiva === "dietauro" && (
   <>
-
-<div style={dietauroStepStyle}>
-  <button
-    type="button"
-    onClick={() => toggleStepDietauro("destinatario")}
-    style={dietauroStepHeaderStyle}
-  >
-    <span>
-      1. Per chi prepari la dieta?
-      <br />
-      <span style={dietauroStepSummaryStyle}>
-        {modalita === "petauro"
-          ? petauroId
-            ? `Petauro: ${nomePetauroDisplay(getPetauro(petauroId))}`
-            : "Petauro singolo non selezionato"
-          : coloniaId
-          ? `Colonia: ${nomeColoniaDisplay(getColonia(coloniaId))}`
-          : "Colonia non selezionata"}
-      </span>
-    </span>
-
-    <span>
-      {stepDietauroAperto === "destinatario" ? "▲" : "▼"}
-    </span>
-  </button>
-
-  {stepDietauroAperto === "destinatario" && (
-    <div style={dietauroStepBodyStyle}>
-      <div style={sectionTitleStyle}>
-        <h2>🍽️ Dietauro</h2>
-        <p>Scegli se stai preparando la dieta per un singolo petauro o per una colonia.</p>
-      </div>
-
-      <div style={formGridStyle}>
-    <div style={miniPanelStyle}>
-      <h3>Modalità dieta</h3>
-
-      <div style={authTabsStyle}>
-        <button
-          type="button"
-          onClick={() => setModalita("petauro")}
-          style={modalita === "petauro" ? authTabActiveStyle : authTabStyle}
-        >
-          🐿️ Petauro singolo
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setModalita("colonia")}
-          style={modalita === "colonia" ? authTabActiveStyle : authTabStyle}
-        >
-          👥 Colonia
-        </button>
-      </div>
-    </div>
-
-    {modalita === "petauro" ? (
-      <div style={miniPanelStyle}>
-        <h3>Seleziona petauro</h3>
-
-        <select
-          value={petauroId}
-          onChange={(e) => setPetauroId(e.target.value)}
-          style={inputStyle}
-        >
-          <option value="">Seleziona petauro</option>
-          {petauri.map((p) => (
-            <option key={p.id} value={p.id}>
-              {nomePetauroDisplay(p)}
-            </option>
-          ))}
-        </select>
-
-        {petauroSelezionatoInfo && (
-          <div style={summaryBoxStyle}>
-            <strong>{petauroSelezionatoInfo.nome}</strong>
-            <span>
-              Ultimo peso:{" "}
-              {petauroSelezionatoInfo.pesoAttuale
-                ? `${petauroSelezionatoInfo.pesoAttuale} g`
-                : "non disponibile"}
-            </span>
-            {petauroSelezionatoInfo.dataUltimoPeso && (
-              <span>Data: {petauroSelezionatoInfo.dataUltimoPeso}</span>
-            )}
-          </div>
-        )}
-      </div>
-    ) : (
-      <div style={miniPanelStyle}>
-        <h3>Seleziona colonia</h3>
-
-        <select
-          value={coloniaId}
-          onChange={(e) => setColoniaId(e.target.value)}
-          style={inputStyle}
-        >
-          <option value="">Seleziona colonia</option>
-          {colonie.map((c) => (
-            <option key={c.id} value={c.id}>
-              {nomeColoniaDisplay(c)}
-            </option>
-          ))}
-        </select>
-
-        {coloniaId && (
-          <div style={summaryBoxStyle}>
-            <strong>{nomeColoniaDisplay(getColonia(coloniaId))}</strong>
-            <span>Petauri collegati: {membriColonia.length}</span>
-          </div>
-        )}
-      </div>
-    )}
-      </div>
-    </div>
-  )}
-</div>
-
-<div style={dietauroStepStyle}>
-  <button
-    type="button"
-    onClick={() => toggleStepDietauro("costruisci")}
-    style={dietauroStepHeaderStyle}
-  >
-    <span>
-      2. Costruisci la dieta
-      <br />
-      <span style={dietauroStepSummaryStyle}>
-        Scegli frutta, verdura, insetti e integratori
-      </span>
-    </span>
-
-    <span>
-      {stepDietauroAperto === "costruisci" ? "▲" : "▼"}
-    </span>
-  </button>
-
-  {stepDietauroAperto === "costruisci" && (
-    <div style={dietauroStepBodyStyle}>
-      <h2>🍽️ Costruisci la dieta</h2> 
+<div style={cardStyle}>
+  <h2>🍽️ Costruisci la dieta</h2>    
 
         {["Frutta", "Verdura", "Insetto", "Integratore", "Tossico"].map((categoria) => (
           <div key={categoria} style={{ marginBottom: "25px" }}>
@@ -4010,15 +3462,13 @@ function HomeIcon({ tipo }) {
     <div style={{ fontSize: "11px" }}>🧪 Posologia</div>
   )}
 </button>
-           ))}
+                ))}
             </div>
           </div>
         ))}
       </div>
-  )}
-</div>
 
-{alimentoId && alimentoSelezionato && (() => {        
+{alimentoId && alimentoSelezionato && (() => {
   const isInsetto = alimentoSelezionato.Categoria === "Insetto";
   const isIntegratore = alimentoSelezionato.Categoria === "Integratore";
   const isTossico = alimentoSelezionato.Categoria === "Tossico";
@@ -4248,29 +3698,7 @@ function HomeIcon({ tipo }) {
   );
 })()}
 
-<div style={dietauroStepStyle}>
-  <button
-    type="button"
-    onClick={() => toggleStepDietauro("verifica")}
-    style={dietauroStepHeaderStyle}
-  >
-    <span>
-      3. Verifica Dieta ENAPI
-      <br />
-      <span style={dietauroStepSummaryStyle}>
-        {verificaEnapi.punteggio}/100 -{" "}
-        {verificaEnapi.insetti > 0 ? "Insetti presenti" : "Insetti assenti"} -{" "}
-        Ca:P {calcoloDieta.rapportoVegetale.toFixed(2)}:1
-      </span>
-    </span>
-
-    <span>
-      {stepDietauroAperto === "verifica" ? "▲" : "▼"}
-    </span>
-  </button>
-
-  {stepDietauroAperto === "verifica" && (
-    <div style={dietauroStepBodyStyle}>
+<div style={cardStyle}>
   <div style={sectionTitleStyle}>
     <h2>📋 Verifica Dieta ENAPI</h2>
     <p>Controllo rapido di varietà, insetti, calcio, quantità e integratori.</p>
@@ -4352,32 +3780,6 @@ function HomeIcon({ tipo }) {
           <strong>{verificaEnapi.calcioPerPetauro.toFixed(2)} mg</strong>
         </div>
       )}
-            <div
-        style={{
-          backgroundColor: dosePraticaCalcio.backgroundColor,
-          border: `1px solid ${dosePraticaCalcio.borderColor}`,
-          color: dosePraticaCalcio.color,
-          borderRadius: "14px",
-          padding: "12px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "6px"
-        }}
-      >
-        <strong>
-          {dosePraticaCalcio.icona} Dose pratica ENAPI: {dosePraticaCalcio.dose}
-        </strong>
-
-        <span>
-          {dosePraticaCalcio.titolo} - {dosePraticaCalcio.testo}
-        </span>
-
-        <span style={{ fontSize: "12px" }}>
-          Indicazione calcolata sulla dieta selezionata in modalità{" "}
-          {modalita === "colonia" ? "colonia" : "petauro singolo"}.
-          Se restano molti avanzi, l'assunzione reale di calcio può essere inferiore.
-        </span>
-      </div>
     </div>
 
     <div style={verificaPanelStyle}>
@@ -4479,115 +3881,14 @@ function HomeIcon({ tipo }) {
   >
     <span>⭐ Punteggio ENAPI</span>
     <strong>{verificaEnapi.punteggio}/100</strong>
+  </div>
 </div>
-    </div>
-  )}
-</div>
-
-<div style={dietauroStepStyle}>
-  <button
-    type="button"
-    onClick={() => toggleStepDietauro("automatica")}
-    style={dietauroStepHeaderStyle}
-  >
-    <span>
-      4. Dieta automatica e lista spesa
-      <br />
-      <span style={dietauroStepSummaryStyle}>
-        Genera dieta giornaliera o settimanale e prepara la lista spesa
-      </span>
-    </span>
-
-    <span>
-      {stepDietauroAperto === "automatica" ? "▲" : "▼"}
-    </span>
-  </button>
-
-  {stepDietauroAperto === "automatica" && (
-    <div style={dietauroStepBodyStyle}>
+<div style={cardStyle}>
   <div style={sectionTitleStyle}>
     <h2>✨ Dieta automatica</h2>
     <p>Genera una dieta per un solo giorno oppure un'anteprima di 7 giorni con 2 frutti, 3 verdure, insetti e integratori secondo frequenza.</p>
   </div>
-  <div style={miniPanelStyle}>
-    <h3>Per chi vuoi generare la dieta?</h3>
 
-    <div style={authTabsStyle}>
-      <button
-        type="button"
-        onClick={() => setModalita("petauro")}
-        style={modalita === "petauro" ? authTabActiveStyle : authTabStyle}
-      >
-        🐿️ Petauro singolo
-      </button>
-
-      <button
-        type="button"
-        onClick={() => setModalita("colonia")}
-        style={modalita === "colonia" ? authTabActiveStyle : authTabStyle}
-      >
-        👥 Colonia
-      </button>
-    </div>
-
-    {modalita === "petauro" ? (
-      <select
-        value={petauroId}
-        onChange={(e) => setPetauroId(e.target.value)}
-        style={inputStyle}
-      >
-        <option value="">Nessun petauro selezionato - dieta indicativa</option>
-        {petauri.map((p) => (
-          <option key={p.id} value={p.id}>
-            {nomePetauroDisplay(p)}
-          </option>
-        ))}
-      </select>
-    ) : (
-      <select
-        value={coloniaId}
-        onChange={(e) => setColoniaId(e.target.value)}
-        style={inputStyle}
-      >
-        <option value="">Nessuna colonia selezionata - dieta indicativa</option>
-        {colonie.map((c) => (
-          <option key={c.id} value={c.id}>
-            {nomeColoniaDisplay(c)}
-          </option>
-        ))}
-      </select>
-    )}
-
-    <div style={infoBoxStyle}>
-      {modalita === "petauro" && petauroId && (
-        <>
-          Dieta calcolata per:{" "}
-          <strong>{nomePetauroDisplay(getPetauro(petauroId))}</strong>
-        </>
-      )}
-
-      {modalita === "colonia" && coloniaId && (
-        <>
-          Dieta calcolata per la colonia:{" "}
-          <strong>{nomeColoniaDisplay(getColonia(coloniaId))}</strong>
-          <br />
-          Petauri collegati: <strong>{membriColonia.length}</strong>
-        </>
-      )}
-
-      {modalita === "petauro" && !petauroId && (
-        <>
-          Nessun petauro selezionato: puoi generare una dieta indicativa, ma per salvarla nello storico dovrai scegliere un petauro.
-        </>
-      )}
-
-      {modalita === "colonia" && !coloniaId && (
-        <>
-          Nessuna colonia selezionata: puoi generare una dieta indicativa, ma per salvarla nello storico dovrai scegliere una colonia.
-        </>
-      )}
-    </div>
-  </div>
   <div style={miniPanelStyle}>
     <h3>Dieta giornaliera</h3>
 
@@ -4693,46 +3994,17 @@ function HomeIcon({ tipo }) {
               <strong>{giorno.rapportoVegetale.toFixed(2)}:1</strong>
             </div>
 
-           {(() => {
-  const doseAutomatica = calcolaDosePraticaCalcio(
-    giorno.rapportoVegetale,
-    Number(giorno.grammiPerAlimento || 0) * 5
-  );
-
-  return (
-    <div
-      style={{
-        backgroundColor: doseAutomatica.backgroundColor,
-        border: `1px solid ${doseAutomatica.borderColor}`,
-        color: doseAutomatica.color,
-        borderRadius: "14px",
-        padding: "12px",
-        display: "flex",
-        flexDirection: "column",
-        gap: "6px"
-      }}
-    >
-      <strong>
-        {doseAutomatica.icona} Calcio: {doseAutomatica.dose}
-      </strong>
-
-      <span>
-        {doseAutomatica.titolo} - {doseAutomatica.testo}
-      </span>
-
-      <span style={{ fontSize: "12px" }}>
-        Ca:P vegetale: {giorno.rapportoVegetale.toFixed(2)}:1.
-        Calcolo applicato alla dieta automatica generata.
-      </span>
-    </div>
-  );
-})()}
+            {giorno.rapportoVegetale < 2 && (
+              <div style={warningBoxStyle}>
+                Calcio da aggiungere: {giorno.calcioDaAggiungere.toFixed(2)} mg
+              </div>
+            )}
           </div>
         ))}
       </div>
     </div>
   )}
-
+</div>
 <div style={miniPanelStyle}>
   <h3>🛒 Lista spesa della dieta generata</h3>
 
@@ -4744,10 +4016,10 @@ function HomeIcon({ tipo }) {
     <div style={shoppingListStyle}>
       {listaSpesaDietaAutomatica.map((item) => (
         <div key={`${item.nome}-${item.unita}`} style={shoppingItemStyle}>
-         <strong>{item.nome}</strong>
-<span>
-  circa {Number(item.quantita).toFixed(0)} {item.unita} previsti
-</span>
+          <strong>{item.nome}</strong>
+          <span>
+            {Number(item.quantita).toFixed(1)} {item.unita}
+          </span>
         </div>
       ))}
     </div>
@@ -4757,34 +4029,10 @@ function HomeIcon({ tipo }) {
 <button onClick={apriWhatsAppListaSpesaAutomatica} style={greenButton}>
   Invia lista spesa su WhatsApp
 </button>
-    </div>
-  )}
-</div>
 
-<div style={dietauroStepStyle}>
-  <button
-    type="button"
-    onClick={() => toggleStepDietauro("storico")}
-    style={dietauroStepHeaderStyle}
-  >
-    <span>
-      5. Settimane e storico
-      <br />
-      <span style={dietauroStepSummaryStyle}>
-        {settimaneRiepilogo.length} settimane salvate - {dietePerData.length} diete nello storico
-      </span>
-    </span>
-
-    <span>
-      {stepDietauroAperto === "storico" ? "▲" : "▼"}
-    </span>
-  </button>
-
-  {stepDietauroAperto === "storico" && (
-  <div style={dietauroStepBodyStyle}>
-      <div style={cardStyle}>
-        <div style={sectionTitleStyle}>
-          <h2>📅 Settimane salvate</h2> 
+<div style={cardStyle}>
+  <div style={sectionTitleStyle}>
+    <h2>📅 Settimane salvate</h2>
     <p>Qui trovi le settimane alimentari generate e salvate.</p>
   </div>
 
@@ -5089,11 +4337,7 @@ function HomeIcon({ tipo }) {
       ))}
     </div>
   )}
-</div>
-    </div>
-  )}
-</div>
-
+</div> 
   </>
 )}
 
@@ -5271,65 +4515,44 @@ function HomeIcon({ tipo }) {
     </div>
   );
 }
-const enapiColors = {
-  panna: "#f6efdf",
-  pannaChiaro: "#fffaf0",
-  salvia: "#e8eddc",
-  salviaChiaro: "#f3f5ec",
-  bosco: "#234b2d",
-  boscoScuro: "#17351f",
-  oliva: "#6f7f3f",
-  marrone: "#4a3b2a",
-  marroneChiaro: "#6b5841",
-  bordo: "#d8ddcf",
-  oro: "#c9a646",
-  bianco: "#fffdf7"
-};
 const pageStyle = {
   minHeight: "100vh",
-  background: "linear-gradient(135deg, #f6efdf 0%, #eef1ea 48%, #f8f1e4 100%)",
-  padding: "clamp(10px, 3vw, 24px)",
+  backgroundColor: "#eef1ea",
+  padding: "clamp(10px, 3vw, 20px)",
   fontFamily: "Arial, sans-serif",
-  boxSizing: "border-box",
-  color: enapiColors.marrone
+  boxSizing: "border-box"
 };
 
 const cardStyle = {
-  backgroundColor: enapiColors.bianco,
-  padding: "clamp(16px, 3vw, 24px)",
-  borderRadius: "24px",
-  marginBottom: "18px",
+  backgroundColor: "white",
+  padding: "clamp(14px, 3vw, 20px)",
+  borderRadius: "16px",
+  marginBottom: "16px",
   display: "flex",
   flexDirection: "column",
-  gap: "12px",
-  boxSizing: "border-box",
-  border: `1px solid ${enapiColors.bordo}`,
-  boxShadow: "0 10px 28px rgba(35, 75, 45, 0.08)"
+  gap: "10px",
+  boxSizing: "border-box"
 };
 
 const inputStyle = {
   width: "100%",
-  padding: "13px 14px",
-  borderRadius: "14px",
-  border: `1px solid ${enapiColors.bordo}`,
+  padding: "12px",
+  borderRadius: "10px",
+  border: "1px solid #ccc",
   fontSize: "16px",
-  boxSizing: "border-box",
-  backgroundColor: enapiColors.bianco,
-  color: enapiColors.marrone,
-  outlineColor: enapiColors.oliva
+  boxSizing: "border-box"
 };
 
 const greenButton = {
-  background: "linear-gradient(135deg, #234b2d 0%, #17351f 100%)",
+  backgroundColor: "#234b2d",
   color: "white",
   border: "none",
-  padding: "14px 18px",
-  borderRadius: "999px",
+  padding: "14px",
+  borderRadius: "12px",
   cursor: "pointer",
-  minHeight: "46px",
+  minHeight: "44px",
   fontSize: "15px",
-  fontWeight: "bold",
-  boxShadow: "0 6px 14px rgba(35, 75, 45, 0.22)"
+  fontWeight: "bold"
 };
 
 const redButton = {
@@ -5556,14 +4779,13 @@ const formGridStyle = {
 };
 
 const miniPanelStyle = {
-  backgroundColor: enapiColors.salviaChiaro,
-  border: `1px solid ${enapiColors.bordo}`,
-  borderRadius: "20px",
-  padding: "16px",
+  backgroundColor: "#f7f8f3",
+  border: "1px solid #d8ddcf",
+  borderRadius: "16px",
+  padding: "14px",
   display: "flex",
   flexDirection: "column",
-  gap: "12px",
-  boxShadow: "0 6px 16px rgba(35, 75, 45, 0.05)"
+  gap: "10px"
 };
 
 const summaryBoxStyle = {
@@ -5859,47 +5081,37 @@ const amazonButtonStyle = {
   fontWeight: "bold"
 };
 const heroHeaderStyle = {
-  background:
-    "linear-gradient(135deg, rgba(255,253,247,0.95) 0%, rgba(246,239,223,0.9) 55%, rgba(232,237,220,0.82) 100%)",
-  border: `1px solid ${enapiColors.bordo}`,
-  borderRadius: "28px",
-  padding: "clamp(14px, 3vw, 22px)",
-  marginBottom: "18px",
+  backgroundColor: "#f7f1e6",
+  border: "1px solid #d8ddcf",
+  borderRadius: "22px",
+  padding: "18px",
+  marginBottom: "20px",
   display: "flex",
   alignItems: "center",
-  gap: "14px",
-  boxShadow: "0 12px 30px rgba(35, 75, 45, 0.09)",
-  position: "relative",
-  overflow: "hidden"
+  gap: "16px"
 };
 
 const logoStyle = {
-  width: "clamp(72px, 14vw, 96px)",
-  height: "clamp(72px, 14vw, 96px)",
+  width: "82px",
+  height: "82px",
   objectFit: "contain",
   borderRadius: "50%",
   backgroundColor: "white",
-  padding: "7px",
-  flexShrink: 0,
-  border: `1px solid ${enapiColors.bordo}`,
-  boxShadow: "0 8px 18px rgba(35, 75, 45, 0.12)"
+  padding: "6px",
+  flexShrink: 0
 };
 
 const heroTitleStyle = {
   margin: 0,
-  color: enapiColors.bosco,
-  fontSize: "clamp(32px, 6vw, 46px)",
-  lineHeight: "1.02",
-  fontWeight: "850",
-  letterSpacing: "-0.035em"
+  color: "#234b2d",
+  fontSize: "32px",
+  lineHeight: "1.1"
 };
 
 const heroSubtitleStyle = {
-  margin: "7px 0 0",
-  color: enapiColors.marrone,
-  fontSize: "clamp(15px, 3vw, 18px)",
-  lineHeight: "1.35",
-  maxWidth: "520px"
+  margin: "6px 0 0",
+  color: "#4a3b2a",
+  fontSize: "15px"
 };
 const petauroPhotoStyle = {
   width: "72px",
@@ -5997,88 +5209,54 @@ const authTabsStyle = {
 };
 
 const authTabStyle = {
-  backgroundColor: enapiColors.bianco,
-  color: enapiColors.bosco,
-  border: `1px solid ${enapiColors.bordo}`,
-  padding: "10px 14px",
+  backgroundColor: "#eef1ea",
+  color: "#234b2d",
+  border: "1px solid #d8ddcf",
+  padding: "8px 10px",
   borderRadius: "999px",
   cursor: "pointer",
-  fontWeight: "bold",
-  boxShadow: "0 4px 10px rgba(35,75,45,0.05)"
+  fontWeight: "bold"
 };
 
 const authTabActiveStyle = {
   ...authTabStyle,
-  background: "linear-gradient(135deg, #234b2d 0%, #17351f 100%)",
-  color: "white",
-  border: "1px solid #234b2d"
+  backgroundColor: "#234b2d",
+  color: "white"
 };
 const homeGridStyle = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+  gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))",
   gap: "18px",
-  marginTop: "18px"
+  marginTop: "22px"
 };
 
 const homeCardStyle = {
-  background:
-    "linear-gradient(145deg, rgba(255,253,247,0.96) 0%, rgba(243,245,236,0.96) 100%)",
-  border: `1px solid ${enapiColors.bordo}`,
-  borderRadius: "26px",
+  backgroundColor: "#f7f8f3",
+  border: "1px solid #d8ddcf",
+  borderRadius: "22px",
   padding: "24px",
   cursor: "pointer",
-  boxShadow: "0 12px 26px rgba(35, 75, 45, 0.10)",
+  boxShadow: "0 8px 20px rgba(0,0,0,0.06)",
   display: "flex",
   flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: "12px",
-  minHeight: "250px",
-  textAlign: "center",
-  color: enapiColors.marrone,
-  position: "relative",
-  overflow: "hidden"
+  gap: "10px",
+  minHeight: "170px"
 };
 
 const homeIconStyle = {
-  width: "132px",
-  height: "132px",
-  borderRadius: "50%",
-  background:
-    "radial-gradient(circle at 45% 35%, #f8f1dc 0%, #e8eddc 60%, #dfe8c9 100%)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  boxShadow: "inset 0 0 0 1px rgba(35,75,45,0.08), 0 10px 22px rgba(35,75,45,0.12)"
+  fontSize: "42px"
 };
 
 const homeTitleStyle = {
-  fontSize: "clamp(25px, 4vw, 34px)",
-  fontWeight: "800",
-  color: enapiColors.bosco,
-  lineHeight: "1.05"
+  fontSize: "22px",
+  fontWeight: "bold",
+  color: "#234b2d"
 };
 
 const homeTextStyle = {
   fontSize: "15px",
-  color: enapiColors.marrone,
-  lineHeight: "1.45",
-  maxWidth: "260px"
-};
-
-const homeActionStyle = {
-  marginTop: "8px",
-  background: "linear-gradient(135deg, #234b2d 0%, #17351f 100%)",
-  color: "white",
-  borderRadius: "999px",
-  padding: "10px 18px",
-  minWidth: "120px",
-  fontWeight: "bold",
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: "10px",
-  boxShadow: "0 8px 18px rgba(35, 75, 45, 0.20)"
+  color: "#4b3b2a",
+  lineHeight: "1.4"
 };
 
 const backHomeButtonStyle = {
@@ -6090,102 +5268,4 @@ const backHomeButtonStyle = {
   padding: "10px 16px",
   cursor: "pointer",
   fontWeight: "bold"
-};
-const dietauroStepStyle = {
-  background:
-    "linear-gradient(145deg, rgba(255,253,247,0.98) 0%, rgba(243,245,236,0.96) 100%)",
-  border: `1px solid ${enapiColors.bordo}`,
-  borderRadius: "24px",
-  marginBottom: "16px",
-  overflow: "hidden",
-  boxShadow: "0 12px 28px rgba(35, 75, 45, 0.09)"
-};
-
-const dietauroStepHeaderStyle = {
-  width: "100%",
-  border: "none",
-  background:
-    "linear-gradient(135deg, rgba(232,237,220,0.98) 0%, rgba(247,241,230,0.98) 100%)",
-  color: enapiColors.bosco,
-  padding: "18px",
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  gap: "12px",
-  cursor: "pointer",
-  fontWeight: "800",
-  fontSize: "18px",
-  textAlign: "left",
-  fontFamily: "inherit",
-  borderBottom: `1px solid ${enapiColors.bordo}`
-};
-
-const dietauroStepBodyStyle = {
-  padding: "clamp(14px, 3vw, 20px)",
-  display: "flex",
-  flexDirection: "column",
-  gap: "16px",
-  backgroundColor: "rgba(255,250,240,0.72)"
-};
-
-const dietauroStepSummaryStyle = {
-  fontSize: "13px",
-  color: enapiColors.marroneChiaro,
-  fontWeight: "500",
-  lineHeight: "1.35"
-};
-const homeSvgStyle = {
-  width: "128px",
-  height: "128px",
-  display: "block"
-};
-const homeImageIconStyle = {
-  width: "132px",
-  height: "132px",
-  objectFit: "contain",
-  borderRadius: "50%",
-  display: "block",
-  filter: "drop-shadow(0 10px 16px rgba(35, 75, 45, 0.18))"
-};
-const accessCardStyle = {
-  background:
-    "linear-gradient(145deg, rgba(255,253,247,0.98) 0%, rgba(243,245,236,0.96) 100%)",
-  padding: "clamp(18px, 4vw, 26px)",
-  borderRadius: "28px",
-  marginBottom: "20px",
-  display: "flex",
-  flexDirection: "column",
-  gap: "14px",
-  boxSizing: "border-box",
-  border: `1px solid ${enapiColors.bordo}`,
-  boxShadow: "0 14px 34px rgba(35, 75, 45, 0.10)",
-  position: "relative",
-  overflow: "hidden"
-};
-
-const accessHeaderIconStyle = {
-  width: "46px",
-  height: "46px",
-  borderRadius: "50%",
-  backgroundColor: enapiColors.salvia,
-  color: enapiColors.bosco,
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontSize: "22px",
-  marginBottom: "4px"
-};
-const heroTextBlockStyle = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "2px",
-  minWidth: 0
-};
-
-const heroKickerStyle = {
-  color: enapiColors.oliva,
-  fontSize: "13px",
-  fontWeight: "800",
-  letterSpacing: "0.18em",
-  textTransform: "uppercase"
 };

@@ -2966,29 +2966,26 @@ function HomeIcon({ tipo }) {
 }
   return (
     <div style={pageStyle}>
- <header style={heroHeaderStyle}>
+     <header style={heroHeaderStyle}>
   <img
     src="/logo.jpg"
     alt="Logo Pesauro ENAPI"
     style={logoStyle}
   />
 
-  <div style={heroTextBlockStyle}>
-    <div style={heroKickerStyle}>ENAPI</div>
-
-    <h1 style={heroTitleStyle}>Pesauro</h1>
-
+  <div>
+    <h1 style={heroTitleStyle}>Pesauro ENAPI</h1>
     <p style={heroSubtitleStyle}>
-      Dieta, pesi e benessere del petauro dello zucchero
+      Gestionale per dieta, pesi e benessere del petauro dello zucchero
     </p>
   </div>
-</header>    
-<div style={accessCardStyle}>
-<div style={sectionTitleStyle}>
-  <div style={accessHeaderIconStyle}>🔐</div>
-  <h2>Accesso</h2>
-  <p>Entra nel tuo spazio personale Pesauro ENAPI.</p>
-</div>  
+</header>
+<div style={cardStyle}>
+  <div style={sectionTitleStyle}>
+    <h2>🔐 Accesso</h2>
+    <p>Accedi per usare le funzioni riservate e la gestione admin.</p>
+  </div>
+
   {authUser ? (
     <div style={miniPanelStyle}>
       <strong>Accesso effettuato</strong>
@@ -5309,14 +5306,11 @@ const cardStyle = {
 
 const inputStyle = {
   width: "100%",
-  padding: "13px 14px",
-  borderRadius: "14px",
-  border: `1px solid ${enapiColors.bordo}`,
+  padding: "12px",
+  borderRadius: "10px",
+  border: "1px solid #ccc",
   fontSize: "16px",
-  boxSizing: "border-box",
-  backgroundColor: enapiColors.bianco,
-  color: enapiColors.marrone,
-  outlineColor: enapiColors.oliva
+  boxSizing: "border-box"
 };
 
 const greenButton = {
@@ -5556,14 +5550,13 @@ const formGridStyle = {
 };
 
 const miniPanelStyle = {
-  backgroundColor: enapiColors.salviaChiaro,
-  border: `1px solid ${enapiColors.bordo}`,
-  borderRadius: "20px",
-  padding: "16px",
+  backgroundColor: "#f7f8f3",
+  border: "1px solid #d8ddcf",
+  borderRadius: "16px",
+  padding: "14px",
   display: "flex",
   flexDirection: "column",
-  gap: "12px",
-  boxShadow: "0 6px 16px rgba(35, 75, 45, 0.05)"
+  gap: "10px"
 };
 
 const summaryBoxStyle = {
@@ -5860,47 +5853,45 @@ const amazonButtonStyle = {
 };
 const heroHeaderStyle = {
   background:
-    "linear-gradient(135deg, rgba(255,253,247,0.95) 0%, rgba(246,239,223,0.9) 55%, rgba(232,237,220,0.82) 100%)",
+    "linear-gradient(135deg, rgba(255,250,240,0.96) 0%, rgba(232,237,220,0.9) 100%)",
   border: `1px solid ${enapiColors.bordo}`,
-  borderRadius: "28px",
-  padding: "clamp(14px, 3vw, 22px)",
-  marginBottom: "18px",
+  borderRadius: "30px",
+  padding: "clamp(18px, 4vw, 30px)",
+  marginBottom: "22px",
   display: "flex",
   alignItems: "center",
-  gap: "14px",
-  boxShadow: "0 12px 30px rgba(35, 75, 45, 0.09)",
-  position: "relative",
-  overflow: "hidden"
+  gap: "18px",
+  boxShadow: "0 14px 34px rgba(35, 75, 45, 0.10)"
 };
 
 const logoStyle = {
-  width: "clamp(72px, 14vw, 96px)",
-  height: "clamp(72px, 14vw, 96px)",
+  width: "clamp(82px, 18vw, 120px)",
+  height: "clamp(82px, 18vw, 120px)",
   objectFit: "contain",
   borderRadius: "50%",
   backgroundColor: "white",
-  padding: "7px",
+  padding: "8px",
   flexShrink: 0,
   border: `1px solid ${enapiColors.bordo}`,
-  boxShadow: "0 8px 18px rgba(35, 75, 45, 0.12)"
+  boxShadow: "0 8px 20px rgba(35, 75, 45, 0.12)"
 };
 
 const heroTitleStyle = {
   margin: 0,
   color: enapiColors.bosco,
-  fontSize: "clamp(32px, 6vw, 46px)",
+  fontSize: "clamp(34px, 7vw, 54px)",
   lineHeight: "1.02",
-  fontWeight: "850",
-  letterSpacing: "-0.035em"
+  fontWeight: "800",
+  letterSpacing: "-0.03em"
 };
 
 const heroSubtitleStyle = {
-  margin: "7px 0 0",
+  margin: "8px 0 0",
   color: enapiColors.marrone,
-  fontSize: "clamp(15px, 3vw, 18px)",
-  lineHeight: "1.35",
-  maxWidth: "520px"
+  fontSize: "clamp(16px, 3.5vw, 22px)",
+  lineHeight: "1.35"
 };
+
 const petauroPhotoStyle = {
   width: "72px",
   height: "72px",
@@ -5997,21 +5988,19 @@ const authTabsStyle = {
 };
 
 const authTabStyle = {
-  backgroundColor: enapiColors.bianco,
-  color: enapiColors.bosco,
-  border: `1px solid ${enapiColors.bordo}`,
-  padding: "10px 14px",
+  backgroundColor: "#eef1ea",
+  color: "#234b2d",
+  border: "1px solid #d8ddcf",
+  padding: "8px 10px",
   borderRadius: "999px",
   cursor: "pointer",
-  fontWeight: "bold",
-  boxShadow: "0 4px 10px rgba(35,75,45,0.05)"
+  fontWeight: "bold"
 };
 
 const authTabActiveStyle = {
   ...authTabStyle,
-  background: "linear-gradient(135deg, #234b2d 0%, #17351f 100%)",
-  color: "white",
-  border: "1px solid #234b2d"
+  backgroundColor: "#234b2d",
+  color: "white"
 };
 const homeGridStyle = {
   display: "grid",
@@ -6092,47 +6081,41 @@ const backHomeButtonStyle = {
   fontWeight: "bold"
 };
 const dietauroStepStyle = {
-  background:
-    "linear-gradient(145deg, rgba(255,253,247,0.98) 0%, rgba(243,245,236,0.96) 100%)",
-  border: `1px solid ${enapiColors.bordo}`,
-  borderRadius: "24px",
-  marginBottom: "16px",
+  backgroundColor: "#f7f1e6",
+  border: "1px solid #d8ddcf",
+  borderRadius: "20px",
+  marginBottom: "14px",
   overflow: "hidden",
-  boxShadow: "0 12px 28px rgba(35, 75, 45, 0.09)"
+  boxShadow: "0 8px 20px rgba(0,0,0,0.04)"
 };
 
 const dietauroStepHeaderStyle = {
   width: "100%",
   border: "none",
-  background:
-    "linear-gradient(135deg, rgba(232,237,220,0.98) 0%, rgba(247,241,230,0.98) 100%)",
-  color: enapiColors.bosco,
-  padding: "18px",
+  backgroundColor: "#eef1ea",
+  color: "#234b2d",
+  padding: "16px",
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
   gap: "12px",
   cursor: "pointer",
-  fontWeight: "800",
+  fontWeight: "bold",
   fontSize: "18px",
-  textAlign: "left",
-  fontFamily: "inherit",
-  borderBottom: `1px solid ${enapiColors.bordo}`
+  textAlign: "left"
 };
 
 const dietauroStepBodyStyle = {
-  padding: "clamp(14px, 3vw, 20px)",
+  padding: "14px",
   display: "flex",
   flexDirection: "column",
-  gap: "16px",
-  backgroundColor: "rgba(255,250,240,0.72)"
+  gap: "14px"
 };
 
 const dietauroStepSummaryStyle = {
   fontSize: "13px",
-  color: enapiColors.marroneChiaro,
-  fontWeight: "500",
-  lineHeight: "1.35"
+  color: "#5d4b36",
+  fontWeight: "normal"
 };
 const homeSvgStyle = {
   width: "128px",
@@ -6146,46 +6129,4 @@ const homeImageIconStyle = {
   borderRadius: "50%",
   display: "block",
   filter: "drop-shadow(0 10px 16px rgba(35, 75, 45, 0.18))"
-};
-const accessCardStyle = {
-  background:
-    "linear-gradient(145deg, rgba(255,253,247,0.98) 0%, rgba(243,245,236,0.96) 100%)",
-  padding: "clamp(18px, 4vw, 26px)",
-  borderRadius: "28px",
-  marginBottom: "20px",
-  display: "flex",
-  flexDirection: "column",
-  gap: "14px",
-  boxSizing: "border-box",
-  border: `1px solid ${enapiColors.bordo}`,
-  boxShadow: "0 14px 34px rgba(35, 75, 45, 0.10)",
-  position: "relative",
-  overflow: "hidden"
-};
-
-const accessHeaderIconStyle = {
-  width: "46px",
-  height: "46px",
-  borderRadius: "50%",
-  backgroundColor: enapiColors.salvia,
-  color: enapiColors.bosco,
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontSize: "22px",
-  marginBottom: "4px"
-};
-const heroTextBlockStyle = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "2px",
-  minWidth: 0
-};
-
-const heroKickerStyle = {
-  color: enapiColors.oliva,
-  fontSize: "13px",
-  fontWeight: "800",
-  letterSpacing: "0.18em",
-  textTransform: "uppercase"
 };

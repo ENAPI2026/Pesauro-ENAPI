@@ -2808,64 +2808,34 @@ function HomeIcon({ tipo }) {
   if (tipo === "dietauro") {
     return (
       <div style={homeIconStyle}>
-        <svg viewBox="0 0 160 160" style={homeSvgStyle}>
-          <defs>
-            <radialGradient id="dietBg" cx="50%" cy="45%" r="60%">
-              <stop offset="0%" stopColor="#f8f1dc" />
-              <stop offset="100%" stopColor="#dfe8c9" />
-            </radialGradient>
-            <linearGradient id="bowl" x1="0" x2="1" y1="0" y2="1">
-              <stop offset="0%" stopColor="#8fa36a" />
-              <stop offset="100%" stopColor="#315c37" />
-            </linearGradient>
-            <linearGradient id="leaf" x1="0" x2="1">
-              <stop offset="0%" stopColor="#9fb77a" />
-              <stop offset="100%" stopColor="#365f37" />
-            </linearGradient>
-            <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
-              <feDropShadow dx="0" dy="7" stdDeviation="5" floodColor="#234b2d" floodOpacity="0.22" />
-            </filter>
-          </defs>
-
-          <circle cx="80" cy="80" r="66" fill="url(#dietBg)" />
-
-          <g filter="url(#softShadow)">
-            <path
-              d="M38 82c5 30 23 47 43 47s38-17 43-47H38z"
-              fill="url(#bowl)"
-              stroke="#234b2d"
-              strokeWidth="5"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M43 82h76"
-              stroke="#17351f"
-              strokeWidth="6"
-              strokeLinecap="round"
-            />
-
-            <path
-              d="M66 69c-20-14-25-34-9-51 18 9 23 30 9 51z"
-              fill="url(#leaf)"
-              stroke="#234b2d"
-              strokeWidth="4"
-            />
-            <path
-              d="M86 70c8-25 28-34 49-22-11 22-31 31-49 22z"
-              fill="#91a85f"
-              stroke="#234b2d"
-              strokeWidth="4"
-            />
-            <path
-              d="M55 78c-18-7-25-20-19-34 17 2 27 16 19 34z"
-              fill="#6f8b50"
-              stroke="#234b2d"
-              strokeWidth="4"
-            />
-
-            <circle cx="77" cy="76" r="13" fill="#c47a3a" stroke="#8b5e34" strokeWidth="4" />
-            <circle cx="98" cy="78" r="10" fill="#d9a94a" stroke="#8b5e34" strokeWidth="3" />
-          </g>
+        <svg viewBox="0 0 120 120" style={homeSvgStyle}>
+          <circle cx="60" cy="60" r="48" fill="#e8eddc" />
+          <path
+            d="M28 58c4 23 18 36 32 36s28-13 32-36H28z"
+            fill="#6f7f3f"
+            stroke="#234b2d"
+            strokeWidth="4"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M34 58h52"
+            stroke="#234b2d"
+            strokeWidth="5"
+            strokeLinecap="round"
+          />
+          <path
+            d="M48 45c-10-12-8-24 7-29 8 13 5 24-7 29z"
+            fill="#8fa36a"
+            stroke="#234b2d"
+            strokeWidth="3"
+          />
+          <path
+            d="M68 46c7-15 20-18 31-7-9 12-21 14-31 7z"
+            fill="#9baa6e"
+            stroke="#234b2d"
+            strokeWidth="3"
+          />
+          <circle cx="61" cy="51" r="10" fill="#c47a3a" stroke="#8b5e34" strokeWidth="3" />
         </svg>
       </div>
     );
@@ -2874,40 +2844,14 @@ function HomeIcon({ tipo }) {
   if (tipo === "pesauro") {
     return (
       <div style={homeIconStyle}>
-        <svg viewBox="0 0 160 160" style={homeSvgStyle}>
-          <defs>
-            <radialGradient id="pesoBg" cx="50%" cy="45%" r="60%">
-              <stop offset="0%" stopColor="#f8f1dc" />
-              <stop offset="100%" stopColor="#dfe8c9" />
-            </radialGradient>
-            <linearGradient id="scaleGreen" x1="0" x2="1" y1="0" y2="1">
-              <stop offset="0%" stopColor="#9caf72" />
-              <stop offset="100%" stopColor="#315c37" />
-            </linearGradient>
-            <filter id="scaleShadow" x="-30%" y="-30%" width="160%" height="160%">
-              <feDropShadow dx="0" dy="8" stdDeviation="5" floodColor="#234b2d" floodOpacity="0.24" />
-            </filter>
-          </defs>
-
-          <circle cx="80" cy="80" r="66" fill="url(#pesoBg)" />
-
-          <g filter="url(#scaleShadow)">
-            <rect x="45" y="34" width="70" height="18" rx="9" fill="#6f7f3f" stroke="#234b2d" strokeWidth="5" />
-            <rect x="59" y="50" width="42" height="19" rx="7" fill="#8fa36a" stroke="#234b2d" strokeWidth="4" />
-
-            <path
-              d="M43 75c0-10 8-18 18-18h38c10 0 18 8 18 18v35c0 10-8 18-18 18H61c-10 0-18-8-18-18V75z"
-              fill="url(#scaleGreen)"
-              stroke="#234b2d"
-              strokeWidth="5"
-            />
-
-            <circle cx="80" cy="93" r="27" fill="#fffaf0" stroke="#17351f" strokeWidth="5" />
-            <path d="M80 93l15-17" stroke="#234b2d" strokeWidth="5" strokeLinecap="round" />
-            <circle cx="80" cy="93" r="5" fill="#234b2d" />
-
-            <path d="M61 128h38" stroke="#8b5e34" strokeWidth="8" strokeLinecap="round" />
-          </g>
+        <svg viewBox="0 0 120 120" style={homeSvgStyle}>
+          <circle cx="60" cy="60" r="48" fill="#e8eddc" />
+          <rect x="34" y="28" width="52" height="15" rx="7" fill="#6f7f3f" stroke="#234b2d" strokeWidth="4" />
+          <rect x="46" y="40" width="28" height="14" rx="5" fill="#8fa36a" stroke="#234b2d" strokeWidth="3" />
+          <circle cx="60" cy="70" r="25" fill="#fffaf0" stroke="#234b2d" strokeWidth="5" />
+          <path d="M60 70l12-12" stroke="#234b2d" strokeWidth="4" strokeLinecap="round" />
+          <circle cx="60" cy="70" r="4" fill="#234b2d" />
+          <rect x="38" y="93" width="44" height="8" rx="4" fill="#8b5e34" />
         </svg>
       </div>
     );
@@ -2915,80 +2859,55 @@ function HomeIcon({ tipo }) {
 
   return (
     <div style={homeIconStyle}>
-      <svg viewBox="0 0 160 160" style={homeSvgStyle}>
-        <defs>
-          <radialGradient id="bookBg" cx="50%" cy="45%" r="60%">
-            <stop offset="0%" stopColor="#f8f1dc" />
-            <stop offset="100%" stopColor="#dfe8c9" />
-          </radialGradient>
-          <filter id="bookShadow" x="-30%" y="-30%" width="160%" height="160%">
-            <feDropShadow dx="0" dy="8" stdDeviation="5" floodColor="#234b2d" floodOpacity="0.22" />
-          </filter>
-        </defs>
-
-        <circle cx="80" cy="80" r="66" fill="url(#bookBg)" />
-
-        <g filter="url(#bookShadow)">
-          <path
-            d="M36 44c19-7 34-2 44 11v74c-11-11-26-15-44-9V44z"
-            fill="#fffaf0"
-            stroke="#234b2d"
-            strokeWidth="5"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M124 44c-19-7-34-2-44 11v74c11-11 26-15 44-9V44z"
-            fill="#f2ead6"
-            stroke="#234b2d"
-            strokeWidth="5"
-            strokeLinejoin="round"
-          />
-
-          <path d="M53 64h16M53 78h16M53 92h13" stroke="#8b5e34" strokeWidth="4" strokeLinecap="round" />
-          <path d="M92 64h16M92 78h16M94 92h12" stroke="#8b5e34" strokeWidth="4" strokeLinecap="round" />
-
-          <path
-            d="M91 118c10-24 30-29 46-14-14 17-32 22-46 14z"
-            fill="#8fa36a"
-            stroke="#234b2d"
-            strokeWidth="4"
-          />
-          <path
-            d="M70 122c-8-18-22-23-37-13 10 16 25 21 37 13z"
-            fill="#9caf72"
-            stroke="#234b2d"
-            strokeWidth="4"
-          />
-        </g>
+      <svg viewBox="0 0 120 120" style={homeSvgStyle}>
+        <circle cx="60" cy="60" r="48" fill="#e8eddc" />
+        <path
+          d="M28 32c16-5 27-1 32 9v53c-8-8-18-10-32-6V32z"
+          fill="#fffaf0"
+          stroke="#234b2d"
+          strokeWidth="4"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M92 32c-16-5-27-1-32 9v53c8-8 18-10 32-6V32z"
+          fill="#f7f1e6"
+          stroke="#234b2d"
+          strokeWidth="4"
+          strokeLinejoin="round"
+        />
+        <path d="M42 49h12M42 62h12M66 49h12M66 62h12" stroke="#8b5e34" strokeWidth="3" strokeLinecap="round" />
+        <path
+          d="M74 82c6-14 18-17 27-8-8 10-19 12-27 8z"
+          fill="#8fa36a"
+          stroke="#234b2d"
+          strokeWidth="3"
+        />
       </svg>
     </div>
   );
 }
   return (
     <div style={pageStyle}>
- <header style={heroHeaderStyle}>
+     <header style={heroHeaderStyle}>
   <img
     src="/logo.jpg"
     alt="Logo Pesauro ENAPI"
     style={logoStyle}
   />
 
-  <div style={heroTextBlockStyle}>
-    <div style={heroKickerStyle}>ENAPI</div>
-
-    <h1 style={heroTitleStyle}>Pesauro</h1>
-
+  <div>
+    <h1 style={heroTitleStyle}>Pesauro ENAPI</h1>
     <p style={heroSubtitleStyle}>
-      Dieta, pesi e benessere del petauro dello zucchero
+      Gestionale per dieta, pesi e benessere del petauro dello zucchero
     </p>
   </div>
-</header>    
-<div style={accessCardStyle}>
-<div style={sectionTitleStyle}>
-  <div style={accessHeaderIconStyle}>🔐</div>
-  <h2>Accesso</h2>
-  <p>Entra nel tuo spazio personale Pesauro ENAPI.</p>
-</div>  
+</header>
+<div style={cardStyle}>
+  <div style={sectionTitleStyle}>
+    <h2>🔐 Accesso</h2>
+    <p>Accedi per usare le funzioni riservate e la gestione admin.</p>
+  </div>
+
   {authUser ? (
     <div style={miniPanelStyle}>
       <strong>Accesso effettuato</strong>
@@ -3086,11 +3005,7 @@ function HomeIcon({ tipo }) {
 
    <div style={homeGridStyle}>
   <div style={homeCardStyle} onClick={() => setSezioneAttiva("dietauro")}>
-    <img
-  src="/icons/icon-dietauro.png"
-  alt="Dietauro"
-  style={homeImageIconStyle}
-/>
+    <HomeIcon tipo="dietauro" />
 
     <div style={homeTitleStyle}>Dietauro</div>
 
@@ -3104,11 +3019,7 @@ function HomeIcon({ tipo }) {
   </div>
 
   <div style={homeCardStyle} onClick={() => setSezioneAttiva("pesauro")}>
-    <img
-  src="/icons/icon-pesauro.png"
-  alt="Pesauro"
-  style={homeImageIconStyle}
-/>
+    <HomeIcon tipo="pesauro" />
 
     <div style={homeTitleStyle}>Pesauro</div>
 
@@ -3122,11 +3033,7 @@ function HomeIcon({ tipo }) {
   </div>
 
   <div style={homeCardStyle} onClick={() => setSezioneAttiva("risorse")}>
-    <img
-  src="/icons/icon-risorse.png"
-  alt="Risorse ENAPI"
-  style={homeImageIconStyle}
-/>
+    <HomeIcon tipo="risorse" />
 
     <div style={homeTitleStyle}>Risorse ENAPI</div>
 
@@ -5309,14 +5216,11 @@ const cardStyle = {
 
 const inputStyle = {
   width: "100%",
-  padding: "13px 14px",
-  borderRadius: "14px",
-  border: `1px solid ${enapiColors.bordo}`,
+  padding: "12px",
+  borderRadius: "10px",
+  border: "1px solid #ccc",
   fontSize: "16px",
-  boxSizing: "border-box",
-  backgroundColor: enapiColors.bianco,
-  color: enapiColors.marrone,
-  outlineColor: enapiColors.oliva
+  boxSizing: "border-box"
 };
 
 const greenButton = {
@@ -5556,14 +5460,13 @@ const formGridStyle = {
 };
 
 const miniPanelStyle = {
-  backgroundColor: enapiColors.salviaChiaro,
-  border: `1px solid ${enapiColors.bordo}`,
-  borderRadius: "20px",
-  padding: "16px",
+  backgroundColor: "#f7f8f3",
+  border: "1px solid #d8ddcf",
+  borderRadius: "16px",
+  padding: "14px",
   display: "flex",
   flexDirection: "column",
-  gap: "12px",
-  boxShadow: "0 6px 16px rgba(35, 75, 45, 0.05)"
+  gap: "10px"
 };
 
 const summaryBoxStyle = {
@@ -5860,47 +5763,45 @@ const amazonButtonStyle = {
 };
 const heroHeaderStyle = {
   background:
-    "linear-gradient(135deg, rgba(255,253,247,0.95) 0%, rgba(246,239,223,0.9) 55%, rgba(232,237,220,0.82) 100%)",
+    "linear-gradient(135deg, rgba(255,250,240,0.96) 0%, rgba(232,237,220,0.9) 100%)",
   border: `1px solid ${enapiColors.bordo}`,
-  borderRadius: "28px",
-  padding: "clamp(14px, 3vw, 22px)",
-  marginBottom: "18px",
+  borderRadius: "30px",
+  padding: "clamp(18px, 4vw, 30px)",
+  marginBottom: "22px",
   display: "flex",
   alignItems: "center",
-  gap: "14px",
-  boxShadow: "0 12px 30px rgba(35, 75, 45, 0.09)",
-  position: "relative",
-  overflow: "hidden"
+  gap: "18px",
+  boxShadow: "0 14px 34px rgba(35, 75, 45, 0.10)"
 };
 
 const logoStyle = {
-  width: "clamp(72px, 14vw, 96px)",
-  height: "clamp(72px, 14vw, 96px)",
+  width: "clamp(82px, 18vw, 120px)",
+  height: "clamp(82px, 18vw, 120px)",
   objectFit: "contain",
   borderRadius: "50%",
   backgroundColor: "white",
-  padding: "7px",
+  padding: "8px",
   flexShrink: 0,
   border: `1px solid ${enapiColors.bordo}`,
-  boxShadow: "0 8px 18px rgba(35, 75, 45, 0.12)"
+  boxShadow: "0 8px 20px rgba(35, 75, 45, 0.12)"
 };
 
 const heroTitleStyle = {
   margin: 0,
   color: enapiColors.bosco,
-  fontSize: "clamp(32px, 6vw, 46px)",
+  fontSize: "clamp(34px, 7vw, 54px)",
   lineHeight: "1.02",
-  fontWeight: "850",
-  letterSpacing: "-0.035em"
+  fontWeight: "800",
+  letterSpacing: "-0.03em"
 };
 
 const heroSubtitleStyle = {
-  margin: "7px 0 0",
+  margin: "8px 0 0",
   color: enapiColors.marrone,
-  fontSize: "clamp(15px, 3vw, 18px)",
-  lineHeight: "1.35",
-  maxWidth: "520px"
+  fontSize: "clamp(16px, 3.5vw, 22px)",
+  lineHeight: "1.35"
 };
+
 const petauroPhotoStyle = {
   width: "72px",
   height: "72px",
@@ -5997,21 +5898,19 @@ const authTabsStyle = {
 };
 
 const authTabStyle = {
-  backgroundColor: enapiColors.bianco,
-  color: enapiColors.bosco,
-  border: `1px solid ${enapiColors.bordo}`,
-  padding: "10px 14px",
+  backgroundColor: "#eef1ea",
+  color: "#234b2d",
+  border: "1px solid #d8ddcf",
+  padding: "8px 10px",
   borderRadius: "999px",
   cursor: "pointer",
-  fontWeight: "bold",
-  boxShadow: "0 4px 10px rgba(35,75,45,0.05)"
+  fontWeight: "bold"
 };
 
 const authTabActiveStyle = {
   ...authTabStyle,
-  background: "linear-gradient(135deg, #234b2d 0%, #17351f 100%)",
-  color: "white",
-  border: "1px solid #234b2d"
+  backgroundColor: "#234b2d",
+  color: "white"
 };
 const homeGridStyle = {
   display: "grid",
@@ -6041,15 +5940,15 @@ const homeCardStyle = {
 };
 
 const homeIconStyle = {
-  width: "132px",
-  height: "132px",
+  width: "112px",
+  height: "112px",
   borderRadius: "50%",
-  background:
-    "radial-gradient(circle at 45% 35%, #f8f1dc 0%, #e8eddc 60%, #dfe8c9 100%)",
+  backgroundColor: enapiColors.salvia,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  boxShadow: "inset 0 0 0 1px rgba(35,75,45,0.08), 0 10px 22px rgba(35,75,45,0.12)"
+  fontSize: "54px",
+  boxShadow: "inset 0 0 0 1px rgba(35,75,45,0.08)"
 };
 
 const homeTitleStyle = {
@@ -6092,100 +5991,44 @@ const backHomeButtonStyle = {
   fontWeight: "bold"
 };
 const dietauroStepStyle = {
-  background:
-    "linear-gradient(145deg, rgba(255,253,247,0.98) 0%, rgba(243,245,236,0.96) 100%)",
-  border: `1px solid ${enapiColors.bordo}`,
-  borderRadius: "24px",
-  marginBottom: "16px",
+  backgroundColor: "#f7f1e6",
+  border: "1px solid #d8ddcf",
+  borderRadius: "20px",
+  marginBottom: "14px",
   overflow: "hidden",
-  boxShadow: "0 12px 28px rgba(35, 75, 45, 0.09)"
+  boxShadow: "0 8px 20px rgba(0,0,0,0.04)"
 };
 
 const dietauroStepHeaderStyle = {
   width: "100%",
   border: "none",
-  background:
-    "linear-gradient(135deg, rgba(232,237,220,0.98) 0%, rgba(247,241,230,0.98) 100%)",
-  color: enapiColors.bosco,
-  padding: "18px",
+  backgroundColor: "#eef1ea",
+  color: "#234b2d",
+  padding: "16px",
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
   gap: "12px",
   cursor: "pointer",
-  fontWeight: "800",
+  fontWeight: "bold",
   fontSize: "18px",
-  textAlign: "left",
-  fontFamily: "inherit",
-  borderBottom: `1px solid ${enapiColors.bordo}`
+  textAlign: "left"
 };
 
 const dietauroStepBodyStyle = {
-  padding: "clamp(14px, 3vw, 20px)",
+  padding: "14px",
   display: "flex",
   flexDirection: "column",
-  gap: "16px",
-  backgroundColor: "rgba(255,250,240,0.72)"
+  gap: "14px"
 };
 
 const dietauroStepSummaryStyle = {
   fontSize: "13px",
-  color: enapiColors.marroneChiaro,
-  fontWeight: "500",
-  lineHeight: "1.35"
+  color: "#5d4b36",
+  fontWeight: "normal"
 };
 const homeSvgStyle = {
-  width: "128px",
-  height: "128px",
+  width: "96px",
+  height: "96px",
   display: "block"
-};
-const homeImageIconStyle = {
-  width: "132px",
-  height: "132px",
-  objectFit: "contain",
-  borderRadius: "50%",
-  display: "block",
-  filter: "drop-shadow(0 10px 16px rgba(35, 75, 45, 0.18))"
-};
-const accessCardStyle = {
-  background:
-    "linear-gradient(145deg, rgba(255,253,247,0.98) 0%, rgba(243,245,236,0.96) 100%)",
-  padding: "clamp(18px, 4vw, 26px)",
-  borderRadius: "28px",
-  marginBottom: "20px",
-  display: "flex",
-  flexDirection: "column",
-  gap: "14px",
-  boxSizing: "border-box",
-  border: `1px solid ${enapiColors.bordo}`,
-  boxShadow: "0 14px 34px rgba(35, 75, 45, 0.10)",
-  position: "relative",
-  overflow: "hidden"
-};
-
-const accessHeaderIconStyle = {
-  width: "46px",
-  height: "46px",
-  borderRadius: "50%",
-  backgroundColor: enapiColors.salvia,
-  color: enapiColors.bosco,
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontSize: "22px",
-  marginBottom: "4px"
-};
-const heroTextBlockStyle = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "2px",
-  minWidth: 0
-};
-
-const heroKickerStyle = {
-  color: enapiColors.oliva,
-  fontSize: "13px",
-  fontWeight: "800",
-  letterSpacing: "0.18em",
-  textTransform: "uppercase"
 };

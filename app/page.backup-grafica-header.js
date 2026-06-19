@@ -2966,23 +2966,20 @@ function HomeIcon({ tipo }) {
 }
   return (
     <div style={pageStyle}>
- <header style={heroHeaderStyle}>
+     <header style={heroHeaderStyle}>
   <img
     src="/logo.jpg"
     alt="Logo Pesauro ENAPI"
     style={logoStyle}
   />
 
-  <div style={heroTextBlockStyle}>
-    <div style={heroKickerStyle}>ENAPI</div>
-
-    <h1 style={heroTitleStyle}>Pesauro</h1>
-
+  <div>
+    <h1 style={heroTitleStyle}>Pesauro ENAPI</h1>
     <p style={heroSubtitleStyle}>
-      Dieta, pesi e benessere del petauro dello zucchero
+      Gestionale per dieta, pesi e benessere del petauro dello zucchero
     </p>
   </div>
-</header>    
+</header>
 <div style={accessCardStyle}>
 <div style={sectionTitleStyle}>
   <div style={accessHeaderIconStyle}>🔐</div>
@@ -5860,47 +5857,45 @@ const amazonButtonStyle = {
 };
 const heroHeaderStyle = {
   background:
-    "linear-gradient(135deg, rgba(255,253,247,0.95) 0%, rgba(246,239,223,0.9) 55%, rgba(232,237,220,0.82) 100%)",
+    "linear-gradient(135deg, rgba(255,250,240,0.96) 0%, rgba(232,237,220,0.9) 100%)",
   border: `1px solid ${enapiColors.bordo}`,
-  borderRadius: "28px",
-  padding: "clamp(14px, 3vw, 22px)",
-  marginBottom: "18px",
+  borderRadius: "30px",
+  padding: "clamp(18px, 4vw, 30px)",
+  marginBottom: "22px",
   display: "flex",
   alignItems: "center",
-  gap: "14px",
-  boxShadow: "0 12px 30px rgba(35, 75, 45, 0.09)",
-  position: "relative",
-  overflow: "hidden"
+  gap: "18px",
+  boxShadow: "0 14px 34px rgba(35, 75, 45, 0.10)"
 };
 
 const logoStyle = {
-  width: "clamp(72px, 14vw, 96px)",
-  height: "clamp(72px, 14vw, 96px)",
+  width: "clamp(82px, 18vw, 120px)",
+  height: "clamp(82px, 18vw, 120px)",
   objectFit: "contain",
   borderRadius: "50%",
   backgroundColor: "white",
-  padding: "7px",
+  padding: "8px",
   flexShrink: 0,
   border: `1px solid ${enapiColors.bordo}`,
-  boxShadow: "0 8px 18px rgba(35, 75, 45, 0.12)"
+  boxShadow: "0 8px 20px rgba(35, 75, 45, 0.12)"
 };
 
 const heroTitleStyle = {
   margin: 0,
   color: enapiColors.bosco,
-  fontSize: "clamp(32px, 6vw, 46px)",
+  fontSize: "clamp(34px, 7vw, 54px)",
   lineHeight: "1.02",
-  fontWeight: "850",
-  letterSpacing: "-0.035em"
+  fontWeight: "800",
+  letterSpacing: "-0.03em"
 };
 
 const heroSubtitleStyle = {
-  margin: "7px 0 0",
+  margin: "8px 0 0",
   color: enapiColors.marrone,
-  fontSize: "clamp(15px, 3vw, 18px)",
-  lineHeight: "1.35",
-  maxWidth: "520px"
+  fontSize: "clamp(16px, 3.5vw, 22px)",
+  lineHeight: "1.35"
 };
+
 const petauroPhotoStyle = {
   width: "72px",
   height: "72px",
@@ -6174,18 +6169,4 @@ const accessHeaderIconStyle = {
   justifyContent: "center",
   fontSize: "22px",
   marginBottom: "4px"
-};
-const heroTextBlockStyle = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "2px",
-  minWidth: 0
-};
-
-const heroKickerStyle = {
-  color: enapiColors.oliva,
-  fontSize: "13px",
-  fontWeight: "800",
-  letterSpacing: "0.18em",
-  textTransform: "uppercase"
 };
