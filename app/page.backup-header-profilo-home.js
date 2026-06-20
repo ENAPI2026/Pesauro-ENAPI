@@ -1,4 +1,5 @@
-"use client";
+
+ "use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
@@ -2797,89 +2798,6 @@ const prodottiUtili = [
     link: ""
   }
 ];
-
-const risorseRapide = [
-  {
-    tipo: "Sito",
-    icona: "🌐",
-    titolo: "Sito ENAPI",
-    descrizione: "Pagina ufficiale con informazioni, materiali e aggiornamenti.",
-    azione: "Apri sito",
-    link: "https://www.petaurodellozucchero.org"
-  },
-  {
-    tipo: "Social",
-    icona: "📘",
-    titolo: "Facebook",
-    descrizione: "Gruppo, comunicazioni e aggiornamenti per adottanti e soci.",
-    azione: "Apri Facebook",
-    link: ""
-  },
-  {
-    tipo: "Social",
-    icona: "📸",
-    titolo: "Instagram",
-    descrizione: "Grafiche divulgative, campagne ENAPI e contenuti educativi.",
-    azione: "Apri Instagram",
-    link: ""
-  },
-  {
-    tipo: "Chat",
-    icona: "💬",
-    titolo: "WhatsApp / Chat",
-    descrizione: "Contatto rapido per supporto, recuperi e informazioni.",
-    azione: "Apri chat",
-    link: ""
-  },
-  {
-    tipo: "Documenti",
-    icona: "📄",
-    titolo: "Documenti e materiali",
-    descrizione: "Vademecum, regolamenti, schede adottanti e materiali utili.",
-    azione: "Apri documenti",
-    link: ""
-  },
-  {
-    tipo: "Studi",
-    icona: "🔬",
-    titolo: "Studi e fonti",
-    descrizione: "Bibliografia, riferimenti scientifici e documenti tecnici.",
-    azione: "Apri studi",
-    link: ""
-  },
-  {
-    tipo: "Grafiche",
-    icona: "🎨",
-    titolo: "Grafiche ENAPI",
-    descrizione: "Infografiche pronte da consultare e condividere.",
-    azione: "Apri grafiche",
-    link: ""
-  },
-  {
-    tipo: "Sostegno",
-    icona: "🤝",
-    titolo: "Tesseramento",
-    descrizione: "Sostieni ENAPI/APAE e accedi ai materiali dedicati ai soci.",
-    azione: "Tesserati",
-    link: ""
-  },
-  {
-    tipo: "Sostegno",
-    icona: "🌱",
-    titolo: "5x1000",
-    descrizione: "Una scelta senza costi che può aiutare recuperi, cure e divulgazione.",
-    azione: "Scopri come",
-    link: ""
-  }
-];
-
-const adminRisorseFuture = [
-  "Caricare documenti PDF e materiali per adottanti",
-  "Inserire o aggiornare link social, tesseramento e 5x1000",
-  "Caricare grafiche ENAPI consultabili dagli utenti",
-  "Aggiungere studi/fonti con titolo, descrizione e link",
-  "Gestire prodotti consigliati e link affiliati"
-];
 const alimentoSelezionato = getAlimento(alimentoId);
 function toggleStepDietauro(step) {
   setStepDietauroAperto((stepAttuale) =>
@@ -3049,11 +2967,7 @@ function HomeIcon({ tipo }) {
   return (
     <div style={pageStyle}>
 <header style={heroHeaderStyle}>
-  <div
-    style={heroBrandStyle}
-    onClick={() => setSezioneAttiva("home")}
-    title="Torna alla schermata principale"
-  >
+  <div style={heroBrandStyle}>
     <img
       src="/logo.jpg"
       alt="Logo ENAPI"
@@ -3071,6 +2985,17 @@ function HomeIcon({ tipo }) {
 
 {authUser && (
   <div style={heroActionsStyle}>
+    <button
+      type="button"
+      onClick={() => setSezioneAttiva("home")}
+      style={heroProfileButtonStyle}
+      title={authUser.email}
+    >
+      <span style={heroProfileIconStyle}>👤</span>
+      <span>Il mio profilo</span>
+      <span>⌄</span>
+    </button>
+
     <button
       type="button"
       onClick={logoutUtente}
@@ -3284,39 +3209,9 @@ function HomeIcon({ tipo }) {
 )}
 
       <div style={cardStyle}>
-  <div style={pesauroHeroStyle}>
-    <div>
-      <span style={pesauroKickerStyle}>Pesauro</span>
-      <h2 style={pesauroTitleStyle}>Petauri, colonie e pesi</h2>
-      <p style={pesauroSubtitleStyle}>
-        Monitora il peso dei petauri, gestisci le colonie e tieni ordinati documenti,
-        schede e andamento del benessere.
-      </p>
-    </div>
-
-    <div style={pesauroHeroIconStyle}>⚖️</div>
-  </div>
-
-  <div style={pesauroStatsGridStyle}>
-    <div style={pesauroStatCardStyle}>
-      <span>Petauri</span>
-      <strong>{petauri.length}</strong>
-    </div>
-
-    <div style={pesauroStatCardStyle}>
-      <span>Colonie</span>
-      <strong>{colonie.length}</strong>
-    </div>
-
-    <div style={pesauroStatCardStyle}>
-      <span>Pesate</span>
-      <strong>{pesi.length}</strong>
-    </div>
-
-    <div style={pesauroStatCardStyle}>
-      <span>Alert peso</span>
-      <strong>{alertPeso.length}</strong>
-    </div>
+  <div style={sectionTitleStyle}>
+    <h2>⚖️ Pesauro - petauri e pesi</h2>
+    <p>Gestisci petauri, colonie e pesate. I pesi salvati vengono usati anche per il calcolo della dieta al 30%.</p>
   </div>
 
   <div style={formGridStyle}>
@@ -3415,14 +3310,7 @@ function HomeIcon({ tipo }) {
     </div>
   </div>
 
-  <div style={pesauroSectionHeaderStyle}>
-    <div>
-      <h3>I miei petauri</h3>
-      <p>Apri una scheda per modificare dati, foto, documenti e pesate.</p>
-    </div>
-
-    <span>{petauriRiepilogo.length} schede</span>
-  </div>
+  <h3>I miei petauri</h3>
 
   {petauriRiepilogo.length === 0 && (
     <p>Nessun petauro registrato.</p>
@@ -3450,7 +3338,7 @@ function HomeIcon({ tipo }) {
   />
 ) : (
   <div style={petauroPhotoPlaceholderStyle}>
-    🐾
+    🐿️
   </div>
 )}
 
@@ -5241,81 +5129,6 @@ function HomeIcon({ tipo }) {
 
 {sezioneAttiva === "risorse" && (
   <>
-<div style={cardStyle}>
-  <div style={risorseHeroStyle}>
-    <div>
-      <span style={pesauroKickerStyle}>Risorse ENAPI</span>
-      <h2 style={pesauroTitleStyle}>Materiali, social e supporto</h2>
-      <p style={pesauroSubtitleStyle}>
-        Uno spazio unico per consultare documenti, studi, grafiche, prodotti consigliati
-        e collegamenti ufficiali ENAPI.
-      </p>
-    </div>
-
-    <div style={risorseHeroIconStyle}>📚</div>
-  </div>
-</div>
-
-{isAdmin && (
-  <div style={adminResourcePanelStyle}>
-    <div style={sectionTitleStyle}>
-      <h2>🛠️ Area admin risorse</h2>
-      <p>
-        Qui prepariamo la gestione dei contenuti caricabili da app: documenti, studi,
-        grafiche, link social e materiali ENAPI.
-      </p>
-    </div>
-
-    <div style={adminResourceGridStyle}>
-      {adminRisorseFuture.map((voce) => (
-        <div key={voce} style={adminResourceItemStyle}>
-          ✅ {voce}
-        </div>
-      ))}
-    </div>
-
-    <div style={infoBoxStyle}>
-      Prossimo passaggio tecnico: creiamo in Supabase una tabella risorse ENAPI e un bucket
-      per caricare PDF, immagini e grafiche direttamente dall'app.
-    </div>
-  </div>
-)}
-
-<div style={cardStyle}>
-  <div style={sectionTitleStyle}>
-    <h2>🌿 Collegamenti e materiali ENAPI</h2>
-    <p>Social, documenti, studi, grafiche e strumenti utili sempre a portata di mano.</p>
-  </div>
-
-  <div style={resourcesGridStyle}>
-    {risorseRapide.map((risorsa) => (
-      <div key={`${risorsa.tipo}-${risorsa.titolo}`} style={resourceCardStyle}>
-        <div style={resourceIconStyle}>{risorsa.icona}</div>
-
-        <span style={productCategoryStyle}>{risorsa.tipo}</span>
-
-        <h3>{risorsa.titolo}</h3>
-
-        <p>{risorsa.descrizione}</p>
-
-        {risorsa.link ? (
-          <button
-            type="button"
-            onClick={() => window.open(risorsa.link, "_blank")}
-            style={greenButton}
-          >
-            {risorsa.azione}
-          </button>
-        ) : (
-          <span style={resourceMissingLinkStyle}>
-            Link da inserire in admin
-          </span>
-        )}
-      </div>
-    ))}
-  </div>
-</div>
-
 {isAdmin && ( 
 <div style={cardStyle}>
   <div style={sectionTitleStyle}>
@@ -5616,14 +5429,11 @@ const filterFooterStyle = {
   flexWrap: "wrap"
 };
 const alertCard = {
-  background:
-    "linear-gradient(145deg, rgba(255,248,225,0.98) 0%, rgba(255,235,238,0.9) 100%)",
+  backgroundColor: "#ffe5e5",
   color: "#9b1c1c",
-  padding: "18px",
-  borderRadius: "22px",
-  marginBottom: "18px",
-  border: "1px solid #eadb9c",
-  boxShadow: "0 10px 24px rgba(176, 0, 32, 0.08)"
+  padding: "20px",
+  borderRadius: "20px",
+  marginBottom: "20px"
 };
 const alertItemStyle = {
   padding: "10px",
@@ -5775,85 +5585,6 @@ const formGridStyle = {
   gap: "12px"
 };
 
-const pesauroHeroStyle = {
-  background:
-    "linear-gradient(135deg, rgba(232,237,220,0.98) 0%, rgba(246,239,223,0.96) 100%)",
-  border: `1px solid ${enapiColors.bordo}`,
-  borderRadius: "24px",
-  padding: "clamp(16px, 4vw, 24px)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: "16px",
-  overflow: "hidden"
-};
-
-const pesauroKickerStyle = {
-  color: enapiColors.oliva,
-  fontSize: "12px",
-  fontWeight: "900",
-  letterSpacing: "0.14em",
-  textTransform: "uppercase"
-};
-
-const pesauroTitleStyle = {
-  margin: "4px 0 6px",
-  color: enapiColors.bosco,
-  fontSize: "clamp(27px, 5vw, 40px)",
-  lineHeight: "1.05",
-  fontWeight: "850",
-  letterSpacing: "-0.035em"
-};
-
-const pesauroSubtitleStyle = {
-  margin: 0,
-  color: enapiColors.marrone,
-  fontSize: "15px",
-  lineHeight: "1.45",
-  maxWidth: "680px"
-};
-
-const pesauroHeroIconStyle = {
-  width: "86px",
-  height: "86px",
-  borderRadius: "50%",
-  backgroundColor: enapiColors.bianco,
-  border: `1px solid ${enapiColors.bordo}`,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontSize: "42px",
-  flexShrink: 0,
-  boxShadow: "0 10px 22px rgba(35,75,45,0.10)"
-};
-
-const pesauroStatsGridStyle = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
-  gap: "10px"
-};
-
-const pesauroStatCardStyle = {
-  backgroundColor: enapiColors.salviaChiaro,
-  border: `1px solid ${enapiColors.bordo}`,
-  borderRadius: "18px",
-  padding: "12px",
-  display: "flex",
-  flexDirection: "column",
-  gap: "4px",
-  color: enapiColors.bosco,
-  boxShadow: "0 6px 14px rgba(35,75,45,0.05)"
-};
-
-const pesauroSectionHeaderStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "flex-end",
-  gap: "12px",
-  flexWrap: "wrap",
-  color: enapiColors.bosco
-};
-
 const miniPanelStyle = {
   backgroundColor: enapiColors.salviaChiaro,
   border: `1px solid ${enapiColors.bordo}`,
@@ -5866,43 +5597,39 @@ const miniPanelStyle = {
 };
 
 const summaryBoxStyle = {
-  backgroundColor: enapiColors.salvia,
-  borderRadius: "16px",
-  padding: "12px",
+  backgroundColor: "#eef1ea",
+  borderRadius: "12px",
+  padding: "10px",
   display: "flex",
   flexDirection: "column",
-  gap: "5px",
-  color: enapiColors.bosco,
-  border: `1px solid ${enapiColors.bordo}`
+  gap: "4px",
+  color: "#234b2d"
 };
 
 const petauroGridStyle = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))",
-  gap: "14px"
+  gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+  gap: "10px"
 };
 
 const petauroCardStyle = {
-  background:
-    "linear-gradient(145deg, rgba(255,253,247,0.98) 0%, rgba(243,245,236,0.96) 100%)",
-  borderRadius: "22px",
-  padding: "16px",
+  backgroundColor: "#ffffff",
+  borderRadius: "16px",
+  padding: "14px",
   display: "flex",
   flexDirection: "column",
-  gap: "8px",
-  textAlign: "center",
-  alignItems: "center",
+  gap: "6px",
+  textAlign: "left",
   cursor: "pointer",
   fontFamily: "inherit",
-  color: enapiColors.bosco,
-  boxShadow: "0 8px 20px rgba(35, 75, 45, 0.08)"
+  color: "#234b2d"
 };
 
 const chartPanelStyle = {
-  backgroundColor: enapiColors.bianco,
-  border: `1px solid ${enapiColors.bordo}`,
-  borderRadius: "22px",
-  padding: "16px",
+  backgroundColor: "#ffffff",
+  border: "1px solid #d8ddcf",
+  borderRadius: "16px",
+  padding: "14px",
   marginTop: "10px"
 };
 const verificaGridStyle = {
@@ -6172,7 +5899,9 @@ const heroHeaderStyle = {
   justifyContent: "space-between",
   gap: "12px",
   boxShadow: "0 12px 26px rgba(35, 75, 45, 0.22)",
-  position: "relative"
+  position: "sticky",
+  top: "8px",
+  zIndex: 50
 };
 
 const logoStyle = {
@@ -6211,26 +5940,24 @@ const heroSubtitleStyle = {
 };
 
 const petauroPhotoStyle = {
-  width: "86px",
-  height: "86px",
+  width: "72px",
+  height: "72px",
   objectFit: "cover",
   borderRadius: "50%",
-  border: `2px solid ${enapiColors.bordo}`,
-  backgroundColor: enapiColors.salvia,
-  boxShadow: "0 8px 18px rgba(35,75,45,0.12)"
+  border: "1px solid #d8ddcf",
+  backgroundColor: "#eef1ea"
 };
 
 const petauroPhotoPlaceholderStyle = {
-  width: "86px",
-  height: "86px",
+  width: "72px",
+  height: "72px",
   borderRadius: "50%",
-  border: `2px solid ${enapiColors.bordo}`,
-  backgroundColor: enapiColors.salvia,
+  border: "1px solid #d8ddcf",
+  backgroundColor: "#eef1ea",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  fontSize: "34px",
-  boxShadow: "0 8px 18px rgba(35,75,45,0.12)"
+  fontSize: "30px"
 };
 
 const petauroNoteStyle = {
@@ -6259,103 +5986,6 @@ const affiliateNoticeStyle = {
   border: "1px solid #eadb9c",
   fontSize: "14px",
   lineHeight: "1.4"
-};
-
-const risorseHeroStyle = {
-  background:
-    "linear-gradient(135deg, rgba(232,237,220,0.98) 0%, rgba(246,239,223,0.96) 100%)",
-  border: `1px solid ${enapiColors.bordo}`,
-  borderRadius: "24px",
-  padding: "clamp(16px, 4vw, 24px)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: "16px",
-  overflow: "hidden"
-};
-
-const risorseHeroIconStyle = {
-  width: "86px",
-  height: "86px",
-  borderRadius: "50%",
-  backgroundColor: enapiColors.bianco,
-  border: `1px solid ${enapiColors.bordo}`,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontSize: "42px",
-  flexShrink: 0,
-  boxShadow: "0 10px 22px rgba(35,75,45,0.10)"
-};
-
-const adminResourcePanelStyle = {
-  background:
-    "linear-gradient(145deg, rgba(255,248,225,0.96) 0%, rgba(243,245,236,0.96) 100%)",
-  border: `1px solid ${enapiColors.bordo}`,
-  borderRadius: "24px",
-  padding: "clamp(16px, 3vw, 22px)",
-  marginBottom: "18px",
-  display: "flex",
-  flexDirection: "column",
-  gap: "14px",
-  boxShadow: "0 10px 24px rgba(35,75,45,0.08)"
-};
-
-const adminResourceGridStyle = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-  gap: "10px"
-};
-
-const adminResourceItemStyle = {
-  backgroundColor: enapiColors.bianco,
-  border: `1px solid ${enapiColors.bordo}`,
-  borderRadius: "16px",
-  padding: "12px",
-  color: enapiColors.bosco,
-  fontWeight: "700"
-};
-
-const resourcesGridStyle = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-  gap: "14px"
-};
-
-const resourceCardStyle = {
-  background:
-    "linear-gradient(145deg, rgba(255,253,247,0.98) 0%, rgba(243,245,236,0.96) 100%)",
-  border: `1px solid ${enapiColors.bordo}`,
-  borderRadius: "22px",
-  padding: "16px",
-  display: "flex",
-  flexDirection: "column",
-  gap: "8px",
-  boxShadow: "0 8px 20px rgba(35,75,45,0.07)",
-  color: enapiColors.marrone
-};
-
-const resourceIconStyle = {
-  width: "52px",
-  height: "52px",
-  borderRadius: "50%",
-  backgroundColor: enapiColors.salvia,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontSize: "25px",
-  border: `1px solid ${enapiColors.bordo}`
-};
-
-const resourceMissingLinkStyle = {
-  backgroundColor: enapiColors.salviaChiaro,
-  color: enapiColors.marroneChiaro,
-  border: `1px solid ${enapiColors.bordo}`,
-  borderRadius: "999px",
-  padding: "9px 12px",
-  fontSize: "13px",
-  fontWeight: "700",
-  textAlign: "center"
 };
 
 const productsGridStyle = {
@@ -6744,8 +6374,7 @@ const heroBrandStyle = {
   display: "flex",
   alignItems: "center",
   gap: "10px",
-  minWidth: 0,
-  cursor: "pointer"
+  minWidth: 0
 };
 
 const heroBadgeStyle = {
