@@ -6217,8 +6217,8 @@ const welcomeStripStyle = {
   padding: "clamp(20px, 4vw, 30px)",
   minHeight: "150px",
   display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
+  flexDirection: "column",
+  alignItems: "stretch",
   gap: "18px",
   overflow: "hidden",
   position: "relative",
@@ -6248,8 +6248,8 @@ const welcomeParagraphStyle = {
 };
 
 const welcomeIllustrationStyle = {
-  width: "clamp(180px, 34vw, 430px)",
-  height: "150px",
+  width: "100%",
+  height: "clamp(145px, 24vw, 175px)",
   flexShrink: 0,
   position: "relative",
   overflow: "hidden",
@@ -6293,10 +6293,9 @@ const welcomeGliderStyle = {
 };
 
 const welcomeImageStyle = {
-  width: "120%",
-  height: "120%",
+  width: "100%",
+  height: "100%",
   objectFit: "cover",
-  objectPosition: "right center",
-  display: "block",
-  transform: "translate(-7%, -9%) scale(1.12)"
+  objectPosition: "70% center",
+  display: "block"
 };
