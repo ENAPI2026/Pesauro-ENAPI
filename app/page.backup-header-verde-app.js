@@ -2966,33 +2966,7 @@ function HomeIcon({ tipo }) {
 }
   return (
     <div style={pageStyle}>
-<header style={heroHeaderStyle}>
-  <div style={heroBrandStyle}>
-    <img
-      src="/logo.jpg"
-      alt="Logo ENAPI"
-      style={logoStyle}
-    />
-
-    <div style={heroTextBlockStyle}>
-      <h1 style={heroTitleStyle}>Pesauro ENAPI</h1>
-
-      <p style={heroSubtitleStyle}>
-        Dieta, pesi e benessere
-      </p>
-    </div>
-  </div>
-
-  {authUser && (
-    <button
-      type="button"
-      onClick={logoutUtente}
-      style={heroProfileButtonStyle}
-    >
-      Esci
-    </button>
-  )}
-</header>
+npm run build; git status; git add .; git commit -m "Aggiorna header Home ENAPI"; git push
 <div style={authUser ? accessCompactCardStyle : accessCardStyle}>
   {authUser ? (
     <div style={accessCompactRowStyle}>
