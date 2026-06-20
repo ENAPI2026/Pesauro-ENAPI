@@ -3079,32 +3079,12 @@ function HomeIcon({ tipo }) {
 
 {authUser && sezioneAttiva === "home" && (
   <div style={cardStyle}>
-    <div style={welcomeStripStyle}>
-      <div style={welcomeTextStyle}>
-        <h2 style={welcomeTitleStyle}>Benvenuto!</h2>
-
-        <p style={welcomeParagraphStyle}>
-          Pesauro ENAPI ti accompagna nella gestione quotidiana della dieta,
-          del peso e del benessere del petauro dello zucchero, secondo lo
-          standard ENAPI.
-        </p>
-      </div>
-
-    <div style={welcomeIllustrationStyle}>
-  <img
-    src="/welcome-glider.png"
-    alt="Petauro dello zucchero ENAPI"
-    style={welcomeImageStyle}
-  />
-</div>  
-    </div>
-
     <div style={sectionTitleStyle}>
       <h2>🌿 Cosa vuoi fare?</h2>
       <p>Scegli la sezione dell'app che vuoi utilizzare.</p>
     </div>
 
-    <div style={homeGridStyle}>
+   <div style={homeGridStyle}>
   <div style={homeCardStyle} onClick={() => setSezioneAttiva("dietauro")}>
     <img
   src="/icons/icon-dietauro.png"
@@ -6208,95 +6188,4 @@ const heroKickerStyle = {
   fontWeight: "800",
   letterSpacing: "0.18em",
   textTransform: "uppercase"
-};
-const welcomeStripStyle = {
-  background:
-    "linear-gradient(135deg, rgba(246,239,223,0.96) 0%, rgba(232,237,220,0.92) 55%, rgba(247,241,230,0.96) 100%)",
-  border: `1px solid ${enapiColors.bordo}`,
-  borderRadius: "26px",
-  padding: "clamp(20px, 4vw, 30px)",
-  minHeight: "150px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: "18px",
-  overflow: "hidden",
-  position: "relative",
-  boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.45)"
-};
-
-const welcomeTextStyle = {
-  position: "relative",
-  zIndex: 2,
-  maxWidth: "620px"
-};
-
-const welcomeTitleStyle = {
-  margin: "0 0 8px",
-  color: enapiColors.bosco,
-  fontSize: "clamp(32px, 6vw, 48px)",
-  lineHeight: "1",
-  fontWeight: "850",
-  letterSpacing: "-0.03em"
-};
-
-const welcomeParagraphStyle = {
-  margin: 0,
-  color: enapiColors.marrone,
-  fontSize: "clamp(15px, 2.6vw, 18px)",
-  lineHeight: "1.45"
-};
-
-const welcomeIllustrationStyle = {
-  width: "clamp(180px, 34vw, 430px)",
-  height: "150px",
-  flexShrink: 0,
-  position: "relative",
-  overflow: "hidden",
-  borderRadius: "22px",
-  border: `1px solid ${enapiColors.bordo}`,
-  boxShadow: "0 10px 24px rgba(35,75,45,0.10)"
-};
-
-const welcomeLeafOneStyle = {
-  position: "absolute",
-  right: "78px",
-  top: "8px",
-  fontSize: "72px",
-  transform: "rotate(-18deg)",
-  opacity: 0.45
-};
-
-const welcomeLeafTwoStyle = {
-  position: "absolute",
-  right: "18px",
-  bottom: "10px",
-  fontSize: "86px",
-  transform: "rotate(16deg)",
-  opacity: 0.38
-};
-
-const welcomeGliderStyle = {
-  position: "absolute",
-  right: "28px",
-  top: "34px",
-  width: "78px",
-  height: "78px",
-  borderRadius: "50%",
-  backgroundColor: "rgba(255,253,247,0.78)",
-  border: `1px solid ${enapiColors.bordo}`,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontSize: "34px",
-  boxShadow: "0 10px 22px rgba(35,75,45,0.12)"
-};
-
-const welcomeImageStyle = {
-  width: "120%",
-  height: "120%",
-  objectFit: "cover",
-  objectPosition: "right center",
-  display: "block",
-  transform: "translate(-7%, -9%) scale(1.12)"
 };
