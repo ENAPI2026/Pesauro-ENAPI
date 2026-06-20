@@ -2983,91 +2983,99 @@ function HomeIcon({ tipo }) {
     </p>
   </div>
 </header>    
-<div style={accessCardStyle}>
-<div style={sectionTitleStyle}>
-  <div style={accessHeaderIconStyle}>🔐</div>
-  <h2>Accesso</h2>
-  <p>Entra nel tuo spazio personale Pesauro ENAPI.</p>
-</div>  
+<div style={authUser ? accessCompactCardStyle : accessCardStyle}>
   {authUser ? (
-    <div style={miniPanelStyle}>
-      <strong>Accesso effettuato</strong>
-      <span>{authUser.email}</span>
+    <div style={accessCompactRowStyle}>
+      <div style={accessCompactInfoStyle}>
+        <span style={accessCompactLabelStyle}>Profilo</span>
 
-      {isAdmin && (
-        <span style={adminBadgeStyle}>
-          Admin
-        </span>
-      )}
+        <strong style={accessCompactEmailStyle}>
+          {authUser.email}
+        </strong>
 
-      <button onClick={logoutUtente} style={redButton}>
+        {isAdmin && (
+          <span style={adminBadgeStyle}>
+            Admin
+          </span>
+        )}
+      </div>
+
+      <button onClick={logoutUtente} style={logoutCompactButtonStyle}>
         Esci
       </button>
     </div>
   ) : (
-    <div style={miniPanelStyle}>
-      <div style={authTabsStyle}>
-        <button
-          type="button"
-          onClick={() => setAuthModalita("login")}
-          style={authModalita === "login" ? authTabActiveStyle : authTabStyle}
-        >
-          Accedi
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setAuthModalita("registrazione")}
-          style={authModalita === "registrazione" ? authTabActiveStyle : authTabStyle}
-        >
-          Registrati
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setAuthModalita("recupero")}
-          style={authModalita === "recupero" ? authTabActiveStyle : authTabStyle}
-        >
-          Password dimenticata
-        </button>
+    <>
+      <div style={sectionTitleStyle}>
+        <div style={accessHeaderIconStyle}>🔐</div>
+        <h2>Accesso</h2>
+        <p>Entra nel tuo spazio personale Pesauro ENAPI.</p>
       </div>
 
-      <input
-        type="email"
-        placeholder="Email"
-        value={loginEmail}
-        onChange={(e) => setLoginEmail(e.target.value)}
-        style={inputStyle}
-      />
+      <div style={miniPanelStyle}>
+        <div style={authTabsStyle}>
+          <button
+            type="button"
+            onClick={() => setAuthModalita("login")}
+            style={authModalita === "login" ? authTabActiveStyle : authTabStyle}
+          >
+            Accedi
+          </button>
 
-      {authModalita !== "recupero" && (
+          <button
+            type="button"
+            onClick={() => setAuthModalita("registrazione")}
+            style={authModalita === "registrazione" ? authTabActiveStyle : authTabStyle}
+          >
+            Registrati
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setAuthModalita("recupero")}
+            style={authModalita === "recupero" ? authTabActiveStyle : authTabStyle}
+          >
+            Password dimenticata
+          </button>
+        </div>
+
         <input
-          type="password"
-          placeholder="Password"
-          value={loginPassword}
-          onChange={(e) => setLoginPassword(e.target.value)}
+          type="email"
+          placeholder="Email"
+          value={loginEmail}
+          onChange={(e) => setLoginEmail(e.target.value)}
           style={inputStyle}
         />
-      )}
 
-      {authModalita === "login" && (
-        <button onClick={loginUtente} style={greenButton}>
-          Accedi
-        </button>
-      )}
+        {authModalita !== "recupero" && (
+          <input
+            type="password"
+            placeholder="Password"
+            value={loginPassword}
+            onChange={(e) => setLoginPassword(e.target.value)}
+            style={inputStyle}
+          />
+        )}
 
-      {authModalita === "registrazione" && (
-        <button onClick={registraUtente} style={greenButton}>
-          Crea account
-        </button>
-      )}
+        {authModalita === "login" && (
+          <button onClick={loginUtente} style={greenButton}>
+            Accedi
+          </button>
+        )}
 
-      {authModalita === "recupero" && (
-        <button onClick={recuperaPassword} style={greenButton}>
-          Invia email recupero password
-        </button>
-      )}
-    </div>
+        {authModalita === "registrazione" && (
+          <button onClick={registraUtente} style={greenButton}>
+            Crea account
+          </button>
+        )}
+
+        {authModalita === "recupero" && (
+          <button onClick={recuperaPassword} style={greenButton}>
+            Invia email recupero password
+          </button>
+        )}
+      </div>
+    </>
   )}
 
   {authMessaggio && (
@@ -3076,7 +3084,6 @@ function HomeIcon({ tipo }) {
     </div>
   )}
 </div>
-
 {authUser && sezioneAttiva === "home" && (
   <div style={cardStyle}>
     <div style={welcomeStripStyle}>
@@ -6298,4 +6305,55 @@ const welcomeImageStyle = {
   objectFit: "cover",
   objectPosition: "70% center",
   display: "block"
+};
+const accessCompactCardStyle = {
+  background:
+    "linear-gradient(145deg, rgba(255,253,247,0.92) 0%, rgba(243,245,236,0.9) 100%)",
+  padding: "10px 12px",
+  borderRadius: "18px",
+  marginBottom: "14px",
+  border: `1px solid ${enapiColors.bordo}`,
+  boxShadow: "0 8px 20px rgba(35, 75, 45, 0.06)"
+};
+
+const accessCompactRowStyle = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: "10px",
+  flexWrap: "wrap"
+};
+
+const accessCompactInfoStyle = {
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
+  flexWrap: "wrap",
+  minWidth: 0
+};
+
+const accessCompactLabelStyle = {
+  color: enapiColors.oliva,
+  fontWeight: "800",
+  fontSize: "12px",
+  textTransform: "uppercase",
+  letterSpacing: "0.08em"
+};
+
+const accessCompactEmailStyle = {
+  color: enapiColors.bosco,
+  fontSize: "14px",
+  overflowWrap: "anywhere"
+};
+
+const logoutCompactButtonStyle = {
+  backgroundColor: "#b00020",
+  color: "white",
+  border: "none",
+  padding: "8px 14px",
+  borderRadius: "999px",
+  cursor: "pointer",
+  minHeight: "36px",
+  fontSize: "13px",
+  fontWeight: "bold"
 };
