@@ -88,6 +88,16 @@ const [storicoColoniaId, setStoricoColoniaId] = useState("");
 const [storicoCategoria, setStoricoCategoria] = useState("");
 const [adminAlimentoId, setAdminAlimentoId] = useState("");
 const [adminAlimentoEdit, setAdminAlimentoEdit] = useState(null); 
+const [risorseEnapi, setRisorseEnapi] = useState([]);
+const [risorsaTipo, setRisorsaTipo] = useState("Come adottare");
+const [risorsaTitolo, setRisorsaTitolo] = useState("");
+const [risorsaDescrizione, setRisorsaDescrizione] = useState("");
+const [risorsaLink, setRisorsaLink] = useState("");
+const [risorsaOrdinamento, setRisorsaOrdinamento] = useState("");
+const [risorsaVisibile, setRisorsaVisibile] = useState(true);
+const [risorsaFile, setRisorsaFile] = useState(null);
+const [risorsaCaricamento, setRisorsaCaricamento] = useState(false);
+const [categoriaRisorsaAttiva, setCategoriaRisorsaAttiva] = useState("Come adottare");
 const [authUser, setAuthUser] = useState(null);
 const [loginEmail, setLoginEmail] = useState("");
 const [loginPassword, setLoginPassword] = useState("");
@@ -125,6 +135,7 @@ async function loadAll() {
     loadDiete(),
     loadSettimane(),
     loadGiorniDB(),
+    loadRisorseEnapi(),
     controllaAdmin()
   ]);
 }
@@ -364,6 +375,21 @@ async function loadPetauri() {
   setGiorniDB(data || []);
 }
 
+async function loadRisorseEnapi() {
+  const { data, error } = await supabase
+    .from("risorse_enapi")
+    .select("*")
+    .order("ordinamento", { ascending: true })
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    setRisorseEnapi([]);
+    return;
+  }
+
+  setRisorseEnapi(data || []);
+}
+
   function nomePetauroDisplay(petauro) {
     return petauro?.Nome || petauro?.nome || "-";
   }
@@ -470,6 +496,255 @@ function pulisciNomeFile(nomeFile) {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-zA-Z0-9._-]/g, "_");
+}
+
+function iconaRisorsa(tipo) {
+  const tipoNormalizzato = String(tipo || "").toLowerCase();
+
+  if (tipoNormalizzato.includes("sito")) return "🌐";
+  if (tipoNormalizzato.includes("social")) return "📣";
+  if (tipoNormalizzato.includes("chat")) return "💬";
+  if (tipoNormalizzato.includes("document")) return "📄";
+  if (tipoNormalizzato.includes("studi")) return "🔬";
+  if (tipoNormalizzato.includes("grafic")) return "🎨";
+  if (tipoNormalizzato.includes("sostegno")) return "🤝";
+  if (tipoNormalizzato.includes("acquisti")) return "🛒";
+
+  return "🌿";
+}
+
+function immagineCategoriaRisorsa(risorsa) {
+  const testo = `${risorsa?.tipo || ""} ${risorsa?.titolo || ""}`.toLowerCase();
+
+  if (
+    testo.includes("acquisti") ||
+    testo.includes("prodotto") ||
+    testo.includes("amazon") ||
+    testo.includes("integratori")
+  ) {
+    return "/icons/resource-acquisti.png";
+  }
+
+  if (
+    testo.includes("sostegno") ||
+    testo.includes("sostienici") ||
+    testo.includes("tesseramento") ||
+    testo.includes("5x1000")
+  ) {
+    return "/icons/resource-sostienici.png";
+  }
+
+  if (
+    testo.includes("social") ||
+    testo.includes("sito") ||
+    testo.includes("chat") ||
+    testo.includes("whatsapp") ||
+    testo.includes("facebook") ||
+    testo.includes("instagram")
+  ) {
+    return "/icons/resource-social.png";
+  }
+
+  if (
+    testo.includes("adottare") ||
+    testo.includes("adozione") ||
+    testo.includes("adottanti") ||
+    testo.includes("cessione")
+  ) {
+    return "/icons/resource-adottare.png";
+  }
+
+  return "/icons/resource-documenti.png";
+}
+
+function etichettaAzioneRisorsa(risorsa) {
+  const tipo = String(risorsa?.tipo || "").toLowerCase();
+  const titolo = String(risorsa?.titolo || "").toLowerCase();
+
+  if (!(risorsa?.link || risorsa?.file_url)) return "In preparazione";
+
+  if (tipo.includes("acquisti")) return "Acquista qui";
+  if (tipo.includes("sito")) return "Apri sito";
+  if (tipo.includes("chat") || titolo.includes("whatsapp")) return "Apri WhatsApp";
+  if (tipo.includes("social") && titolo.includes("facebook")) return "Apri Facebook";
+  if (tipo.includes("social") && titolo.includes("instagram")) return "Apri Instagram";
+  if (tipo.includes("social")) return "Apri social";
+  if (tipo.includes("document")) return "Apri documento";
+  if (tipo.includes("studi")) return "Apri studio";
+  if (tipo.includes("grafic")) return "Apri grafica";
+  if (tipo.includes("sostegno")) return "Scopri di più";
+
+  return "Apri";
+}
+
+function dominioRisorsa(url) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return "";
+  }
+}
+
+function renderAnteprimaRisorsa(risorsa) {
+  const url = risorsa?.file_url || risorsa?.link || "";
+  if (!url) return null;
+
+  const testo = String(url).toLowerCase();
+  const isImmagine = /\.(png|jpe?g|webp|gif)(\?|$)/i.test(testo);
+  const isPdf = /\.pdf(\?|$)/i.test(testo);
+  const isDocumento = /\.(doc|docx)(\?|$)/i.test(testo);
+  const dominio = dominioRisorsa(risorsa?.link || risorsa?.file_url || "");
+
+  if (isImmagine) {
+    return (
+      <div style={resourcePreviewImageWrapStyle}>
+        <img
+          src={url}
+          alt={risorsa.titolo}
+          style={resourcePreviewImageStyle}
+        />
+      </div>
+    );
+  }
+
+  if (isPdf || isDocumento || risorsa?.file_url) {
+    return (
+      <div style={resourcePreviewFileStyle}>
+        <span style={resourcePreviewFileIconStyle}>
+          {isPdf ? "PDF" : isDocumento ? "DOC" : "FILE"}
+        </span>
+
+        <span>
+          {isPdf
+            ? "Documento PDF collegato"
+            : isDocumento
+            ? "Documento collegato"
+            : "File collegato"}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div style={resourcePreviewLinkStyle}>
+      <span>🔗</span>
+      <span>{dominio || "Link collegato"}</span>
+    </div>
+  );
+}
+
+function apriRisorsa(risorsa) {
+  const destinazione = risorsa?.link || risorsa?.file_url;
+
+  if (!destinazione) {
+    alert("Risorsa non ancora disponibile.");
+    return;
+  }
+
+  window.open(destinazione, "_blank");
+}
+
+async function salvaRisorsaEnapi() {
+  if (!risorsaTitolo.trim()) {
+    alert("Inserisci il titolo della risorsa.");
+    return;
+  }
+
+  if (!risorsaLink.trim() && !risorsaFile) {
+    const conferma = confirm(
+      "Non hai inserito né link né file. Vuoi salvare comunque questa risorsa come promemoria?"
+    );
+
+    if (!conferma) return;
+  }
+
+  const userId = await getUserIdCorrente();
+
+  if (!userId) {
+    alert("Devi effettuare l'accesso per salvare una risorsa.");
+    return;
+  }
+
+  setRisorsaCaricamento(true);
+
+  let fileUrl = "";
+  let filePath = "";
+
+  if (risorsaFile) {
+    const nomeFilePulito = pulisciNomeFile(risorsaFile.name);
+    filePath = `${pulisciNomeFile(risorsaTipo)}/${Date.now()}-${nomeFilePulito}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("risorse-enapi")
+      .upload(filePath, risorsaFile, { upsert: false });
+
+    if (uploadError) {
+      setRisorsaCaricamento(false);
+      alert("Errore caricamento file: " + uploadError.message);
+      return;
+    }
+
+    const { data } = supabase.storage
+      .from("risorse-enapi")
+      .getPublicUrl(filePath);
+
+    fileUrl = data.publicUrl;
+  }
+
+  const { error } = await supabase.from("risorse_enapi").insert([
+    {
+      tipo: risorsaTipo,
+      titolo: risorsaTitolo.trim(),
+      descrizione: risorsaDescrizione.trim(),
+      link: risorsaLink.trim(),
+      file_url: fileUrl,
+      file_path: filePath,
+      visibile: risorsaVisibile,
+      ordinamento: risorsaOrdinamento ? Number(risorsaOrdinamento) : 0,
+      created_by: userId
+    }
+  ]);
+
+  if (error) {
+    if (filePath) {
+      await supabase.storage.from("risorse-enapi").remove([filePath]);
+    }
+
+    setRisorsaCaricamento(false);
+    alert("Errore salvataggio risorsa: " + error.message);
+    return;
+  }
+
+  setRisorsaTitolo("");
+  setRisorsaDescrizione("");
+  setRisorsaLink("");
+  setRisorsaOrdinamento("");
+  setRisorsaVisibile(true);
+  setRisorsaFile(null);
+  setRisorsaCaricamento(false);
+
+  await loadRisorseEnapi();
+}
+
+async function eliminaRisorsaEnapi(risorsa) {
+  const conferma = confirm(`Eliminare "${risorsa.titolo}" dalle risorse ENAPI?`);
+  if (!conferma) return;
+
+  const { error } = await supabase
+    .from("risorse_enapi")
+    .delete()
+    .eq("id", Number(risorsa.id));
+
+  if (error) {
+    alert("Errore eliminazione risorsa: " + error.message);
+    return;
+  }
+
+  if (risorsa.file_path) {
+    await supabase.storage.from("risorse-enapi").remove([risorsa.file_path]);
+  }
+
+  await loadRisorseEnapi();
 }
 
 async function caricaFotoPetauro(file) {
@@ -2799,88 +3074,166 @@ const prodottiUtili = [
   }
 ];
 
-const risorseRapide = [
+const categorieRisorseEnapi = [
   {
-    tipo: "Sito",
-    icona: "🌐",
-    titolo: "Sito ENAPI",
-    descrizione: "Pagina ufficiale con informazioni, materiali e aggiornamenti.",
-    azione: "Apri sito",
+    tipo: "Come adottare",
+    immagine: "/icons/resource-adottare.png",
+    titolo: "Come adottare",
+    descrizione:
+      "Percorso adottivo, requisiti, regolamenti, gestione corretta e materiali per chi vuole accogliere un petauro.",
+    azione: "Apri sezione",
+    link: ""
+  },
+  {
+    tipo: "Infografiche e documenti utili",
+    immagine: "/icons/resource-documenti.png",
+    titolo: "Infografiche e documenti utili",
+    descrizione:
+      "Vademecum, schede, regolamenti, grafiche educative ENAPI e materiali pronti da consultare o condividere.",
+    azione: "Consulta materiali",
+    link: ""
+  },
+  {
+    tipo: "Social e contatti",
+    immagine: "/icons/resource-social.png",
+    titolo: "Social e contatti",
+    descrizione:
+      "Sito ufficiale, Facebook, Instagram, WhatsApp e canali rapidi per rimanere aggiornati o contattare ENAPI.",
+    azione: "Apri contatti",
     link: "https://www.petaurodellozucchero.org"
   },
   {
-    tipo: "Social",
-    icona: "📘",
-    titolo: "Facebook",
-    descrizione: "Gruppo, comunicazioni e aggiornamenti per adottanti e soci.",
-    azione: "Apri Facebook",
+    tipo: "Sostienici",
+    immagine: "/icons/resource-sostienici.png",
+    titolo: "Sostienici",
+    descrizione:
+      "Tesseramento, 5x1000 e modi concreti per aiutare recuperi, cure veterinarie, divulgazione e gestione dei petauri.",
+    azione: "Scopri come aiutare",
     link: ""
   },
   {
-    tipo: "Social",
-    icona: "📸",
-    titolo: "Instagram",
-    descrizione: "Grafiche divulgative, campagne ENAPI e contenuti educativi.",
-    azione: "Apri Instagram",
-    link: ""
-  },
-  {
-    tipo: "Chat",
-    icona: "💬",
-    titolo: "WhatsApp / Chat",
-    descrizione: "Contatto rapido per supporto, recuperi e informazioni.",
-    azione: "Apri chat",
-    link: ""
-  },
-  {
-    tipo: "Documenti",
-    icona: "📄",
-    titolo: "Documenti e materiali",
-    descrizione: "Vademecum, regolamenti, schede adottanti e materiali utili.",
-    azione: "Apri documenti",
-    link: ""
-  },
-  {
-    tipo: "Studi",
-    icona: "🔬",
-    titolo: "Studi e fonti",
-    descrizione: "Bibliografia, riferimenti scientifici e documenti tecnici.",
-    azione: "Apri studi",
-    link: ""
-  },
-  {
-    tipo: "Grafiche",
-    icona: "🎨",
-    titolo: "Grafiche ENAPI",
-    descrizione: "Infografiche pronte da consultare e condividere.",
-    azione: "Apri grafiche",
-    link: ""
-  },
-  {
-    tipo: "Sostegno",
-    icona: "🤝",
-    titolo: "Tesseramento",
-    descrizione: "Sostieni ENAPI/APAE e accedi ai materiali dedicati ai soci.",
-    azione: "Tesserati",
-    link: ""
-  },
-  {
-    tipo: "Sostegno",
-    icona: "🌱",
-    titolo: "5x1000",
-    descrizione: "Una scelta senza costi che può aiutare recuperi, cure e divulgazione.",
-    azione: "Scopri come",
+    tipo: "Link acquisti",
+    immagine: "/icons/resource-acquisti.png",
+    titolo: "Link acquisti",
+    descrizione:
+      "Prodotti utili, integratori consigliati, strumenti per pesatura e accessori selezionati per la gestione quotidiana.",
+    azione: "Vai ai prodotti",
     link: ""
   }
 ];
 
-const adminRisorseFuture = [
-  "Caricare documenti PDF e materiali per adottanti",
-  "Inserire o aggiornare link social, tesseramento e 5x1000",
-  "Caricare grafiche ENAPI consultabili dagli utenti",
-  "Aggiungere studi/fonti con titolo, descrizione e link",
-  "Gestire prodotti consigliati e link affiliati"
-];
+const tipiRisorsa = categorieRisorseEnapi.map((categoria) => categoria.tipo);
+
+function categoriaRisorsaDaTipo(tipo, titolo = "") {
+  const testo = `${tipo || ""} ${titolo || ""}`.toLowerCase();
+
+  if (tipiRisorsa.some((categoria) => categoria.toLowerCase() === String(tipo || "").toLowerCase())) {
+    return tipiRisorsa.find(
+      (categoria) => categoria.toLowerCase() === String(tipo || "").toLowerCase()
+    );
+  }
+
+  if (
+    testo.includes("acquisti") ||
+    testo.includes("prodotto") ||
+    testo.includes("amazon") ||
+    testo.includes("integratori")
+  ) {
+    return "Link acquisti";
+  }
+
+  if (
+    testo.includes("sostegno") ||
+    testo.includes("sostienici") ||
+    testo.includes("tesseramento") ||
+    testo.includes("5x1000") ||
+    testo.includes("donazione")
+  ) {
+    return "Sostienici";
+  }
+
+  if (
+    testo.includes("social") ||
+    testo.includes("sito") ||
+    testo.includes("chat") ||
+    testo.includes("whatsapp") ||
+    testo.includes("facebook") ||
+    testo.includes("instagram") ||
+    testo.includes("contatti")
+  ) {
+    return "Social e contatti";
+  }
+
+  if (
+    testo.includes("adottare") ||
+    testo.includes("adozione") ||
+    testo.includes("adottanti") ||
+    testo.includes("cessione")
+  ) {
+    return "Come adottare";
+  }
+
+  return "Infografiche e documenti utili";
+}
+
+const risorseDinamiche = useMemo(() => {
+  return risorseEnapi
+    .filter((risorsa) => risorsa.visibile !== false)
+    .map((risorsa) => {
+      const categoria = categoriaRisorsaDaTipo(risorsa.tipo, risorsa.titolo);
+
+      return {
+        ...risorsa,
+        categoria,
+        azione: etichettaAzioneRisorsa({ ...risorsa, tipo: categoria })
+      };
+    });
+}, [risorseEnapi]);
+
+const acquistiBase = prodottiUtili
+  .map((prodotto, index) => ({
+        id: `prodotto-${index}`,
+        tipo: "Link acquisti",
+        categoria: "Link acquisti",
+        sottotipo: prodotto.categoria,
+        titolo: prodotto.nome,
+        descrizione: prodotto.descrizione,
+        link: prodotto.link,
+        file_url: "",
+        file_path: "",
+        azione: prodotto.link ? "Acquista qui" : "Link da inserire in admin"
+      }))
+
+  .filter(
+    (prodottoBase) =>
+      !risorseDinamiche.some(
+        (prodotto) =>
+          prodotto.categoria === "Link acquisti" &&
+          String(prodotto.titolo || "").toLowerCase() ===
+          String(prodottoBase.titolo || "").toLowerCase()
+      )
+  );
+
+function risorsePerCategoria(categoria) {
+  const risorseCategoria = risorseDinamiche.filter(
+    (risorsa) => risorsa.categoria === categoria
+  );
+
+  if (categoria === "Link acquisti") {
+    return [...risorseCategoria, ...acquistiBase];
+  }
+
+  return risorseCategoria;
+}
+
+const categoriaRisorsaSelezionata =
+  categorieRisorseEnapi.find((categoria) => categoria.tipo === categoriaRisorsaAttiva) ||
+  categorieRisorseEnapi[0];
+
+const contenutiRisorsaSelezionata = risorsePerCategoria(
+  categoriaRisorsaSelezionata.tipo
+);
+
 const alimentoSelezionato = getAlimento(alimentoId);
 function toggleStepDietauro(step) {
   setStepDietauroAperto((stepAttuale) =>
@@ -5277,8 +5630,8 @@ function HomeIcon({ tipo }) {
       </p>
 
       <div style={pesauroHeroPillsStyle}>
-        <span style={pesauroHeroPillStyle}>{risorseRapide.length} collegamenti</span>
-        <span style={pesauroHeroPillStyle}>{prodottiUtili.length} prodotti utili</span>
+        <span style={pesauroHeroPillStyle}>5 macro aree</span>
+        <span style={pesauroHeroPillStyle}>{risorseDinamiche.length} risorse caricate</span>
         {isAdmin && <span style={pesauroHeroPillStyle}>Area admin attiva</span>}
       </div>
     </div>
@@ -5295,82 +5648,106 @@ function HomeIcon({ tipo }) {
 
 <div style={cardStyle}>
   <div style={sectionTitleStyle}>
-    <h2>🌿 Materiali e collegamenti</h2>
-    <p>Consulta rapidamente i contenuti più utili per gestione, informazione e supporto.</p>
+    <h2>Menu risorse</h2>
+    <p>Scegli una macro area per vedere solo i contenuti collegati.</p>
   </div>
 
   <div style={resourcesGridStyle}>
-    {risorseRapide.map((risorsa) => (
-      <div key={`${risorsa.tipo}-${risorsa.titolo}`} style={resourceCardStyle}>
-        <div style={resourceCardHeaderStyle}>
-          <div style={resourceIconStyle}>{risorsa.icona}</div>
+    {categorieRisorseEnapi.map((categoria) => {
+      const attiva = categoriaRisorsaAttiva === categoria.tipo;
+      const totaleContenuti = risorsePerCategoria(categoria.tipo).length;
 
-          <span style={resourceTypeStyle}>{risorsa.tipo}</span>
-        </div>
+      return (
+        <button
+          key={categoria.tipo}
+          type="button"
+          onClick={() => setCategoriaRisorsaAttiva(categoria.tipo)}
+          style={{
+            ...resourceSoftCardStyle,
+            ...(attiva ? resourceSoftCardActiveStyle : {})
+          }}
+        >
+          <img
+            src={categoria.immagine}
+            alt={categoria.titolo}
+            style={resourceSoftImageStyle}
+          />
 
-        <h3>{risorsa.titolo}</h3>
+          <div style={resourceSoftTextStyle}>
+            <h3 style={resourceSoftTitleStyle}>{categoria.titolo}</h3>
+            <p style={resourceSoftDescriptionStyle}>{categoria.descrizione}</p>
+          </div>
 
-        <p>{risorsa.descrizione}</p>
-
-        <div style={resourceActionAreaStyle}>
-          {risorsa.link ? (
-            <button
-              type="button"
-              onClick={() => window.open(risorsa.link, "_blank")}
-              style={greenButton}
-            >
-              {risorsa.azione}
-            </button>
-          ) : (
-            <span style={resourceMissingLinkStyle}>
-              In preparazione
-            </span>
-          )}
-        </div>
-      </div>
-    ))}
+          <span style={attiva ? resourceSoftActionActiveStyle : resourceSoftActionStyle}>
+            {attiva ? "Categoria aperta" : "Apri categoria"} · {totaleContenuti}
+          </span>
+        </button>
+      );
+    })}
   </div>
 </div>
 
-<div style={cardStyle}>
+<div style={resourceContentPanelStyle}>
   <div style={sectionTitleStyle}>
-    <h2>🛒 Acquisti consigliati</h2>
+    <h2>{categoriaRisorsaSelezionata.titolo}</h2>
     <p>
-      Integratori, strumenti e accessori utili per la gestione quotidiana dei petauri.
+      {categoriaRisorsaSelezionata.descrizione}
     </p>
   </div>
 
-  <div style={affiliateNoticeStyle}>
-    In qualità di Affiliati Amazon possiamo ricevere una commissione dagli acquisti idonei,
-    senza costi aggiuntivi per chi acquista. Le eventuali commissioni saranno utilizzate
-    per sostenere le attività dell'associazione.
-  </div>
+  {categoriaRisorsaSelezionata.tipo === "Link acquisti" && (
+    <div style={affiliateNoticeStyle}>
+      In qualità di Affiliati Amazon possiamo ricevere una commissione dagli acquisti idonei,
+      senza costi aggiuntivi per chi acquista. Le eventuali commissioni saranno utilizzate
+      per sostenere le attività dell'associazione.
+    </div>
+  )}
 
-  <div style={productsGridStyle}>
-    {prodottiUtili.map((prodotto) => (
-      <div key={`${prodotto.categoria}-${prodotto.nome}`} style={productCardStyle}>
-        <span style={resourceTypeStyle}>{prodotto.categoria}</span>
+  {contenutiRisorsaSelezionata.length === 0 ? (
+    <div style={emptyBoxStyle}>
+      Nessun contenuto caricato in questa macro area.
+    </div>
+  ) : (
+    <div style={resourceListStyle}>
+      {contenutiRisorsaSelezionata.map((risorsa) => (
+        <div key={`${risorsa.id || risorsa.tipo}-${risorsa.titolo}`} style={resourceListItemStyle}>
+          <div style={resourceListTextStyle}>
+            <div style={resourceMetaRowStyle}>
+              <span style={resourceTypeStyle}>
+                {risorsa.sottotipo || risorsa.tipo}
+              </span>
 
-        <h3>{prodotto.nome}</h3>
+              {!risorsa.visibile && risorsa.id && (
+                <span style={resourceHiddenBadgeStyle}>Nascosta</span>
+              )}
+            </div>
 
-        <p>{prodotto.descrizione}</p>
+            <h3 style={resourceListTitleStyle}>{risorsa.titolo}</h3>
 
-        {prodotto.link ? (
-          <button
-            type="button"
-            onClick={() => window.open(prodotto.link, "_blank")}
-            style={greenButton}
-          >
-            Apri prodotto
-          </button>
-        ) : (
-          <span style={resourceMissingLinkStyle}>
-            Link da inserire in admin
-          </span>
-        )}
-      </div>
-    ))}
-  </div>
+            {risorsa.descrizione && (
+              <p style={resourceListDescriptionStyle}>{risorsa.descrizione}</p>
+            )}
+          </div>
+
+          <div style={resourceListActionsStyle}>
+            {risorsa.link || risorsa.file_url ? (
+              <button
+                type="button"
+                onClick={() => apriRisorsa(risorsa)}
+                style={smallGreenButton}
+              >
+                {risorsa.azione}
+              </button>
+            ) : (
+              <span style={resourceMissingLinkStyle}>
+                In preparazione
+              </span>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  )}
 </div>
 
 {isAdmin && (
@@ -5381,26 +5758,127 @@ function HomeIcon({ tipo }) {
           <span style={pesauroKickerStyle}>Admin</span>
           <h2>Gestione contenuti ENAPI</h2>
           <p>
-            Questa sarà l'area da cui caricare materiali, link, studi e grafiche
-            direttamente dall'app.
+            Carica link e documenti dentro una delle 5 macro aree mostrate agli utenti.
           </p>
         </div>
 
         <span style={adminBadgeStyle}>Admin</span>
       </div>
 
-      <div style={adminResourceGridStyle}>
-        {adminRisorseFuture.map((voce) => (
-          <div key={voce} style={adminResourceItemStyle}>
-            <span>✓</span>
-            <strong>{voce}</strong>
-          </div>
-        ))}
+      <div style={adminResourceFormStyle}>
+        <select
+          value={risorsaTipo}
+          onChange={(e) => setRisorsaTipo(e.target.value)}
+          style={inputStyle}
+        >
+          {tipiRisorsa.map((tipo) => (
+            <option key={tipo} value={tipo}>
+              {tipo}
+            </option>
+          ))}
+        </select>
+
+        <input
+          type="text"
+          placeholder="Titolo risorsa"
+          value={risorsaTitolo}
+          onChange={(e) => setRisorsaTitolo(e.target.value)}
+          style={inputStyle}
+        />
+
+        <textarea
+          placeholder="Descrizione"
+          value={risorsaDescrizione}
+          onChange={(e) => setRisorsaDescrizione(e.target.value)}
+          style={{ ...inputStyle, minHeight: "90px" }}
+        />
+
+        <input
+          type="text"
+          placeholder="Link esterno, se presente"
+          value={risorsaLink}
+          onChange={(e) => setRisorsaLink(e.target.value)}
+          style={inputStyle}
+        />
+
+        <input
+          type="number"
+          placeholder="Ordine visualizzazione"
+          value={risorsaOrdinamento}
+          onChange={(e) => setRisorsaOrdinamento(e.target.value)}
+          style={inputStyle}
+        />
+
+        <label style={adminCheckboxStyle}>
+          <input
+            type="checkbox"
+            checked={risorsaVisibile}
+            onChange={(e) => setRisorsaVisibile(e.target.checked)}
+          />
+          Risorsa visibile agli utenti
+        </label>
+
+        <input
+          type="file"
+          accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"
+          onChange={(e) => setRisorsaFile(e.target.files?.[0] || null)}
+          style={inputStyle}
+        />
+
+        <button
+          type="button"
+          onClick={salvaRisorsaEnapi}
+          disabled={risorsaCaricamento}
+          style={greenButton}
+        >
+          {risorsaCaricamento ? "Caricamento..." : "Salva risorsa"}
+        </button>
       </div>
 
       <div style={adminResourceNoteStyle}>
-        Prossimo step: colleghiamo questa area a Supabase per caricare file PDF,
-        immagini, grafiche e link senza modificare il codice.
+        Puoi salvare una risorsa con solo link, solo file, oppure link e file insieme.
+        La categoria scelta decide in quale macro area comparirà il contenuto.
+      </div>
+
+      <div style={adminResourceListStyle}>
+        <h3>Risorse caricate</h3>
+
+        {risorseEnapi.length === 0 ? (
+          <div style={emptyBoxStyle}>
+            Nessuna risorsa caricata. Le card visibili sopra sono quelle base dell'app.
+          </div>
+        ) : (
+          risorseEnapi.map((risorsa) => (
+            <div key={risorsa.id} style={adminResourceRowStyle}>
+              <div>
+                <strong>{risorsa.titolo}</strong>
+                <span>
+                  {risorsa.tipo} · {risorsa.visibile ? "visibile" : "nascosta"}
+                </span>
+              </div>
+
+              <div style={documentActionsStyle}>
+                {(risorsa.link || risorsa.file_url) && (
+                  <button
+                    type="button"
+                    onClick={() => apriRisorsa(risorsa)}
+                    style={smallGreenButton}
+                  >
+                    Apri
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => eliminaRisorsaEnapi(risorsa)}
+                  style={smallRedButton}
+                >
+                  Elimina
+                </button>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
 
@@ -6435,23 +6913,43 @@ const adminResourceHeaderStyle = {
   color: enapiColors.bosco
 };
 
-const adminResourceGridStyle = {
+const adminResourceFormStyle = {
   display: "grid",
   gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+  gap: "10px",
+  alignItems: "start"
+};
+
+const adminCheckboxStyle = {
+  backgroundColor: enapiColors.bianco,
+  border: `1px solid ${enapiColors.bordo}`,
+  borderRadius: "14px",
+  padding: "12px",
+  color: enapiColors.bosco,
+  fontWeight: "800",
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
+  minHeight: "46px"
+};
+
+const adminResourceListStyle = {
+  display: "flex",
+  flexDirection: "column",
   gap: "10px"
 };
 
-const adminResourceItemStyle = {
+const adminResourceRowStyle = {
   backgroundColor: enapiColors.bianco,
   border: `1px solid ${enapiColors.bordo}`,
   borderRadius: "16px",
   padding: "12px",
   color: enapiColors.bosco,
-  fontWeight: "700",
   display: "flex",
-  gap: "8px",
-  alignItems: "flex-start",
-  lineHeight: "1.35"
+  justifyContent: "space-between",
+  alignItems: "center",
+  gap: "10px",
+  flexWrap: "wrap"
 };
 
 const adminResourceNoteStyle = {
@@ -6518,6 +7016,61 @@ const resourceActionAreaStyle = {
   display: "flex",
   flexDirection: "column",
   gap: "8px"
+};
+
+const resourcePreviewImageWrapStyle = {
+  width: "100%",
+  height: "132px",
+  borderRadius: "18px",
+  overflow: "hidden",
+  border: `1px solid ${enapiColors.bordo}`,
+  backgroundColor: enapiColors.salviaChiaro,
+  boxShadow: "0 6px 14px rgba(35,75,45,0.06)"
+};
+
+const resourcePreviewImageStyle = {
+  width: "100%",
+  height: "100%",
+  objectFit: "cover",
+  display: "block"
+};
+
+const resourcePreviewFileStyle = {
+  backgroundColor: enapiColors.bianco,
+  border: `1px solid ${enapiColors.bordo}`,
+  borderRadius: "18px",
+  padding: "12px",
+  display: "flex",
+  alignItems: "center",
+  gap: "10px",
+  color: enapiColors.bosco,
+  fontWeight: "800",
+  fontSize: "14px"
+};
+
+const resourcePreviewFileIconStyle = {
+  backgroundColor: enapiColors.bosco,
+  color: "white",
+  borderRadius: "10px",
+  padding: "7px 8px",
+  fontSize: "12px",
+  fontWeight: "900",
+  minWidth: "42px",
+  textAlign: "center"
+};
+
+const resourcePreviewLinkStyle = {
+  backgroundColor: "rgba(232,237,220,0.72)",
+  border: `1px solid ${enapiColors.bordo}`,
+  borderRadius: "18px",
+  padding: "10px 12px",
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
+  color: enapiColors.bosco,
+  fontWeight: "800",
+  fontSize: "13px",
+  overflowWrap: "anywhere"
 };
 
 const resourceMissingLinkStyle = {
@@ -6980,3 +7533,153 @@ const heroLogoutButtonStyle = {
   cursor: "pointer",
   boxShadow: "0 6px 14px rgba(0,0,0,0.16)"
 };
+
+const resourceSoftCardStyle = {
+  background:
+    "linear-gradient(145deg, rgba(255,253,247,0.98) 0%, rgba(243,245,236,0.96) 100%)",
+  border: `1px solid ${enapiColors.bordo}`,
+  borderRadius: "26px",
+  padding: "18px",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: "14px",
+  textAlign: "center",
+  cursor: "pointer",
+  fontFamily: "inherit",
+  color: enapiColors.marrone,
+  boxShadow: "0 10px 24px rgba(35,75,45,0.08)",
+  minHeight: "310px"
+};
+
+const resourceSoftCardActiveStyle = {
+  border: `2px solid ${enapiColors.bosco}`,
+  background:
+    "linear-gradient(145deg, rgba(232,237,220,0.98) 0%, rgba(255,253,247,0.98) 100%)",
+  boxShadow: "0 14px 30px rgba(35,75,45,0.16)"
+};
+
+const resourceSoftImageStyle = {
+  width: "138px",
+  height: "138px",
+  objectFit: "contain",
+  display: "block",
+  filter: "drop-shadow(0 10px 16px rgba(35,75,45,0.14))"
+};
+
+const resourceSoftTextStyle = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: "7px",
+  flex: 1
+};
+
+const resourceSoftTitleStyle = {
+  margin: 0,
+  color: enapiColors.bosco,
+  fontSize: "clamp(20px, 3vw, 25px)",
+  lineHeight: "1.08",
+  fontWeight: "850"
+};
+
+const resourceSoftDescriptionStyle = {
+  margin: 0,
+  color: enapiColors.marrone,
+  fontSize: "14px",
+  lineHeight: "1.42"
+};
+
+const resourceSoftActionStyle = {
+  marginTop: "auto",
+  background: "linear-gradient(135deg, #234b2d 0%, #17351f 100%)",
+  color: "white",
+  borderRadius: "999px",
+  padding: "10px 16px",
+  fontWeight: "800",
+  fontSize: "14px",
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "8px",
+  boxShadow: "0 8px 18px rgba(35,75,45,0.18)"
+};
+
+const resourceSoftActionActiveStyle = {
+  ...resourceSoftActionStyle,
+  background: "linear-gradient(135deg, #6f7f3f 0%, #234b2d 100%)"
+};
+
+const resourceContentPanelStyle = {
+  ...cardStyle,
+  display: "flex",
+  flexDirection: "column",
+  gap: "14px"
+};
+
+const resourceListStyle = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "10px"
+};
+
+const resourceListItemStyle = {
+  backgroundColor: enapiColors.bianco,
+  border: `1px solid ${enapiColors.bordo}`,
+  borderRadius: "18px",
+  padding: "14px",
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  gap: "12px",
+  flexWrap: "wrap",
+  color: enapiColors.marrone
+};
+
+const resourceListTextStyle = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "7px",
+  minWidth: "220px",
+  flex: "1 1 280px"
+};
+
+const resourceMetaRowStyle = {
+  display: "flex",
+  gap: "8px",
+  flexWrap: "wrap",
+  alignItems: "center"
+};
+
+const resourceHiddenBadgeStyle = {
+  color: "#7b1b1b",
+  backgroundColor: "#ffebee",
+  border: "1px solid #f1c0c0",
+  borderRadius: "999px",
+  padding: "6px 10px",
+  fontWeight: "800",
+  fontSize: "12px"
+};
+
+const resourceListTitleStyle = {
+  margin: 0,
+  color: enapiColors.bosco,
+  fontSize: "18px",
+  lineHeight: "1.15"
+};
+
+const resourceListDescriptionStyle = {
+  margin: 0,
+  color: enapiColors.marrone,
+  lineHeight: "1.4",
+  fontSize: "14px"
+};
+
+const resourceListActionsStyle = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "flex-end",
+  gap: "8px",
+  flex: "0 1 190px"
+};
+
