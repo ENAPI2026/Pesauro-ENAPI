@@ -5293,37 +5293,6 @@ function HomeIcon({ tipo }) {
   </div>
 </div>
 
-{isAdmin && (
-  <div style={adminResourcePanelStyle}>
-    <div style={adminResourceHeaderStyle}>
-      <div>
-        <span style={pesauroKickerStyle}>Admin</span>
-        <h2>Gestione contenuti ENAPI</h2>
-        <p>
-          Questa sarà l'area da cui caricare materiali, link, studi e grafiche
-          direttamente dall'app.
-        </p>
-      </div>
-
-      <span style={adminBadgeStyle}>Admin</span>
-    </div>
-
-    <div style={adminResourceGridStyle}>
-      {adminRisorseFuture.map((voce) => (
-        <div key={voce} style={adminResourceItemStyle}>
-          <span>✓</span>
-          <strong>{voce}</strong>
-        </div>
-      ))}
-    </div>
-
-    <div style={adminResourceNoteStyle}>
-      Prossimo step: colleghiamo questa area a Supabase per caricare file PDF,
-      immagini, grafiche e link senza modificare il codice.
-    </div>
-  </div>
-)}
-
 <div style={cardStyle}>
   <div style={sectionTitleStyle}>
     <h2>🌿 Materiali e collegamenti</h2>
@@ -5363,129 +5332,6 @@ function HomeIcon({ tipo }) {
   </div>
 </div>
 
-{isAdmin && ( 
-<div style={cardStyle}>
-  <div style={sectionTitleStyle}>
-    <h2>⚙️ Admin alimenti</h2>
-    <p>Modifica note, foto, valori nutrizionali, posologie e link acquisto.</p>
-  </div>
-
-  <select
-    value={adminAlimentoId}
-    onChange={(e) => apriAlimentoAdmin(e.target.value)}
-    style={inputStyle}
-  >
-    <option value="">Seleziona alimento</option>
-    {alimenti
-      .slice()
-      .sort((a, b) => String(a.Nome || "").localeCompare(String(b.Nome || "")))
-      .map((alimento) => (
-        <option key={alimento.id} value={alimento.id}>
-          {alimento.Nome} - {alimento.Categoria}
-        </option>
-      ))}
-  </select>
-
-  {adminAlimentoEdit && (
-    <div style={miniPanelStyle}>
-      {adminAlimentoEdit.FotoUrl && (
-        <img
-          src={adminAlimentoEdit.FotoUrl}
-          alt={adminAlimentoEdit.Nome}
-          style={adminFoodImageStyle}
-        />
-      )}
-
-      <input
-        type="text"
-        placeholder="Nome"
-        value={adminAlimentoEdit.Nome}
-        onChange={(e) => aggiornaAlimentoAdmin("Nome", e.target.value)}
-        style={inputStyle}
-      />
-
-      <select
-        value={adminAlimentoEdit.Categoria}
-        onChange={(e) => aggiornaAlimentoAdmin("Categoria", e.target.value)}
-        style={inputStyle}
-      >
-        <option value="">Categoria</option>
-        <option value="Frutta">Frutta</option>
-        <option value="Verdura">Verdura</option>
-        <option value="Insetto">Insetto</option>
-        <option value="Integratore">Integratore</option>
-        <option value="Tossico">Tossico / non consigliato</option>
-      </select>
-
-      <input
-        type="number"
-        placeholder="Calcio"
-        value={adminAlimentoEdit.Calcio}
-        onChange={(e) => aggiornaAlimentoAdmin("Calcio", e.target.value)}
-        style={inputStyle}
-      />
-
-      <input
-        type="number"
-        placeholder="Fosforo"
-        value={adminAlimentoEdit.Fosforo}
-        onChange={(e) => aggiornaAlimentoAdmin("Fosforo", e.target.value)}
-        style={inputStyle}
-      />
-
-      <input
-        type="text"
-        placeholder="URL foto"
-        value={adminAlimentoEdit.FotoUrl}
-        onChange={(e) => aggiornaAlimentoAdmin("FotoUrl", e.target.value)}
-        style={inputStyle}
-      />
-
-      <input
-        type="text"
-        placeholder="Link acquisto / Amazon"
-        value={adminAlimentoEdit.link_acquisto}
-        onChange={(e) => aggiornaAlimentoAdmin("link_acquisto", e.target.value)}
-        style={inputStyle}
-      />
-
-      <input
-        type="text"
-        placeholder="Dose consigliata"
-        value={adminAlimentoEdit.DoseConsigliata}
-        onChange={(e) => aggiornaAlimentoAdmin("DoseConsigliata", e.target.value)}
-        style={inputStyle}
-      />
-
-      <input
-        type="text"
-        placeholder="Unità misura"
-        value={adminAlimentoEdit.UnitaMisura}
-        onChange={(e) => aggiornaAlimentoAdmin("UnitaMisura", e.target.value)}
-        style={inputStyle}
-      />
-
-      <textarea
-        placeholder="Posologia"
-        value={adminAlimentoEdit.Posologia}
-        onChange={(e) => aggiornaAlimentoAdmin("Posologia", e.target.value)}
-        style={{ ...inputStyle, minHeight: "80px" }}
-      />
-
-      <textarea
-        placeholder="Note alimento"
-        value={adminAlimentoEdit.Note}
-        onChange={(e) => aggiornaAlimentoAdmin("Note", e.target.value)}
-        style={{ ...inputStyle, minHeight: "100px" }}
-      />
-
-      <button onClick={salvaAlimentoAdmin} style={greenButton}>
-        Salva modifiche alimento
-      </button>
-    </div>
-  )}
-</div>
-)}
 <div style={cardStyle}>
   <div style={sectionTitleStyle}>
     <h2>🛒 Acquisti consigliati</h2>
@@ -5526,6 +5372,161 @@ function HomeIcon({ tipo }) {
     ))}
   </div>
 </div>
+
+{isAdmin && (
+  <>
+    <div style={adminResourcePanelStyle}>
+      <div style={adminResourceHeaderStyle}>
+        <div>
+          <span style={pesauroKickerStyle}>Admin</span>
+          <h2>Gestione contenuti ENAPI</h2>
+          <p>
+            Questa sarà l'area da cui caricare materiali, link, studi e grafiche
+            direttamente dall'app.
+          </p>
+        </div>
+
+        <span style={adminBadgeStyle}>Admin</span>
+      </div>
+
+      <div style={adminResourceGridStyle}>
+        {adminRisorseFuture.map((voce) => (
+          <div key={voce} style={adminResourceItemStyle}>
+            <span>✓</span>
+            <strong>{voce}</strong>
+          </div>
+        ))}
+      </div>
+
+      <div style={adminResourceNoteStyle}>
+        Prossimo step: colleghiamo questa area a Supabase per caricare file PDF,
+        immagini, grafiche e link senza modificare il codice.
+      </div>
+    </div>
+
+    <div style={cardStyle}>
+      <div style={sectionTitleStyle}>
+        <h2>⚙️ Admin alimenti</h2>
+        <p>Modifica note, foto, valori nutrizionali, posologie e link acquisto.</p>
+      </div>
+
+      <select
+        value={adminAlimentoId}
+        onChange={(e) => apriAlimentoAdmin(e.target.value)}
+        style={inputStyle}
+      >
+        <option value="">Seleziona alimento</option>
+        {alimenti
+          .slice()
+          .sort((a, b) => String(a.Nome || "").localeCompare(String(b.Nome || "")))
+          .map((alimento) => (
+            <option key={alimento.id} value={alimento.id}>
+              {alimento.Nome} - {alimento.Categoria}
+            </option>
+          ))}
+      </select>
+
+      {adminAlimentoEdit && (
+        <div style={miniPanelStyle}>
+          {adminAlimentoEdit.FotoUrl && (
+            <img
+              src={adminAlimentoEdit.FotoUrl}
+              alt={adminAlimentoEdit.Nome}
+              style={adminFoodImageStyle}
+            />
+          )}
+
+          <input
+            type="text"
+            placeholder="Nome"
+            value={adminAlimentoEdit.Nome}
+            onChange={(e) => aggiornaAlimentoAdmin("Nome", e.target.value)}
+            style={inputStyle}
+          />
+
+          <select
+            value={adminAlimentoEdit.Categoria}
+            onChange={(e) => aggiornaAlimentoAdmin("Categoria", e.target.value)}
+            style={inputStyle}
+          >
+            <option value="">Categoria</option>
+            <option value="Frutta">Frutta</option>
+            <option value="Verdura">Verdura</option>
+            <option value="Insetto">Insetto</option>
+            <option value="Integratore">Integratore</option>
+            <option value="Tossico">Tossico / non consigliato</option>
+          </select>
+
+          <input
+            type="number"
+            placeholder="Calcio"
+            value={adminAlimentoEdit.Calcio}
+            onChange={(e) => aggiornaAlimentoAdmin("Calcio", e.target.value)}
+            style={inputStyle}
+          />
+
+          <input
+            type="number"
+            placeholder="Fosforo"
+            value={adminAlimentoEdit.Fosforo}
+            onChange={(e) => aggiornaAlimentoAdmin("Fosforo", e.target.value)}
+            style={inputStyle}
+          />
+
+          <input
+            type="text"
+            placeholder="URL foto"
+            value={adminAlimentoEdit.FotoUrl}
+            onChange={(e) => aggiornaAlimentoAdmin("FotoUrl", e.target.value)}
+            style={inputStyle}
+          />
+
+          <input
+            type="text"
+            placeholder="Link acquisto / Amazon"
+            value={adminAlimentoEdit.link_acquisto}
+            onChange={(e) => aggiornaAlimentoAdmin("link_acquisto", e.target.value)}
+            style={inputStyle}
+          />
+
+          <input
+            type="text"
+            placeholder="Dose consigliata"
+            value={adminAlimentoEdit.DoseConsigliata}
+            onChange={(e) => aggiornaAlimentoAdmin("DoseConsigliata", e.target.value)}
+            style={inputStyle}
+          />
+
+          <input
+            type="text"
+            placeholder="Unità misura"
+            value={adminAlimentoEdit.UnitaMisura}
+            onChange={(e) => aggiornaAlimentoAdmin("UnitaMisura", e.target.value)}
+            style={inputStyle}
+          />
+
+          <textarea
+            placeholder="Posologia"
+            value={adminAlimentoEdit.Posologia}
+            onChange={(e) => aggiornaAlimentoAdmin("Posologia", e.target.value)}
+            style={{ ...inputStyle, minHeight: "80px" }}
+          />
+
+          <textarea
+            placeholder="Note alimento"
+            value={adminAlimentoEdit.Note}
+            onChange={(e) => aggiornaAlimentoAdmin("Note", e.target.value)}
+            style={{ ...inputStyle, minHeight: "100px" }}
+          />
+
+          <button onClick={salvaAlimentoAdmin} style={greenButton}>
+            Salva modifiche alimento
+          </button>
+        </div>
+      )}
+    </div>
+  </>
+)}
 
   </>
 )}
