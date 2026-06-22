@@ -3260,6 +3260,29 @@ function HomeIcon({ tipo }) {
 {sezioneAttiva === "pesauro" && (
   <>
 
+{alertPeso.length > 0 && (
+  <div style={alertCard}>
+    <h2>🚨 Alert peso</h2>
+
+    {alertPeso.map((alert, index) => (
+      <div
+        key={index}
+        style={{
+          ...alertItemStyle,
+          backgroundColor:
+            alert.livello === "danger" ? "#ffebee" : "#fff8e1",
+          color:
+            alert.livello === "danger" ? "#b00020" : "#f57f17",
+          borderColor:
+            alert.livello === "danger" ? "#ef9a9a" : "#eadb9c"
+        }}
+      >
+        {alert.livello === "danger" ? "🚨" : "⚠️"} {alert.testo}
+      </div>
+    ))}
+  </div>
+)}
+
       <div style={cardStyle}>
   <div style={pesauroHeroStyle}>
     <div>
@@ -3287,44 +3310,6 @@ function HomeIcon({ tipo }) {
       />
     </div>
   </div>
-
-  {alertPeso.length > 0 && (
-    <div style={alertWeightPanelStyle}>
-      <div style={alertWeightHeaderStyle}>
-        <div>
-          <span style={pesauroKickerStyle}>Promemoria</span>
-          <h3>Controllo peso</h3>
-        </div>
-
-        <span style={alertWeightCountStyle}>
-          {alertPeso.length}
-        </span>
-      </div>
-
-      <div style={alertWeightListStyle}>
-        {alertPeso.map((alert, index) => (
-          <div
-            key={index}
-            style={{
-              ...alertWeightItemStyle,
-              borderColor:
-                alert.livello === "danger" ? "#ef9a9a" : "#eadb9c"
-            }}
-          >
-            <span
-              style={{
-                ...alertWeightDotStyle,
-                backgroundColor:
-                  alert.livello === "danger" ? "#b00020" : "#c9a646"
-              }}
-            />
-
-            <span>{alert.testo}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  )}
 
   <div style={pesauroSectionHeaderStyle}>
     <div>
@@ -5629,64 +5614,22 @@ const filterFooterStyle = {
   gap: "10px",
   flexWrap: "wrap"
 };
-const alertWeightPanelStyle = {
+const alertCard = {
   background:
-    "linear-gradient(145deg, rgba(255,253,247,0.98) 0%, rgba(255,248,225,0.72) 100%)",
-  border: `1px solid ${enapiColors.bordo}`,
+    "linear-gradient(145deg, rgba(255,248,225,0.98) 0%, rgba(255,235,238,0.9) 100%)",
+  color: "#9b1c1c",
+  padding: "18px",
   borderRadius: "22px",
-  padding: "14px",
-  display: "flex",
-  flexDirection: "column",
-  gap: "10px",
-  boxShadow: "0 8px 18px rgba(35,75,45,0.06)"
+  marginBottom: "18px",
+  border: "1px solid #eadb9c",
+  boxShadow: "0 10px 24px rgba(176, 0, 32, 0.08)"
 };
-
-const alertWeightHeaderStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  gap: "12px",
-  color: enapiColors.bosco
-};
-
-const alertWeightCountStyle = {
-  width: "34px",
-  height: "34px",
-  borderRadius: "50%",
-  backgroundColor: enapiColors.salvia,
-  color: enapiColors.bosco,
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontWeight: "900",
-  border: `1px solid ${enapiColors.bordo}`
-};
-
-const alertWeightListStyle = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-  gap: "8px"
-};
-
-const alertWeightItemStyle = {
-  backgroundColor: enapiColors.bianco,
-  color: enapiColors.marrone,
-  padding: "10px 12px",
-  borderRadius: "16px",
+const alertItemStyle = {
+  padding: "10px",
+  borderRadius: "12px",
   border: "1px solid",
-  display: "flex",
-  alignItems: "flex-start",
-  gap: "9px",
-  fontSize: "14px",
-  lineHeight: "1.35"
-};
-
-const alertWeightDotStyle = {
-  width: "9px",
-  height: "9px",
-  borderRadius: "50%",
-  marginTop: "5px",
-  flexShrink: 0
+  fontWeight: "bold",
+  marginTop: "8px"
 };
 const rowStyle = {
   display: "flex",

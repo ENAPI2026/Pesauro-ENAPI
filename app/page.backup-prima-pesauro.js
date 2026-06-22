@@ -3260,82 +3260,68 @@ function HomeIcon({ tipo }) {
 {sezioneAttiva === "pesauro" && (
   <>
 
+{alertPeso.length > 0 && (
+  <div style={alertCard}>
+    <h2>🚨 Alert peso</h2>
+
+    {alertPeso.map((alert, index) => (
+      <div
+        key={index}
+        style={{
+          ...alertItemStyle,
+          backgroundColor:
+            alert.livello === "danger" ? "#ffebee" : "#fff8e1",
+          color:
+            alert.livello === "danger" ? "#b00020" : "#f57f17",
+          borderColor:
+            alert.livello === "danger" ? "#ef9a9a" : "#eadb9c"
+        }}
+      >
+        {alert.livello === "danger" ? "🚨" : "⚠️"} {alert.testo}
+      </div>
+    ))}
+  </div>
+)}
+
       <div style={cardStyle}>
   <div style={pesauroHeroStyle}>
     <div>
       <span style={pesauroKickerStyle}>Pesauro</span>
-      <h2 style={pesauroTitleStyle}>Monitoraggio petauri</h2>
+      <h2 style={pesauroTitleStyle}>Petauri, colonie e pesi</h2>
       <p style={pesauroSubtitleStyle}>
-        Schede, colonie, pesate, grafici e documenti in un unico spazio.
+        Monitora il peso dei petauri, gestisci le colonie e tieni ordinati documenti,
+        schede e andamento del benessere.
       </p>
-
-      <div style={pesauroHeroPillsStyle}>
-        <span style={pesauroHeroPillStyle}>{petauri.length} petauri</span>
-        <span style={pesauroHeroPillStyle}>{colonie.length} colonie</span>
-        <span style={pesauroHeroPillStyle}>{pesi.length} pesate</span>
-        {alertPeso.length > 0 && (
-          <span style={pesauroHeroPillStyle}>{alertPeso.length} alert</span>
-        )}
-      </div>
     </div>
 
-    <div style={pesauroHeroIconStyle}>
-      <img
-        src="/icons/icon-pesauro.png"
-        alt="Pesauro"
-        style={pesauroHeroImageStyle}
-      />
-    </div>
+    <div style={pesauroHeroIconStyle}>⚖️</div>
   </div>
 
-  {alertPeso.length > 0 && (
-    <div style={alertWeightPanelStyle}>
-      <div style={alertWeightHeaderStyle}>
-        <div>
-          <span style={pesauroKickerStyle}>Promemoria</span>
-          <h3>Controllo peso</h3>
-        </div>
-
-        <span style={alertWeightCountStyle}>
-          {alertPeso.length}
-        </span>
-      </div>
-
-      <div style={alertWeightListStyle}>
-        {alertPeso.map((alert, index) => (
-          <div
-            key={index}
-            style={{
-              ...alertWeightItemStyle,
-              borderColor:
-                alert.livello === "danger" ? "#ef9a9a" : "#eadb9c"
-            }}
-          >
-            <span
-              style={{
-                ...alertWeightDotStyle,
-                backgroundColor:
-                  alert.livello === "danger" ? "#b00020" : "#c9a646"
-              }}
-            />
-
-            <span>{alert.testo}</span>
-          </div>
-        ))}
-      </div>
+  <div style={pesauroStatsGridStyle}>
+    <div style={pesauroStatCardStyle}>
+      <span>Petauri</span>
+      <strong>{petauri.length}</strong>
     </div>
-  )}
 
-  <div style={pesauroSectionHeaderStyle}>
-    <div>
-      <h3>Gestione rapida</h3>
-      <p>Seleziona un petauro o una colonia, aggiungi nuove schede e registra una pesata.</p>
+    <div style={pesauroStatCardStyle}>
+      <span>Colonie</span>
+      <strong>{colonie.length}</strong>
+    </div>
+
+    <div style={pesauroStatCardStyle}>
+      <span>Pesate</span>
+      <strong>{pesi.length}</strong>
+    </div>
+
+    <div style={pesauroStatCardStyle}>
+      <span>Alert peso</span>
+      <strong>{alertPeso.length}</strong>
     </div>
   </div>
 
   <div style={formGridStyle}>
     <div style={miniPanelStyle}>
-      <h3>🔎 Seleziona scheda</h3>
+      <h3>Modalità dieta</h3>
 
       <select value={modalita} onChange={(e) => setModalita(e.target.value)} style={inputStyle}>
         <option value="petauro">Singolo petauro</option>
@@ -3387,7 +3373,7 @@ function HomeIcon({ tipo }) {
     </div>
 
     <div style={miniPanelStyle}>
-      <h3>👥 Nuova colonia</h3>
+      <h3>Aggiungi colonia</h3>
       <input
         type="text"
         placeholder="Nome colonia"
@@ -3399,7 +3385,7 @@ function HomeIcon({ tipo }) {
     </div>
 
     <div style={miniPanelStyle}>
-      <h3>🐾 Nuovo petauro</h3>
+      <h3>Aggiungi petauro</h3>
       <input
         type="text"
         placeholder="Nome petauro"
@@ -3411,7 +3397,7 @@ function HomeIcon({ tipo }) {
     </div>
 
     <div style={miniPanelStyle}>
-      <h3>⚖️ Nuova pesata</h3>
+      <h3>Inserisci peso</h3>
       <input
         type="number"
         placeholder="Peso in grammi"
@@ -5629,64 +5615,22 @@ const filterFooterStyle = {
   gap: "10px",
   flexWrap: "wrap"
 };
-const alertWeightPanelStyle = {
+const alertCard = {
   background:
-    "linear-gradient(145deg, rgba(255,253,247,0.98) 0%, rgba(255,248,225,0.72) 100%)",
-  border: `1px solid ${enapiColors.bordo}`,
+    "linear-gradient(145deg, rgba(255,248,225,0.98) 0%, rgba(255,235,238,0.9) 100%)",
+  color: "#9b1c1c",
+  padding: "18px",
   borderRadius: "22px",
-  padding: "14px",
-  display: "flex",
-  flexDirection: "column",
-  gap: "10px",
-  boxShadow: "0 8px 18px rgba(35,75,45,0.06)"
+  marginBottom: "18px",
+  border: "1px solid #eadb9c",
+  boxShadow: "0 10px 24px rgba(176, 0, 32, 0.08)"
 };
-
-const alertWeightHeaderStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  gap: "12px",
-  color: enapiColors.bosco
-};
-
-const alertWeightCountStyle = {
-  width: "34px",
-  height: "34px",
-  borderRadius: "50%",
-  backgroundColor: enapiColors.salvia,
-  color: enapiColors.bosco,
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontWeight: "900",
-  border: `1px solid ${enapiColors.bordo}`
-};
-
-const alertWeightListStyle = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-  gap: "8px"
-};
-
-const alertWeightItemStyle = {
-  backgroundColor: enapiColors.bianco,
-  color: enapiColors.marrone,
-  padding: "10px 12px",
-  borderRadius: "16px",
+const alertItemStyle = {
+  padding: "10px",
+  borderRadius: "12px",
   border: "1px solid",
-  display: "flex",
-  alignItems: "flex-start",
-  gap: "9px",
-  fontSize: "14px",
-  lineHeight: "1.35"
-};
-
-const alertWeightDotStyle = {
-  width: "9px",
-  height: "9px",
-  borderRadius: "50%",
-  marginTop: "5px",
-  flexShrink: 0
+  fontWeight: "bold",
+  marginTop: "8px"
 };
 const rowStyle = {
   display: "flex",
@@ -5835,14 +5779,13 @@ const pesauroHeroStyle = {
   background:
     "linear-gradient(135deg, rgba(232,237,220,0.98) 0%, rgba(246,239,223,0.96) 100%)",
   border: `1px solid ${enapiColors.bordo}`,
-  borderRadius: "26px",
-  padding: "clamp(18px, 4vw, 26px)",
+  borderRadius: "24px",
+  padding: "clamp(16px, 4vw, 24px)",
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
   gap: "16px",
-  overflow: "hidden",
-  boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.45)"
+  overflow: "hidden"
 };
 
 const pesauroKickerStyle = {
@@ -5856,7 +5799,7 @@ const pesauroKickerStyle = {
 const pesauroTitleStyle = {
   margin: "4px 0 6px",
   color: enapiColors.bosco,
-  fontSize: "clamp(30px, 6vw, 46px)",
+  fontSize: "clamp(27px, 5vw, 40px)",
   lineHeight: "1.05",
   fontWeight: "850",
   letterSpacing: "-0.035em"
@@ -5865,47 +5808,41 @@ const pesauroTitleStyle = {
 const pesauroSubtitleStyle = {
   margin: 0,
   color: enapiColors.marrone,
-  fontSize: "clamp(14px, 2.8vw, 17px)",
+  fontSize: "15px",
   lineHeight: "1.45",
   maxWidth: "680px"
 };
 
 const pesauroHeroIconStyle = {
-  width: "clamp(96px, 24vw, 148px)",
-  height: "clamp(96px, 24vw, 148px)",
+  width: "86px",
+  height: "86px",
   borderRadius: "50%",
-  backgroundColor: "rgba(255,253,247,0.78)",
-  border: `1px solid rgba(216,221,207,0.85)`,
+  backgroundColor: enapiColors.bianco,
+  border: `1px solid ${enapiColors.bordo}`,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
+  fontSize: "42px",
   flexShrink: 0,
   boxShadow: "0 10px 22px rgba(35,75,45,0.10)"
 };
 
-const pesauroHeroImageStyle = {
-  width: "100%",
-  height: "100%",
-  objectFit: "contain",
-  display: "block",
-  filter: "drop-shadow(0 8px 12px rgba(35,75,45,0.14))"
+const pesauroStatsGridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
+  gap: "10px"
 };
 
-const pesauroHeroPillsStyle = {
-  display: "flex",
-  gap: "8px",
-  flexWrap: "wrap",
-  marginTop: "12px"
-};
-
-const pesauroHeroPillStyle = {
-  backgroundColor: "rgba(255,253,247,0.72)",
+const pesauroStatCardStyle = {
+  backgroundColor: enapiColors.salviaChiaro,
   border: `1px solid ${enapiColors.bordo}`,
-  borderRadius: "999px",
-  padding: "7px 10px",
+  borderRadius: "18px",
+  padding: "12px",
+  display: "flex",
+  flexDirection: "column",
+  gap: "4px",
   color: enapiColors.bosco,
-  fontSize: "13px",
-  fontWeight: "800"
+  boxShadow: "0 6px 14px rgba(35,75,45,0.05)"
 };
 
 const pesauroSectionHeaderStyle = {
@@ -5914,8 +5851,7 @@ const pesauroSectionHeaderStyle = {
   alignItems: "flex-end",
   gap: "12px",
   flexWrap: "wrap",
-  color: enapiColors.bosco,
-  marginTop: "6px"
+  color: enapiColors.bosco
 };
 
 const miniPanelStyle = {
