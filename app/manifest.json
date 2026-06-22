@@ -1,0 +1,21 @@
+{
+  "name": "Pesauro ENAPI",
+  "short_name": "Pesauro",
+  "description": "Dieta, pesi e benessere del petauro dello zucchero",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f6efdf",
+  "theme_color": "#234b2d",
+  "icons": [
+    {
+      "src": "/icons/pesauro-app-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/pesauro-app-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
